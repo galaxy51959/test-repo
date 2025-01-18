@@ -1,0 +1,20 @@
+{
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "@ironsoftware/ironpdf": "^2024.12.9",
+    "@ironsoftware/ironpdf-engine-windows-x64": "^2024.12.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.3",
+    "openai": "^4.77.3",
+    "path": "^0.12.7",
+    "puppeteer": "^24.1.0",
+    "request-ip": "^3.3.0"
+  }
+}

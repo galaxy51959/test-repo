@@ -1,0 +1,43 @@
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+dotenv.config();
+
+// Routes
+const reportRoutes = require('./routes/reportRoutes');
+// const emailRoutes = require('./routes/emailRoutes');
+// const calendarRoutes = require('./routes/calendarRoutes');
+const studentRoutes = require('./routes/studentRoutes');
+// const callRoutes = require('./routes/callRoutes');
+
+// Middleware
+const errorHandler = require('./middleware/error');
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static('reportPdfs'));
+
+// Routes
+app.use('/api/reports', reportRoutes);
+// app.use('/api/emails', emailRoutes);
+// app.use('/api/calendar', calendarRoutes);
+app.use('/api/students', studentRoutes);
+// app.use('/api/calls', callRoutes);
+
+// Error Handler
+app.use(errorHandler);
+
+// Database connection
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error('MongoDB connection error:', err));
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

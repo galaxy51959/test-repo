@@ -1,0 +1,6 @@
+node_modules
+reportPdfs
+db_json
+
+.env
+package-lock.json
