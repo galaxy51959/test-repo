@@ -1,6 +1,7 @@
 const Report = require('../models/Report');
 const Student = require('../models/Student');
 const reportGenerationService = require('../services/reportGenerationService');
+const accessOutSideService = require('../services/accessOutSideService');
 
 // Create new report
 const createReport = async (req, res) => {
@@ -125,11 +126,22 @@ const deleteReport = async (req, res) => {
   }
 };
 
+const accessReport = async (req, res) => {
+  try {
+    const { studentInfo, targetInfo } = req.body;
+    const result = await accessOutSideService(studentInfo, targetInfo);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   createReport,
   generateReport,
   getReports,
   getReportById,
   updateReport,
-  deleteReport
+  deleteReport,
+  accessReport
 };

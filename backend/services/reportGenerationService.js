@@ -23,7 +23,7 @@ const generateReportSection = async (template, section, data) => {
                 }
             ],
             temperature: 0.5,
-            max_tokens: 4000
+            max_tokens: 3000
         });
 
         console.log(section.order);
@@ -62,6 +62,7 @@ const generateTotalReport = async (sections, studentData, templateType) => {
         } else {
             htmlContent += `${sections[i].content}`;
         }
+        htmlContent += '<br />';
     }
 
     try {
@@ -125,8 +126,18 @@ const generateReport = async (studentData, templateType) => {
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[8], studentData));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[9], studentData));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[10], studentData));
-    generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[11], studentData));
-    generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[12], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[11], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[12], studentData));
+
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[12], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[13], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[14], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[15], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[16], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[17], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[18], studentData));
+    generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[19], studentData));
+    generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[20], studentData));
 
     // for (let i=0; i<targetTemplate.sections.length; i++) {
     //     generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData));
@@ -134,7 +145,7 @@ const generateReport = async (studentData, templateType) => {
 
     // console.log('GeneratedReportSection: ', generatedReportSections);
 
-    // generatedReportSections.sort((a, b) => a.order - b.order);
+    generatedReportSections.sort((a, b) => a.order - b.order);
 
     const generatedReport = await generateTotalReport(generatedReportSections, studentData, templateType);
     

@@ -7,9 +7,9 @@ const {
 	getReports,
 	getReportById,
 	updateReport,
-	deleteReport
+	deleteReport,
+	accessReport
 } = require('../controllers/reportController');
-
 // router.use(auth); // Apply authentication to all routes
 
 router.post('/', createReport);
@@ -18,5 +18,6 @@ router.get('/', getReports);
 router.get('/:id', getReportById);
 router.put('/:id', updateReport);
 router.delete('/:id', deleteReport);
+router.post('/access-outside', accessReport);
 
 module.exports = router;
