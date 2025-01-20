@@ -243,6 +243,35 @@ const Action = async (page, studentInfo, targetInfo) => {
     // Wait for page to settle after sending email
     await delay(5000);
 
+
+    try {
+        // Wait for CKEditor iframe to load
+        const frameSelector = 'iframe.cke_wysiwyg_frame';
+        await page.waitForSelector(frameSelector, {
+            visible: true,
+            timeout: 30000
+        });
+
+        // Get the link content from CKEditor
+        const linkContent = await page.evaluate(() => {
+            const editorFrame = document.querySelector('iframe.cke_wysiwyg_frame');
+            if (editorFrame && editorFrame.contentDocument) {
+                const links = editorFrame.contentDocument.querySelectorAll('a');
+                // Return array of all link hrefs
+                return Array.from(links).map(link => ({
+                    href: link.getAttribute('href'),
+                    text: link.textContent
+                }));
+            }
+            return [];
+        });
+
+        console.log('Found links in editor:', linkContent);
+
+    } catch (error) {
+        console.error('Failed to get link content from editor:', error);
+    }
+
     try {                  
         await page.evaluate(() => {
             const links = Array.from(document.querySelectorAll('a'));
