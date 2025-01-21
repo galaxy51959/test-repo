@@ -59,7 +59,7 @@ const Action = async (page, studentInfo, targetInfo) => {
             birthDate: '#calendarInputDate',
             saveButton: '#save'
         };
-        const birthDatecontent = `05/17/2021`;
+    //    const birthDatecontent = `05/17/2021`;
 
         // Wait for the form to be ready
         await page.waitForSelector(formSelectors.firstName, { 
@@ -67,16 +67,16 @@ const Action = async (page, studentInfo, targetInfo) => {
             timeout: 100000 
         });
 
-        await page.type(formSelectors.birthDate, birthDatecontent, {delay: 200});
+        await page.type(formSelectors.birthDate, studentInfo.dateOfBirth, {delay: 200});
         await delay(200);
             // Fill in the form fields
-        await page.type(formSelectors.firstName, "1717dfd2", {delay: 300});
+        await page.type(formSelectors.firstName, studentInfo.firstName, {delay: 300});
         await delay(300);
             
-        await page.type(formSelectors.middleName, "monesdsed4", {delay: 300});
+        await page.type(formSelectors.middleName, studentInfo.middleName, {delay: 300});
         await delay(300);
             
-        await page.type(formSelectors.lastName, "L345ee", {delay: 300});
+        await page.type(formSelectors.lastName, studentInfo.lastName, {delay: 300});
         await delay(300);
 
             // Select option with value "51" from gender menu
@@ -164,7 +164,7 @@ const Action = async (page, studentInfo, targetInfo) => {
         visible: true,
         timeout: 20000
     });
-    await page.type(firstNameSelector, 'paretntfirst1', {delay: 100});
+    await page.type(firstNameSelector, targetInfo.firstName, {delay: 100});
     
     // Fill in respondent's last name
     const lastNameSelector = '#respondentLastName';
@@ -172,7 +172,7 @@ const Action = async (page, studentInfo, targetInfo) => {
         visible: true,
         timeout: 20000
     });
-    await page.type(lastNameSelector, 'second', {delay: 100});
+    await page.type(lastNameSelector, targetInfo.lastName, {delay: 100});
 
     console.log('Successfully filled in respondent information');
 
@@ -221,7 +221,7 @@ const Action = async (page, studentInfo, targetInfo) => {
         visible: true,
         timeout: 20000
     });
-    await page.type(emailInputSelector, 'blackcatkai7@gmail.com', {delay: 100});
+    await page.type(emailInputSelector, targetInfo.email, {delay: 100});
 
     console.log('Successfully entered email address');
 
