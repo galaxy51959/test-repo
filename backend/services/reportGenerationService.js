@@ -136,12 +136,14 @@ const generateReport = async (studentData, templateType) => {
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[16], studentData));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[17], studentData));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[18], studentData));
-    generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[19], studentData));
-    generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[20], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[19], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[20], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[21], studentData));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[22], studentData)); 
 
-    // for (let i=0; i<targetTemplate.sections.length; i++) {
-    //     generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData));
-    // }
+    for (let i=0; i<targetTemplate.sections.length; i++) {
+        generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData));
+    }
 
     // console.log('GeneratedReportSection: ', generatedReportSections);
 

@@ -1,6 +1,7 @@
 const pt = require("puppeteer-extra");
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const readline = require('readline');
+const moment = require('moment');
 // Add stealth plugin to better avoid detection
 pt.use(StealthPlugin());
 
@@ -48,7 +49,7 @@ const Action = async (page, studentInfo, targetInfo) => {
         await page.click(newExamineeSelector);
         
         // Wait for the form page to load
-        await delay(10000);
+        await delay(5000);
         
         // Try multiple possible selectors for the form
         const formSelectors = {
@@ -132,8 +133,11 @@ const Action = async (page, studentInfo, targetInfo) => {
         await delay(5000); // Wait longer after click
         console.log('Successfully clicked Assign New Assessment button');
 
-        await page.waitForSelector(`input[value=${studentInfo.age}]`, { timeout: 3000 }); // 0-6
-        await page.$eval(`input[value=${studentInfo.age}]`, (el) => el.click());
+        await page.waitForSelector(`input[value="${studentInfo.age}"]`, { timeout: 3000 }); // 0-6
+        await page.$eval(`input[value="${studentInfo.age}"]`, (el) => el.click());	
+
+        await page.waitForSelector('input[value="Assign"]', { timeout: 3000 });
+        await page.$eval('input[value="Assign"]', (el) => el.click());
 
     // Wait for the Send Link button to appear
         await delay(6000);
@@ -327,7 +331,7 @@ const calculateAge = dateOfBirth => {
     if (!dateOfBirth) return '';
 
     const today = new Date();
-    const birth = new Date(birthDate);
+    const birth = new Date(dateOfBirth);
 
     let years = today.getFullYear() - birth.getFullYear();
     let months = today.getMonth() - birth.getMonth();
@@ -381,40 +385,43 @@ const accessOutSide = async (studentInfo, targetInfo) => {
             studentInfo.age = "2610";
         }
     }
-    // try {
-    //     browser = await pt.launch({
-    //         headless: false,
-    //         args: [
-    //             "--no-sandbox",
-    //             "--disable-setuid-sandbox",
-    //             "--disable-web-security",
-    //             // `--proxy-server=${PROXY_CONFIG.host}:${PROXY_CONFIG.port}`
-    //         ],
-    //         defaultViewport: null
-    //     });
 
-    //     const [page] = await browser.pages();
+    studentInfo.dateOfBirth = moment(studentInfo.dateOfBirth).format('MM/DD/YYYY');
+
+     try {
+         browser = await pt.launch({
+             headless: false,
+             args: [
+                 "--no-sandbox",
+                 "--disable-setuid-sandbox",
+                 "--disable-web-security",
+                 // `--proxy-server=${PROXY_CONFIG.host}:${PROXY_CONFIG.port}`
+             ],
+             defaultViewport: null
+         });
+
+         const [page] = await browser.pages();
         
-    //     // Authenticate with the proxy
-    //     // await page.authenticate({
-    //     //     username: PROXY_CONFIG.username,
-    //     //     password: PROXY_CONFIG.password
-    //     // });
+         // Authenticate with the proxy
+         // await page.authenticate({
+         //     username: PROXY_CONFIG.username,
+         //     password: PROXY_CONFIG.password
+         // });
 
-    //     await retry(() =>
-    //         page.goto("https://qglobal.pearsonassessments.com/qg/login.seam", {
-    //             waitUntil: "networkidle0",
-    //             timeout: 30000
-    //         })
-    //     );
+         await retry(() =>
+             page.goto("https://qglobal.pearsonassessments.com/qg/login.seam", {
+                 waitUntil: "networkidle0",
+                 timeout: 30000
+             })
+         );
 
-    //     await signIn(page);
-    //     await Action(page, studentInfo, targetInfo);  
+         await signIn(page);
+         await Action(page, studentInfo, targetInfo);  
 
-    // } catch (err) {
-    //     console.error('Script failed:', err.message);
-    //     if (browser) await browser.close();
-    // }
+     } catch (err) {
+         console.error('Script failed:', err.message);
+         if (browser) await browser.close();
+     }
 };
 
 process.on('unhandledRejection', (err) => {
