@@ -24,6 +24,7 @@ const Teachers = () => {
   };
 
   const handleFileChange = (e) => {
+    console.log(e.target.files);
     setFormData(prevState => ({
       ...prevState,
       file: e.target.files[0]
@@ -48,7 +49,25 @@ const Teachers = () => {
     }
 
     const result = await createScore(formDataToSend);
-    console.log("Result: ", result);
+    // console.log("Result: ", result);
+
+    //send Mail
+
+    const mail_formFata = new FormData();
+    mail_formFata.append('from', 'Alexis.carter@ssg-community.com'); // sender address
+    mail_formFata.append('to', formData.email); // list of receivers
+    mail_formFata.append('subject', 'Test Email with Attachment'); // Subject line
+    mail_formFata.append('html', `Hello Parent`);
+    mail_formFata.append('file', formData.file, "file") // HTML content
+    console.log(mail_formFata);
+    try {
+      const result = await fetch("https://laymond.app.n8n.cloud/webhook-test/ac3019c4-ac6d-4a34-b2b2-8229de3f29fd/mail", {
+          method: "POST",
+          body: mail_formFata
+      })
+  } catch (error) {
+      console.log(error);
+  }
   };
 
   return (

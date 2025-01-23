@@ -240,7 +240,12 @@ const Action = async (page, studentInfo, targetInfo) => {
     } catch (error) {
         console.error('Failed to click Continue to send E-mail button:', error);
     }
+    
 
+
+    await delay(2000);
+
+    // Wait for next step
     // Wait for page to settle after sending email
     await delay(1000);
 
@@ -272,11 +277,11 @@ const Action = async (page, studentInfo, targetInfo) => {
     } catch (error) {
         console.error('Failed to get link content from editor:', error);
     }
-    try {                  
-        await page.evaluate(() => {
-            const links = Array.from(document.querySelectorAll('a'));
-            const signOutLink = links.find(link => 
-                link.textContent.trim() === 'Sign Out' && 
+     try {                  
+         await page.evaluate(() => {
+             const links = Array.from(document.querySelectorAll('a'));
+             const signOutLink = links.find(link => 
+                 link.textContent.trim() === 'Sign Out' && 
                  (!link.getAttribute('href') || link.getAttribute('href') === '')
              );
              if (signOutLink) {
