@@ -145,9 +145,10 @@ const deleteReport = async (req, res) => {
 };
 
 const accessReport = async (req, res) => {
+  console.log(req.body);
   try {
     const { studentInfo, targetInfo } = req.body;
-    // const result = await accessOutSideService(studentInfo, targetInfo);
+    const result = await accessOutSideService(studentInfo, targetInfo);
     res.json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });

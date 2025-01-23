@@ -1,8 +1,6 @@
 const pt = require("puppeteer-extra");
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const readline = require('readline');
 const moment = require('moment');
-const sendEmailWithDoc = require('./sendEmailWithTemplate');
 // Add stealth plugin to better avoid detection
 pt.use(StealthPlugin());
 
@@ -391,7 +389,7 @@ const accessOutSide = async (studentInfo, targetInfo) => {
 
      try {
          browser = await pt.launch({
-             headless: true,
+             headless: false,
              args: [
                  "--no-sandbox",
                  "--disable-setuid-sandbox",

@@ -34,21 +34,23 @@ const Teachers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formDataToSend = new FormData();
-    
-    // Append all text fields
-    Object.keys(formData).forEach(key => {
-      if (key !== 'file') {
-        formDataToSend.append(key, formData[key]);
-      }
-    });
-
-    // Append file if it exists
-    if (formData.file) {
-      formDataToSend.append('file', formData.file);
+    const studentInfo = {
+      firstName: formData.studentFirstName,
+      middlename: formData.studentMiddleName,
+      lastname: formData.studentLastName,
+      gender: formData.gender,
+      dateOfBirth: formData.dateOfBirth,
+      
     }
 
-    const result = await createScore(formDataToSend);
+    const targetInfo = {
+      sendTo: formData.sendTo,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email
+    }
+
+    // const result = await createScore({ studentInfo, targetInfo });
     // console.log("Result: ", result);
 
     //send Mail
@@ -58,7 +60,7 @@ const Teachers = () => {
     mail_formFata.append('to', formData.email); // list of receivers
     mail_formFata.append('subject', 'Test Email with Attachment'); // Subject line
     mail_formFata.append('html', `Hello Parent`);
-    mail_formFata.append('file', formData.file, "file") // HTML content
+    mail_formFata.append('file', formData.file, formData.file.name) // HTML content
     console.log(mail_formFata);
     try {
       const result = await fetch("https://laymond.app.n8n.cloud/webhook-test/ac3019c4-ac6d-4a34-b2b2-8229de3f29fd/mail", {
