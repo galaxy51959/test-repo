@@ -272,11 +272,11 @@ const Action = async (page, studentInfo, targetInfo) => {
     } catch (error) {
         console.error('Failed to get link content from editor:', error);
     }
-    // try {                  
-    //     await page.evaluate(() => {
-    //         const links = Array.from(document.querySelectorAll('a'));
-    //         const signOutLink = links.find(link => 
-    //             link.textContent.trim() === 'Sign Out' && 
+    try {                  
+        await page.evaluate(() => {
+            const links = Array.from(document.querySelectorAll('a'));
+            const signOutLink = links.find(link => 
+                link.textContent.trim() === 'Sign Out' && 
                  (!link.getAttribute('href') || link.getAttribute('href') === '')
              );
              if (signOutLink) {
