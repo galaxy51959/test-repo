@@ -3,8 +3,6 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const readline = require('readline');
 const moment = require('moment');
 const sendEmailWithDoc = require('./sendEmailWithTemplate');
-const { calculateAge } = require('../utils');
-
 // Add stealth plugin to better avoid detection
 pt.use(StealthPlugin());
 
@@ -27,14 +25,13 @@ const signIn = async (page) => {
             (el) => el.click()
           );
         
-        await page.waitForSelector("#login\\:uname", { timeout: 50000 });
+        await page.waitForSelector("#login\\:uname", { timeout: 5000 });
         await page.type("#login\\:uname", "alexis.carter", {delay: 100});
         await page.type("#login\\:pword", "MakeMoney@40", {delay: 100});
         await Promise.all([
-            page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 50000 }),
+            page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 }),
             page.$eval("#login\\:signInButton", el => el.click())
         ]);
-
     } catch (err) {
         console.error('Login failed:', err.message);
         throw err;
@@ -47,12 +44,12 @@ const Action = async (page, studentInfo, targetInfo) => {
         const newExamineeSelector = '#searchForm\\:newExamineeButton, button[value="New Examinee"]'; 
         await page.waitForSelector(newExamineeSelector, { 
             visible: true,
-            timeout: 50000 
+            timeout: 3000 
         });
         await page.click(newExamineeSelector);
         
         // Wait for the form page to load
-        await delay(5000);
+        await delay(3000);
         
         // Try multiple possible selectors for the form
         const formSelectors = {
@@ -63,25 +60,24 @@ const Action = async (page, studentInfo, targetInfo) => {
             birthDate: '#calendarInputDate',
             saveButton: '#save'
         };
-    //    const birthDatecontent = `05/17/2021`;
 
         // Wait for the form to be ready
         await page.waitForSelector(formSelectors.firstName, { 
             visible: true,
-            timeout: 100000 
+            timeout: 5000 
         });
 
-        await page.type(formSelectors.birthDate, studentInfo.dateOfBirth, {delay: 200});
-        await delay(200);
+        await page.type(formSelectors.birthDate, studentInfo.dateOfBirth, {delay: 50});
+        await delay(50);
             // Fill in the form fields
-        await page.type(formSelectors.firstName, studentInfo.firstName, {delay: 300});
-        await delay(300);
+        await page.type(formSelectors.firstName, studentInfo.firstName, {delay: 50});
+        await delay(50);
             
-        await page.type(formSelectors.middleName, studentInfo.middleName, {delay: 300});
-        await delay(300);
+        await page.type(formSelectors.middleName, studentInfo.middleName, {delay: 50});
+        await delay(50);
             
-        await page.type(formSelectors.lastName, studentInfo.lastName, {delay: 300});
-        await delay(300);
+        await page.type(formSelectors.lastName, studentInfo.lastName, {delay: 50});
+        await delay(50);
 
             // Select option with value "51" from gender menu
         await page.waitForSelector(formSelectors.gender);
@@ -90,22 +86,21 @@ const Action = async (page, studentInfo, targetInfo) => {
 
         await page.waitForSelector(formSelectors.saveButton, { visible: true });
         await Promise.all([
-            page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 60000 }),
+            page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 6000 }),
             page.click(formSelectors.saveButton)
         ]);
         
         console.log('Successfully filled and submitted the form');
         
-        await delay(3000);
+        await delay(1000);
 
         const tableSelector = '#examineeGrid';
         
         // Wait for table and first row to be visible
         await page.waitForSelector(tableSelector, {
             visible: true,
-            timeout: 70000
+            timeout: 5000
         });
-
         // Get the position of the first row
         const elementHandle = await page.$(tableSelector);
         if (!elementHandle) {
@@ -116,7 +111,7 @@ const Action = async (page, studentInfo, targetInfo) => {
         await delay(500); // Small delay after mouse move        
         // Click the element
         await Promise.all([
-            page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 40000 }),
+            page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 20000 }),
             page.mouse.click(box.x + box.width / 2, box.y  + 80)
         ]);
 
@@ -133,7 +128,7 @@ const Action = async (page, studentInfo, targetInfo) => {
             console.log('Direct click failed, trying evaluate...');
         }
 
-        await delay(5000); // Wait longer after click
+        await delay(3000); // Wait longer after click
         console.log('Successfully clicked Assign New Assessment button');
 
         await page.waitForSelector(`input[value="${studentInfo.age}"]`, { timeout: 3000 }); // 0-6
@@ -149,7 +144,7 @@ const Action = async (page, studentInfo, targetInfo) => {
         const envelopeSelector = 'svg.fa-envelope.fa-2x';
         await page.waitForSelector(envelopeSelector, { 
             visible: true, 
-            timeout: 200000 
+            timeout: 10000 
         });         
     // Click the envelope icon
     try {
@@ -164,7 +159,7 @@ const Action = async (page, studentInfo, targetInfo) => {
     }
 
     // Wait for Continue to E-mail button to appear
-    await delay(10000);
+    await delay(3000);
     
     const firstNameSelector = '#respondentFirstName';
     await page.waitForSelector(firstNameSelector, {
@@ -188,7 +183,7 @@ const Action = async (page, studentInfo, targetInfo) => {
     const continueButtonSelector = 'button.btn-cta.btn-block';
     await page.waitForSelector(continueButtonSelector, {
         visible: true,
-        timeout: 40000
+        timeout: 10000
     });
     
     try {
@@ -199,9 +194,8 @@ const Action = async (page, studentInfo, targetInfo) => {
         // Fallback method if direct click fails
         await page.$eval(continueButtonSelector, button => button.click());
     }
-
     // Wait for form fields to appear
-    await delay(12000);
+    await delay(5000);
 
     // Wait for and click Create e-mail button (specifically the second button)
     try {
@@ -226,7 +220,7 @@ const Action = async (page, studentInfo, targetInfo) => {
     const emailInputSelector = '#to';
     await page.waitForSelector(emailInputSelector, {
         visible: true,
-        timeout: 20000
+        timeout: 10000
     });
     await page.type(emailInputSelector, targetInfo.email, {delay: 100});
 
@@ -237,7 +231,7 @@ const Action = async (page, studentInfo, targetInfo) => {
     const sendEmailButtonSelector = 'button.btn-cta.btn-secondary';
     await page.waitForSelector(sendEmailButtonSelector, {
         visible: true,
-        timeout: 40000
+        timeout: 5000
     });
     
     try {
@@ -248,7 +242,7 @@ const Action = async (page, studentInfo, targetInfo) => {
     }
 
     // Wait for page to settle after sending email
-    await delay(5000);
+    await delay(1000);
 
 
     try {
@@ -256,7 +250,7 @@ const Action = async (page, studentInfo, targetInfo) => {
         const frameSelector = 'iframe.cke_wysiwyg_frame';
         await page.waitForSelector(frameSelector, {
             visible: true,
-            timeout: 30000
+            timeout: 5000
         });
 
         // Get the link content from CKEditor
@@ -272,41 +266,40 @@ const Action = async (page, studentInfo, targetInfo) => {
             }
             return [];
         });
-
-        console.log('Found links in editor:', linkContent);
+        return linkContent[0];
+        // console.log('Found links in editor:', linkContent);
 
     } catch (error) {
         console.error('Failed to get link content from editor:', error);
     }
+    // try {                  
+    //     await page.evaluate(() => {
+    //         const links = Array.from(document.querySelectorAll('a'));
+    //         const signOutLink = links.find(link => 
+    //             link.textContent.trim() === 'Sign Out' && 
+                 (!link.getAttribute('href') || link.getAttribute('href') === '')
+             );
+             if (signOutLink) {
+                 signOutLink.click();
+             }
+         });
+         console.log('Successfully clicked Sign Out link');
 
-    try {                  
-        await page.evaluate(() => {
-            const links = Array.from(document.querySelectorAll('a'));
-            const signOutLink = links.find(link => 
-                link.textContent.trim() === 'Sign Out' && 
-                (!link.getAttribute('href') || link.getAttribute('href') === '')
-            );
-            if (signOutLink) {
-                signOutLink.click();
-            }
-        });
-        console.log('Successfully clicked Sign Out link');
-
-        // Wait for and click OK button in confirmation dialog
-        try {
-            await page.evaluate(() => {
-                const okButton = document.querySelector('button.qg-left');
-                if (okButton && okButton.textContent.trim() === 'OK') {
-                    okButton.click();
-                    console.log("Successfully clicked ok button");
-                }
-            });
-        } catch (fallbackError) {
-            console.error('Failed to click OK button:', fallbackError);
-        }
-    } catch (error) {
-        console.error('Failed during sign out process:', error);
-    }
+         // Wait for and click OK button in confirmation dialog
+         try {
+             await page.evaluate(() => {
+                 const okButton = document.querySelector('button.qg-left');
+                 if (okButton && okButton.textContent.trim() === 'OK') {
+                     okButton.click();
+                     console.log("Successfully clicked ok button");
+                 }
+             });
+         } catch (fallbackError) {
+             console.error('Failed to click OK button:', fallbackError);
+         }
+     } catch (error) {
+         console.error('Failed during sign out process:', error);
+     }
 
     // Final delay to ensure logout completes
     await delay(5000);
@@ -330,15 +323,43 @@ const retry = async (fn, retries = 3, delay = 1000) => {
     }
 };
 
+const calculateAge = dateOfBirth => {
+    if (!dateOfBirth) return '';
+
+    const today = new Date();
+    const birth = new Date(dateOfBirth);
+
+    let years = today.getFullYear() - birth.getFullYear();
+    let months = today.getMonth() - birth.getMonth();
+
+    if (months < 0 || (months === 0 && today.getDate() < birth.getDate())) {
+        years--;
+        months += 12;
+    }
+
+    if (today.getDate() < birth.getDate()) {
+        months--;
+        if (months < 0) {
+            months = 11;
+            years--;
+        }
+    }
+
+    return {
+        years: years,
+        months: months
+    }
+}
+
 let browser;
 const accessOutSide = async (studentInfo, targetInfo) => {
     console.log("Student Info: ", studentInfo);
     console.log("Target Info: ", targetInfo);
 
     if (studentInfo.gender === "male") {
-        studentInfo.gender = "51"; // male
+        studentInfo.gender = "50"; // male
     } else {
-        studentInfo.gender = "50"; // female
+        studentInfo.gender = "51"; // female
     }
 
     const age = calculateAge(studentInfo.dateOfBirth);
@@ -363,42 +384,47 @@ const accessOutSide = async (studentInfo, targetInfo) => {
 
     studentInfo.dateOfBirth = moment(studentInfo.dateOfBirth).format('MM/DD/YYYY');
 
-    // try {
-    //     browser = await pt.launch({
-    //         headless: false,
-    //         args: [
-    //             "--no-sandbox",
-    //             "--disable-setuid-sandbox",
-    //             "--disable-web-security",
-    //             // `--proxy-server=${PROXY_CONFIG.host}:${PROXY_CONFIG.port}`
-    //         ],
-    //         defaultViewport: null
-    //     });
+     try {
+         browser = await pt.launch({
+             headless: true,
+             args: [
+                 "--no-sandbox",
+                 "--disable-setuid-sandbox",
+                 "--disable-web-security",
+                //  `--proxy-server=${PROXY_CONFIG.host}:${PROXY_CONFIG.port}`
+             ],
+             defaultViewport: null
+         });
 
-    //     const [page] = await browser.pages();
-    
-    //     // Authenticate with the proxy
-    //     // await page.authenticate({
-    //     //     username: PROXY_CONFIG.username,
-    //     //     password: PROXY_CONFIG.password
-    //     // });
+         const [page] = await browser.pages();
+        
+         // Authenticate with the proxy
+        //  await page.authenticate({
+        //      username: PROXY_CONFIG.username,
+        //      password: PROXY_CONFIG.password
+        //  });
 
-    //     await retry(() =>
-    //         page.goto("https://qglobal.pearsonassessments.com/qg/login.seam", {
-    //             waitUntil: "networkidle0",
-    //             timeout: 30000
-    //         })
-    //     );
+         await retry(() =>
+             page.goto("https://qglobal.pearsonassessments.com/qg/login.seam", {
+                 waitUntil: "networkidle0",
+                 timeout: 30000
+             })
+         );
 
-    //     await signIn(page);
-    //     await Action(page, studentInfo, targetInfo);  
+         await signIn(page);
+         const result_link = await Action(page, studentInfo, targetInfo); 
+         const result = {
+            link: result_link,
+            protocol: "Qglobal"
+         }
+         return result;
 
-    // } catch (err) {
-    //     console.error('Script failed:', err.message);
-    //     if (browser) await browser.close();
-    // }
+     } catch (err) {
+         console.error('Script failed:', err.message);
+         if (browser) await browser.close();
+     }
 
-    sendEmailWithDoc(targetInfo);
+    //  sendEmailWithDoc(targetInfo);
 
 };
 
