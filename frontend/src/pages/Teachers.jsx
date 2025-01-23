@@ -12,6 +12,7 @@ const Teachers = () => {
     firstName: '',
     lastName: '',
     email: '',
+    file: null
   });
 
   const handleChange = (e) => {
@@ -22,28 +23,32 @@ const Teachers = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    setFormData(prevState => ({
+      ...prevState,
+      file: e.target.files[0]
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const result = await createScore({
-      studentInfo: {
-        firstName: formData.studentFirstName,
-        middleName: formData.studentMiddleName,
-        lastName: formData.studentLastName,
-        gender: formData.gender,
-        dateOfBirth: formData.dateOfBirth
-      },
-      targetInfo: {
-        sendTo: formData.sendTo,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
+    const formDataToSend = new FormData();
+    
+    // Append all text fields
+    Object.keys(formData).forEach(key => {
+      if (key !== 'file') {
+        formDataToSend.append(key, formData[key]);
       }
     });
 
+    // Append file if it exists
+    if (formData.file) {
+      formDataToSend.append('file', formData.file);
+    }
+
+    const result = await createScore(formDataToSend);
     console.log("Result: ", result);
-    // Add your submit logic here
-    console.log('Form submitted:', formData);
   };
 
   return (
@@ -198,6 +203,36 @@ const Teachers = () => {
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Add File Upload Field */}
+          <div className="mb-6">
+            <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
+              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider">File Upload</h4>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Upload File
+                </label>
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  accept=".pdf,.doc,.docx"
+                  className="block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100"
+                />
+                {formData.file && (
+                  <p className="mt-1 text-sm text-gray-500">
+                    Selected: {formData.file.name} ({(formData.file.size / 1024 / 1024).toFixed(2)} MB)
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -12,6 +12,26 @@ export default function GenerateReport() {
   const [loading, setLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [additionalFiles, setAdditionalFiles] = useState([]);
+  const [testFiles, setTestFiles] = useState([
+    { id: 1, title: '', file: null }
+  ]);
+  const [testProtocols] = useState([
+    'BASC-3',
+    'WISC-V',
+    'KTEA-3',
+    'WIAT-4',
+    'WJ-IV',
+    'BRIEF-2',
+    'ADOS-2',
+    'GARS-3',
+    'CARS-2',
+    'SRS-2',
+    'ABAS-3',
+    'CBCL',
+    'Conners-3',
+    'NEPSY-II',
+    'OWLS-II'
+  ]);
 
   useEffect(() => {
     fetchStudents();
@@ -41,6 +61,25 @@ export default function GenerateReport() {
     setAdditionalFiles([...additionalFiles, ...e.target.files]);
   };
 
+  const handleAddField = () => {
+    setTestFiles([
+      ...testFiles,
+      { id: Date.now(), title: '', file: null }
+    ]);
+  };
+
+  const handleTitleChange = (id, value) => {
+    setTestFiles(testFiles.map(field => 
+      field.id === id ? { ...field, title: value } : field
+    ));
+  };
+
+  const handleFileChange = (id, file) => {
+    setTestFiles(testFiles.map(field => 
+      field.id === id ? { ...field, file } : field
+    ));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -49,8 +88,12 @@ export default function GenerateReport() {
       const formDataToSend = new FormData();
       formDataToSend.append('studentId', selectedStudent._id);
 
-      additionalFiles.forEach((file) => {
-        formDataToSend.append('files', file);
+      // Append test files with their titles
+      testFiles.forEach((field, index) => {
+        if (field.file) {
+          formDataToSend.append(`files`, field.file);
+          formDataToSend.append(`titles`, field.title);
+        }
       });
 
       const result = await generateReport(selectedStudent._id, formDataToSend);
@@ -146,45 +189,68 @@ export default function GenerateReport() {
             </div>
           </div>
 
-          {/* Additional Files Section */}
+          {/* Test Files Section */}
           <div className="space-y-4">
-            <h2 className="text-lg font-medium text-gray-900">Additional Files</h2>
-            <div className="border rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <label className="block text-sm font-medium text-gray-700">
-                  Upload Additional Files
-                </label>
-                <div className="flex-1 ml-4">
-                  <input
-                    type="file"
-                    multiple
-                    onChange={handleAdditionalFiles}
-                    accept=".pdf,.doc,.docx"
-                    className="block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-blue-50 file:text-blue-700
-                      hover:file:bg-blue-100"
-                  />
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-medium text-gray-900">Test Files</h2>
+              <button
+                type="button"
+                onClick={handleAddField}
+                className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
+              >
+                + Add New Test
+              </button>
+            </div>
+            
+            {/* Changed to grid layout with 5 columns */}
+            <div className="grid grid-cols-4 gap-4">
+              {testFiles.map((field) => (
+                <div key={field.id} className="border rounded-lg p-4 space-y-3 bg-white">
+                  <div className="flex">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Test Protocol
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        list="test-protocols"
+                        value={field.title}
+                        onChange={(e) => handleTitleChange(field.id, e.target.value)}
+                        placeholder="Search test protocol"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        autoComplete="off"
+                      />
+                      <datalist id="test-protocols">
+                        {testProtocols.map((protocol, index) => (
+                          <option key={index} value={protocol} />
+                        ))}
+                      </datalist>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Upload File
+                    </label>
+                    <input
+                      type="file"
+                      onChange={(e) => handleFileChange(field.id, e.target.files[0])}
+                      accept=".pdf,.doc,.docx"
+                      className="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100"
+                    />
+                    {field.file && (
+                      <p className="mt-1 text-sm text-gray-500 truncate">
+                        Selected: {field.file.name} ({(field.file.size / 1024 / 1024).toFixed(2)} MB)
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-              {/* Show selected files */}
-              {additionalFiles.length > 0 && (
-                <div className="mt-3">
-                  <p className="text-sm font-medium text-gray-500 mb-2">Selected Files:</p>
-                  <ul className="text-sm text-gray-700 space-y-1">
-                    {additionalFiles.map((file, index) => (
-                      <li key={index} className="flex items-center justify-between">
-                        <span>{file.name}</span>
-                        <span className="text-gray-500">
-                          ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              ))}
             </div>
           </div>
 
