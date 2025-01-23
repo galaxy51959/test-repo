@@ -1,7 +1,21 @@
+const multer = require('multer');
+
 const Report = require('../models/Report');
 const Student = require('../models/Student');
 const reportGenerationService = require('../services/reportGenerationService');
 const accessOutSideService = require('../services/accessOutSideService');
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/tests');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${req.params.id}-${file.originalname}`);
+  }
+})
+
+const upload = multer({ storage: storage });
 
 // Create new report
 const createReport = async (req, res) => {
@@ -26,42 +40,46 @@ const generateReport = async (req, res) => {
   try {
 
     console.log("Request Body: ", req.body);
+    console.log("Request Files: ", req.files);
 
-    const { studentId, testScores, templateType, summary } = req.body;
+    const { studentId } = req.body;
+    const testFiles = req.files;
 
     const studentData = await Student.findById(studentId);
     if (!studentData) {
       return res.status(404).json({ message: 'Student not found'});
     }
 
+    console.log(testFiles);
+
     studentData.name = `${studentData.firstName} ${studentData.lastName}`;
 
     // return res.json({ content: studentData });
-    const generatedContent = await reportGenerationService.generateReport(studentData, templateType);
+    const generatedContent = await reportGenerationService.generateReport(studentData, testFiles);
     
     // Save or Update Report
-    const findReport = await Report.findOne({
-      student: studentId,
-      type: templateType
-    })
+    // const findReport = await Report.findOne({
+    //   student: studentId,
+    //   type: templateType
+    // })
 
-    if (!findReport) {
-      const report = new Report({
-        student: studentId,
-        type: templateType,
-        testScores,
-        summary,
-        author: 'Alexis E. Carter',
-        file: generatedContent.fileName,
-      });
+    // if (!findReport) {
+    //   const report = new Report({
+    //     student: studentId,
+    //     type: templateType,
+    //     testScores,
+    //     summary,
+    //     author: 'Alexis E. Carter',
+    //     file: generatedContent.fileName,
+    //   });
   
-      await report.save();
-    } else {
-      await Report.updateOne(
-        { student: studentId, type: templateType },
-        { $set: { testScores, summary, author: 'Alexis E. Carter', file: generatedContent.fileName }}
-      );
-    }
+    //   await report.save();
+    // } else {
+    //   await Report.updateOne(
+    //     { student: studentId, type: templateType },
+    //     { $set: { testScores, summary, author: 'Alexis E. Carter', file: generatedContent.fileName }}
+    //   );
+    // }
 
     res.json({ ...generatedContent });
   } catch (error) {
@@ -138,7 +156,7 @@ const accessReport = async (req, res) => {
 
 module.exports = {
   createReport,
-  generateReport,
+  generateReport: [upload.array('files'), generateReport],
   getReports,
   getReportById,
   updateReport,

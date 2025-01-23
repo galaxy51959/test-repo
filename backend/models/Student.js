@@ -1,14 +1,24 @@
 const mongoose = require('mongoose');
 
+const testSchema = new mongoose.Schema({
+	protocol: String,
+	file: String,
+});
+
 const studentSchema = new mongoose.Schema({
   	firstName: {
 		type: String,
 		required: true
 	},
+	middleName: String,
 	lastName: String,
 	dateOfBirth: {
 		type: Date,
-		require: true
+		required: true
+	},
+	gender: {
+		type: Boolean,
+		required: true
 	},
 	grade: {
 		type: Number,
@@ -20,6 +30,7 @@ const studentSchema = new mongoose.Schema({
 	},
 	guardian: String,
 	language: String,
+	tests: [testSchema],
 	createdAt: {
 		type: Date,
 		default: Date.now
@@ -27,7 +38,7 @@ const studentSchema = new mongoose.Schema({
 	updatedAt: {
 		type: Date,
 		default: Date.now
-	}
+	},
 });
 
 module.exports = mongoose.model('Student', studentSchema);

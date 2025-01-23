@@ -2,6 +2,9 @@ const pt = require("puppeteer-extra");
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const readline = require('readline');
 const moment = require('moment');
+const sendEmailWithDoc = require('./sendEmailWithTemplate');
+const { calculateAge } = require('../utils');
+
 // Add stealth plugin to better avoid detection
 pt.use(StealthPlugin());
 
@@ -327,34 +330,6 @@ const retry = async (fn, retries = 3, delay = 1000) => {
     }
 };
 
-const calculateAge = dateOfBirth => {
-    if (!dateOfBirth) return '';
-
-    const today = new Date();
-    const birth = new Date(dateOfBirth);
-
-    let years = today.getFullYear() - birth.getFullYear();
-    let months = today.getMonth() - birth.getMonth();
-
-    if (months < 0 || (months === 0 && today.getDate() < birth.getDate())) {
-        years--;
-        months += 12;
-    }
-
-    if (today.getDate() < birth.getDate()) {
-        months--;
-        if (months < 0) {
-            months = 11;
-            years--;
-        }
-    }
-
-    return {
-        years: years,
-        months: months
-    }
-}
-
 let browser;
 const accessOutSide = async (studentInfo, targetInfo) => {
     console.log("Student Info: ", studentInfo);
@@ -388,40 +363,43 @@ const accessOutSide = async (studentInfo, targetInfo) => {
 
     studentInfo.dateOfBirth = moment(studentInfo.dateOfBirth).format('MM/DD/YYYY');
 
-     try {
-         browser = await pt.launch({
-             headless: false,
-             args: [
-                 "--no-sandbox",
-                 "--disable-setuid-sandbox",
-                 "--disable-web-security",
-                 // `--proxy-server=${PROXY_CONFIG.host}:${PROXY_CONFIG.port}`
-             ],
-             defaultViewport: null
-         });
+    // try {
+    //     browser = await pt.launch({
+    //         headless: false,
+    //         args: [
+    //             "--no-sandbox",
+    //             "--disable-setuid-sandbox",
+    //             "--disable-web-security",
+    //             // `--proxy-server=${PROXY_CONFIG.host}:${PROXY_CONFIG.port}`
+    //         ],
+    //         defaultViewport: null
+    //     });
 
-         const [page] = await browser.pages();
-        
-         // Authenticate with the proxy
-         // await page.authenticate({
-         //     username: PROXY_CONFIG.username,
-         //     password: PROXY_CONFIG.password
-         // });
+    //     const [page] = await browser.pages();
+    
+    //     // Authenticate with the proxy
+    //     // await page.authenticate({
+    //     //     username: PROXY_CONFIG.username,
+    //     //     password: PROXY_CONFIG.password
+    //     // });
 
-         await retry(() =>
-             page.goto("https://qglobal.pearsonassessments.com/qg/login.seam", {
-                 waitUntil: "networkidle0",
-                 timeout: 30000
-             })
-         );
+    //     await retry(() =>
+    //         page.goto("https://qglobal.pearsonassessments.com/qg/login.seam", {
+    //             waitUntil: "networkidle0",
+    //             timeout: 30000
+    //         })
+    //     );
 
-         await signIn(page);
-         await Action(page, studentInfo, targetInfo);  
+    //     await signIn(page);
+    //     await Action(page, studentInfo, targetInfo);  
 
-     } catch (err) {
-         console.error('Script failed:', err.message);
-         if (browser) await browser.close();
-     }
+    // } catch (err) {
+    //     console.error('Script failed:', err.message);
+    //     if (browser) await browser.close();
+    // }
+
+    sendEmailWithDoc(targetInfo);
+
 };
 
 process.on('unhandledRejection', (err) => {

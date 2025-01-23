@@ -1,11 +1,17 @@
 const OpenAI = require('openai');
+const fs = require('fs');
+const pdfParse = require('pdf-parse');
 const ReportTemplate = require('../models/ReportTemplate');
 const { generateAndSavePDF } = require('./pdfGenerationService');
+const { calculateAge } = require('../utils');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const generateReportSection = async (template, section, data) => {
     try {
+
+        console.log(section);
+
         const prompt = constructSectionPrompt(section, data);
 
         const completion = await openai.chat.completions.create({
@@ -13,7 +19,7 @@ const generateReportSection = async (template, section, data) => {
             messages: [
                 {
                     role: "system",
-                    content: `You are a professional report writer specialized in deucational psychological reports.
+                    content: `You are a professional report writer specialized in eucational psychological reports.
                     ${template.basePrompt}
                     ${section.promptInstructions || ''}`
                 },
@@ -38,6 +44,36 @@ const generateReportSection = async (template, section, data) => {
     }
 }
 
+const summarizePdf = async (pdfPath) => {
+
+    const pdfBuffer = fs.readFileSync(pdfPath);
+    const data = await pdfParse(pdfBuffer);
+    const text = data.text;  
+
+    return text;
+
+    // try {
+    //     const response = await openai.chat.completions.create({
+    //         model: "gpt-4-turbo-preview",
+    //         messages: [
+    //             {
+    //                 role: "user",
+    //                 content: `Summarize the following pdf:\\n\\n${text}`
+    //             }
+    //         ]
+    //     });
+
+    //     console.log(response.choices[0].message.content);
+    //     return response.choices[0].message.content;
+    // } catch (error) {
+    //     console.error("Error summarizing pdf:", error);
+    //     throw error;
+    // }
+
+    
+    
+}
+
 const constructSectionPrompt = (section, data) => {
     let prompt = section.prompt;
 
@@ -49,7 +85,7 @@ const constructSectionPrompt = (section, data) => {
     return prompt;
 }
 
-const generateTotalReport = async (sections, studentData, templateType) => {
+const generateTotalReport = async (sections, studentData) => {
     let htmlContent = '';
 
     for (let i=0; i<sections.length; i++) {
@@ -66,90 +102,47 @@ const generateTotalReport = async (sections, studentData, templateType) => {
     }
 
     try {
-        // const completion = await openai.chat.completions.create({
-        //     model: 'gpt-4-turbo-preview',
-        //     messages: [
-        //         {
-        //             role: "system",
-        //             content: `Given the code about sections, output the completed html code(only body content without body tag).
-        //                     There must be break lines between sections.`
-        //         },
-        //         {
-        //             role: "user",
-        //             content: prompt
-        //         }
-        //     ],
-        //     temperature: 0.5,
-        //     max_tokens: 2000
-        // });
-
         const pdf = await generateAndSavePDF(
             htmlContent,
-            `${studentData.firstName} ${studentData.lastName}-${templateType}.pdf`
+            `${studentData.firstName} ${studentData.lastName}-${studentData._id}.pdf`
         );
-
         return pdf;
-
     } catch (err) {
         console.error("Error generating total report:", err);
         throw err;
     }
 }
 
-const generateReport = async (studentData, templateType) => {
+const generateReport = async (studentData, testFiles) => {
 
     console.log('studentData: ', studentData);
-    console.log('templateType: ', templateType);
+    console.log('testFiles: ', testFiles);
 
-    const targetTemplate = await ReportTemplate.findOne({ type: templateType });
-
-    console.log('targetTemplate: ', targetTemplate);
+    const templates = await ReportTemplate.find();
+    const targetTemplate = templates[0];
 
     if (!targetTemplate)
-        throw new Error(`Template not found for type: ${templateType}`);
+        throw new Error(`Template not found for type`);
+
+    studentData.age = calculateAge(studentData.dateOfBirth);
 
     const generatedReportSections = [];
 
-    // targetTemplate.sections.forEach(section => {
-    //     generatedReportSections.concat(generateReportSection(targetTemplate, section, testData));
-    // })
-
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[0], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[1], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[2], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[3], studentData));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[4], studentData));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[5], studentData));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[6], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[7], studentData));
+    generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[20], studentData));
     
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[8], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[9], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[10], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[11], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[12], studentData));
 
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[12], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[13], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[14], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[15], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[16], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[17], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[18], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[19], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[20], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[21], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[22], studentData)); 
+    // return generatedReportSections;
 
-    for (let i=0; i<targetTemplate.sections.length; i++) {
-        generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData));
-    }
+    // for (let i=0; i<6; i++) {
+    //     generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData));
+    // }
 
-    // console.log('GeneratedReportSection: ', generatedReportSections);
+    // generatedReportSections.sort((a, b) => a.order - b.order);
 
-    generatedReportSections.sort((a, b) => a.order - b.order);
-
-    const generatedReport = await generateTotalReport(generatedReportSections, studentData, templateType);
+    const generatedReport = await generateTotalReport(generatedReportSections, studentData);
     
     return generatedReport;
 }

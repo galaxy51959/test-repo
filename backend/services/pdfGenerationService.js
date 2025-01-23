@@ -30,7 +30,7 @@ const generateAndSavePDF = async (htmlContent, fileName) => {
         await browser.close();
 
         // Create uploads directory if it doesn't exist
-        const uploadsDir = path.join(__dirname, '../reportPdfs');
+        const uploadsDir = path.join(__dirname, '../public/reports');
         await fs.mkdir(uploadsDir, { recursive: true });
 
         // Generate unique filename if none provided

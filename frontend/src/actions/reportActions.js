@@ -1,13 +1,10 @@
 const SERVER_URL = `http://localhost:5000/api/reports`;
 
-export const generateReport = async (studentId, templateType) => {
+export const generateReport = async (studentId, formData) => {
     try {
-        const getResult = await fetch(`${SERVER_URL}/generate`, {
+        const getResult = await fetch(`${SERVER_URL}/generate/${studentId}`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ studentId, templateType })
+            body: formData
         });
         const data = await getResult.json();
         console.log("Generate Result: ", data);

@@ -13,7 +13,7 @@ const {
 // router.use(auth); // Apply authentication to all routes
 
 router.post('/', createReport);
-router.post('/generate', generateReport);
+router.post('/generate/:id', generateReport);
 router.get('/', getReports);
 router.get('/:id', getReportById);
 router.put('/:id', updateReport);
