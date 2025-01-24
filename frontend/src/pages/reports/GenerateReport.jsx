@@ -5,19 +5,21 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import { getStudents } from '../../actions/studentActions';
 import { generateReport } from '../../actions/reportActions';
+import { getFullName } from '../../utils';
 
 export default function GenerateReport() {
   const navigate = useNavigate();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
-  const [additionalFiles, setAdditionalFiles] = useState([]);
   const [testFiles, setTestFiles] = useState([
-    { id: 1, title: '', file: null }
+    { id: 1, protocol: '', file: null }
   ]);
   const [testProtocols] = useState([
-    'BASC-3',
+    'BASC-3-Parent',
+		'BASC-3-Teacher',
     'WISC-V',
+		'TAPS-4',
     'KTEA-3',
     'WIAT-4',
     'WJ-IV',
@@ -57,20 +59,27 @@ export default function GenerateReport() {
     setSelectedStudent(student || null);
   };
 
-  const handleAdditionalFiles = (e) => {
-    setAdditionalFiles([...additionalFiles, ...e.target.files]);
-  };
+  const handleAddField = async () => {
+		const lastField = testFiles[testFiles.length - 1];
+		
+		if (!lastField.protocol || !lastField.file)
+			return;
 
-  const handleAddField = () => {
+		const formData = new FormData();
+		formData.append('protocol', lastField.protocol);
+		formData.append('file', lastField.file);
+
+		await generateReport(selectedStudent._id, formData);
+
     setTestFiles([
       ...testFiles,
-      { id: Date.now(), title: '', file: null }
+      { id: Date.now(), protocol: '', file: null }
     ]);
   };
 
   const handleTitleChange = (id, value) => {
     setTestFiles(testFiles.map(field => 
-      field.id === id ? { ...field, title: value } : field
+      field.id === id ? { ...field, protocol: value } : field
     ));
   };
 
@@ -84,19 +93,7 @@ export default function GenerateReport() {
     e.preventDefault();
     try {
       setLoading(true);
-      
-      const formDataToSend = new FormData();
-      formDataToSend.append('studentId', selectedStudent._id);
-
-      // Append test files with their titles
-      testFiles.forEach((field, index) => {
-        if (field.file) {
-          formDataToSend.append(`files`, field.file);
-          formDataToSend.append(`titles`, field.title);
-        }
-      });
-
-      const result = await generateReport(selectedStudent._id, formDataToSend);
+      const result = await generateReport(selectedStudent._id);
       window.open(`http://localhost:5000/reports/${result.fileName}`, '_blank');
     } catch (error) {
       console.error('Error submitting report:', error);

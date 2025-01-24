@@ -4,18 +4,19 @@ const Report = require('../models/Report');
 const Student = require('../models/Student');
 const reportGenerationService = require('../services/reportGenerationService');
 const accessOutSideService = require('../services/accessOutSideService');
-
+const files = [];
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/tests');
   },
   filename: (req, file, cb) => {
-    cb(null, `${req.params.id}-${file.originalname}`);
+    cb(null, `${req.body?.protocol}-${file.originalname}`);
   }
 })
 
 const upload = multer({ storage: storage });
+// const upload = multer({ dest: 'public/tests' });
 
 // Create new report
 const createReport = async (req, res) => {
@@ -40,22 +41,29 @@ const generateReport = async (req, res) => {
   try {
 
     console.log("Request Body: ", req.body);
-    console.log("Request Files: ", req.files);
+    console.log("Request Files: ", req.file);
 
-    const { studentId } = req.body;
-    const testFiles = req.files;
+    if (req.file) {
+      if (files.findIndex(f => f.protocol === req.body?.protocol) === -1) {
+        files.push({
+          protocol: req.body?.protocol,
+          file: req.file.originalname
+        })
+      }
+      res.json({ files });
+      return;
+    }
+    const studentId = req.params.id;
 
     const studentData = await Student.findById(studentId);
     if (!studentData) {
       return res.status(404).json({ message: 'Student not found'});
     }
 
-    console.log(testFiles);
-
-    studentData.name = `${studentData.firstName} ${studentData.lastName}`;
+    console.log("Files: ", files);
 
     // return res.json({ content: studentData });
-    const generatedContent = await reportGenerationService.generateReport(studentData, testFiles);
+    const generatedContent = await reportGenerationService.generateReport(studentData, files);
     
     // Save or Update Report
     // const findReport = await Report.findOne({
@@ -84,7 +92,7 @@ const generateReport = async (req, res) => {
     res.json({ ...generatedContent });
   } catch (error) {
     res.status(500).json({ message: error.message });
-  }
+  } 
 };
 
 // Get all reports
@@ -156,7 +164,7 @@ const accessReport = async (req, res) => {
 
 module.exports = {
   createReport,
-  generateReport: [upload.array('files'), generateReport],
+  generateReport: [upload.single('file'), generateReport],
   getReports,
   getReportById,
   updateReport,

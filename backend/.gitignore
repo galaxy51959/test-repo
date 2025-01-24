@@ -1,6 +1,7 @@
 node_modules
 public
 db_json
+dist
 
 .env
 package-lock.json
