@@ -19,20 +19,16 @@ export default function GenerateReport() {
     'BASC-3-Parent',
 		'BASC-3-Teacher',
     'WISC-V',
-		'TAPS-4',
+		'TAPS-4(Auditory Processing)',
+		'TAPS-4(Visual Processing)',
     'Academic',
     'GARS-3-Parent',
     'GARS-3-Teacher',
     'ASRS',
-    'ADOS-2',
-    'GARS-3',
-    'CARS-2',
-    'SRS-2',
-    'ABAS-3',
-    'CBCL',
-    'Conners-3',
-    'NEPSY-II',
-    'OWLS-II'
+		'CTONI-2',
+		'DAY C-2',
+		'WRAML-3',
+		'BG-2'
   ]);
 
   useEffect(() => {

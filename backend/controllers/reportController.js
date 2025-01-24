@@ -66,6 +66,8 @@ const generateReport = async (req, res) => {
     // return res.json({ content: studentData });
     const generatedContent = await reportGenerationService.generateReport(studentData, files.filter(field => req.body.includes(field.protocol)));
     
+    const templateType = "Psychoeducational";
+      
     // Save or Update Report
     const findReport = await Report.findOne({
       student: studentId,
