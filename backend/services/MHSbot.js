@@ -116,8 +116,11 @@ const MainAction = async(page, studentInfo, targetInfo) => {
         await page.waitForSelector('input#txtRaterName', { timeout: 10000 });
         await page.type('input#txtRaterName',targetInfo.fullName, {delay: 100});
 
-        await page.waitForSelector('input[value="Next"]', { timeout: 1000 });
+
+
+        await page.waitForSelector('input[value="Next"]', { timeout: 5000 });
         await page.$eval('input[value="Next"]', (el) => el.click());
+
 
         await delay(5000);
         await page.waitForSelector('input[value="GENERATE LINKS"]', { timeout: 3000 });
@@ -125,6 +128,35 @@ const MainAction = async(page, studentInfo, targetInfo) => {
 
         await page.waitForSelector('#ctrl__Controls_Product_Custom_ASRS_Wizard_InviteWizardContainer_ascx_CreateLink_rptraters_txtLink_0', { timeout: 10000 });
         const linkContent = await page.$eval('#ctrl__Controls_Product_Custom_ASRS_Wizard_InviteWizardContainer_ascx_CreateLink_rptraters_txtLink_0', el => el.value);
+
+        await delay(1000);
+        await page.waitForSelector('input[value="CONTINUE TO GENERATE AN EMAIL"]', { timeout: 1000 });
+        await page.$eval('input[value="CONTINUE TO GENERATE AN EMAIL"]', (el) => el.click());
+
+        await delay(1000);
+        await page.waitForSelector('input[tabindex="10"]', { timeout: 5000 });
+        await page.type('input[tabindex="10"]', targetInfo.email, {delay: 100});
+
+        await page.waitForSelector('input[value="Next"]', { timeout: 1000 });
+        await page.$eval('input[value="Next"]', (el) => el.click());
+
+        const defaultOptionSelector = '#ddlEmailTemplate';
+        await page.waitForSelector(defaultOptionSelector, {
+            visible: true,
+            timeout: 5000
+        });
+
+        // Select the specific option by value
+        await page.select(defaultOptionSelector, 'd7f00042-25ac-ef11-99d0-005056b42b4f');
+        console.log('Successfully selected default template');
+        await delay(1000);
+        await page.waitForSelector('input[value="Next"]', { timeout: 1000 });
+        await page.$eval('input[value="Next"]', (el) => el.click());
+
+        // await page.waitForSelector('input[value="Send Email"]', { timeout: 1000 });
+        // await page.$eval('input[value="Send Email"]', (el) => el.click());
+
+        // await delay(2000);
 
         return linkContent;
 
@@ -147,7 +179,7 @@ const startScript = async(studentInfo, targetInfo)=>{
 
     try {
         browser = await pt.launch({
-            headless: true,
+            headless: false,
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",

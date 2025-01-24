@@ -15,6 +15,8 @@ const Teachers = () => {
     file: null
   });
 
+  const [isAccessing , setIsAccessing] = useState(false);
+  const [issendEmail, setIsSendingEmail] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -24,6 +26,7 @@ const Teachers = () => {
   };
 
   const handleFileChange = (e) => {
+    console.log(e.target.files);
     setFormData(prevState => ({
       ...prevState,
       file: e.target.files[0]
@@ -32,23 +35,56 @@ const Teachers = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formDataToSend = new FormData();
-    
-    // Append all text fields
-    Object.keys(formData).forEach(key => {
-      if (key !== 'file') {
-        formDataToSend.append(key, formData[key]);
-      }
-    });
-
-    // Append file if it exists
-    if (formData.file) {
-      formDataToSend.append('file', formData.file);
+    setIsAccessing(true);
+    const studentInfo = {
+      firstName: formData.studentFirstName,
+      middleName: formData.studentMiddleName,
+      lastName: formData.studentLastName,
+      gender: formData.gender,
+      dateOfBirth: formData.dateOfBirth,
+      
     }
 
-    const result = await createScore(formDataToSend);
+    const targetInfo = {
+      sendTo: formData.sendTo,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email
+    }
+
+    let result = [];
+    result = await createScore({ studentInfo, targetInfo });
     console.log("Result: ", result);
+    if(result.length > 0) {
+      setIsAccessing(false);
+      setIsSendingEmail(true);
+    }
+
+
+    //send Mail
+    const mail_Content = `Hello \n I have sent you link \n ${result}`;
+   
+    const mail_formFata = new FormData();
+    
+    mail_formFata.append('from', 'Alexis.carter@ssg-community.com'); // sender address
+    mail_formFata.append('to', formData.email); // list of receivers
+    mail_formFata.append('subject', 'Test Email with Attachment'); // Subject line
+    mail_formFata.append('html',  mail_Content);
+    mail_formFata.append('file', formData.file, formData.file.name); // HTML content
+    try {
+      const result = await fetch("https://laymond.app.n8n.cloud/webhook/ac3019c4-ac6d-4a34-b2b2-8229de3f29fd/mail", {
+          method: "POST",
+          body: mail_formFata
+      })
+      const res = await result.json();
+      alert(res.message);
+      if(res.message != "" || res.message != "failed") {
+        setIsSendingEmail(false);
+      }
+        alert(res.message);
+  } catch (error) {
+      console.log(error);
+  }
   };
 
   return (
@@ -243,6 +279,7 @@ const Teachers = () => {
           >
             Send
           </button>
+          {isAccessing ? 'Accessing...' : issendEmail ? 'Complete Accessing -> Sending Email ...' : isAccessing && issendEmail ? "Sent Email successfully" : "Please Start"}
         </form>
       </div>
     </div>
