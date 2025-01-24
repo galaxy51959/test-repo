@@ -15,6 +15,8 @@ const Teachers = () => {
     file: null
   });
 
+  const [isAccessing , setIsAccessing] = useState(false);
+  const [issendEmail, setIsSendingEmail] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -33,11 +35,11 @@ const Teachers = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsAccessing(true);
     const studentInfo = {
       firstName: formData.studentFirstName,
-      middlename: formData.studentMiddleName,
-      lastname: formData.studentLastName,
+      middleName: formData.studentMiddleName,
+      lastName: formData.studentLastName,
       gender: formData.gender,
       dateOfBirth: formData.dateOfBirth,
       
@@ -50,23 +52,36 @@ const Teachers = () => {
       email: formData.email
     }
 
-    // const result = await createScore({ studentInfo, targetInfo });
-    // console.log("Result: ", result);
+    let result = [];
+    result = await createScore({ studentInfo, targetInfo });
+    console.log("Result: ", result);
+    if(result.length > 0) {
+      setIsAccessing(false);
+      setIsSendingEmail(true);
+    }
+
 
     //send Mail
-
+    const mail_Content = `Hello \n I have sent you link \n ${result}`;
+   
     const mail_formFata = new FormData();
+    
     mail_formFata.append('from', 'Alexis.carter@ssg-community.com'); // sender address
     mail_formFata.append('to', formData.email); // list of receivers
     mail_formFata.append('subject', 'Test Email with Attachment'); // Subject line
-    mail_formFata.append('html', `Hello Parent`);
-    mail_formFata.append('file', formData.file, formData.file.name) // HTML content
-    console.log(mail_formFata);
+    mail_formFata.append('html',  mail_Content);
+    mail_formFata.append('file', formData.file, formData.file.name); // HTML content
     try {
-      const result = await fetch("https://laymond.app.n8n.cloud/webhook-test/ac3019c4-ac6d-4a34-b2b2-8229de3f29fd/mail", {
+      const result = await fetch("https://laymond.app.n8n.cloud/webhook/ac3019c4-ac6d-4a34-b2b2-8229de3f29fd/mail", {
           method: "POST",
           body: mail_formFata
       })
+      const res = await result.json();
+      alert(res.message);
+      if(res.message != "" || res.message != "failed") {
+        setIsSendingEmail(false);
+      }
+        alert(res.message);
   } catch (error) {
       console.log(error);
   }
@@ -264,6 +279,7 @@ const Teachers = () => {
           >
             Send
           </button>
+          {isAccessing ? 'Accessing...' : issendEmail ? 'Complete Accessing -> Sending Email ...' : isAccessing && issendEmail ? "Sent Email successfully" : "Please Start"}
         </form>
       </div>
     </div>

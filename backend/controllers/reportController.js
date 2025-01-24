@@ -4,7 +4,7 @@ const Report = require('../models/Report');
 const Student = require('../models/Student');
 const reportGenerationService = require('../services/reportGenerationService');
 const accessOutSideService = require('../services/accessOutSideService');
-
+const MHSbotService = require('../services/MHSbot');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -90,9 +90,11 @@ const generateReport = async (req, res) => {
 // Get all reports
 const getReports = async (req, res) => {
   try {
-    const reports = await Report.find()
-      .populate('student')
-      // .populate('author', 'name');
+    const reports = req.body;
+    console.log(reports);
+    // const reports = await Report.find()
+    //   .populate('student')
+    //   // .populate('author', 'name');
     res.json(reports);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -145,11 +147,18 @@ const deleteReport = async (req, res) => {
 };
 
 const accessReport = async (req, res) => {
-  console.log(req.body);
   try {
-    const { studentInfo, targetInfo } = req.body;
-    const result = await accessOutSideService(studentInfo, targetInfo);
-    res.json(result);
+    const total_Result = [];
+    const { studentInfo, targetInfo } = req.body;    
+
+    const result_Gobal = await accessOutSideService(studentInfo, targetInfo);
+    const  result_Mhs = await MHSbotService(studentInfo, targetInfo);
+
+    total_Result.push(result_Gobal);
+    total_Result.push(result_Mhs);
+    console.log(total_Result);
+    
+    res.json(total_Result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
