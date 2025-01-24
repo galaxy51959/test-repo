@@ -20,10 +20,10 @@ export default function GenerateReport() {
 		'BASC-3-Teacher',
     'WISC-V',
 		'TAPS-4',
-    'KTEA-3',
-    'WIAT-4',
-    'WJ-IV',
-    'BRIEF-2',
+    'Academic',
+    'GARS-3-Parent',
+    'GARS-3-Teacher',
+    'ASRS',
     'ADOS-2',
     'GARS-3',
     'CARS-2',
@@ -51,15 +51,7 @@ export default function GenerateReport() {
     }
   }
 
-  const handleStudentChange = (e) => {
-    const studentId = e.target.value;
-		
-    // Find and set selected student details
-    const student = students.find(s => s._id === studentId);
-    setSelectedStudent(student || null);
-  };
-
-  const handleAddField = async () => {
+	const uploadFile = async () => {
 		const lastField = testFiles[testFiles.length - 1];
 		
 		if (!lastField.protocol || !lastField.file)
@@ -70,7 +62,18 @@ export default function GenerateReport() {
 		formData.append('file', lastField.file);
 
 		await generateReport(selectedStudent._id, formData);
+	}
 
+  const handleStudentChange = (e) => {
+    const studentId = e.target.value;
+		
+    // Find and set selected student details
+    const student = students.find(s => s._id === studentId);
+    setSelectedStudent(student || null);
+  };
+
+  const handleAddField = async () => {
+		await uploadFile();
     setTestFiles([
       ...testFiles,
       { id: Date.now(), protocol: '', file: null }
@@ -89,11 +92,16 @@ export default function GenerateReport() {
     ));
   };
 
+  const handleRemoveField = (id) => {
+    setTestFiles(testFiles.filter(field => field.id !== id));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+		await uploadFile();
     try {
       setLoading(true);
-      const result = await generateReport(selectedStudent._id);
+      const result = await generateReport(selectedStudent._id, testFiles.map(field => field.protocol));
       window.open(`http://localhost:5000/reports/${result.fileName}`, '_blank');
     } catch (error) {
       console.error('Error submitting report:', error);
@@ -202,10 +210,30 @@ export default function GenerateReport() {
             {/* Changed to grid layout with 5 columns */}
             <div className="grid grid-cols-4 gap-4">
               {testFiles.map((field) => (
-                <div key={field.id} className="border rounded-lg p-4 space-y-3 bg-white">
-                  <div className="flex">
+                <div key={field.id} className="border rounded-lg p-4 space-y-3 bg-white relative">
+                  {/* Add remove button */}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveField(field.id)}
+                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                  >
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className="h-5 w-5" 
+                      viewBox="0 0 20 20" 
+                      fill="currentColor"
+                    >
+                      <path 
+                        fillRule="evenodd" 
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
+                        clipRule="evenodd" 
+                      />
+                    </svg>
+                  </button>
+
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Test Protocol
+                      Title
                     </label>
                     <div className="relative">
                       <input
@@ -240,11 +268,6 @@ export default function GenerateReport() {
                         file:bg-blue-50 file:text-blue-700
                         hover:file:bg-blue-100"
                     />
-                    {field.file && (
-                      <p className="mt-1 text-sm text-gray-500 truncate">
-                        Selected: {field.file.name} ({(field.file.size / 1024 / 1024).toFixed(2)} MB)
-                      </p>
-                    )}
                   </div>
                 </div>
               ))}

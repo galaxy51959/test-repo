@@ -64,31 +64,31 @@ const generateReport = async (req, res) => {
     console.log("Files: ", files);
 
     // return res.json({ content: studentData });
-    const generatedContent = await reportGenerationService.generateReport(studentData, files);
+    const generatedContent = await reportGenerationService.generateReport(studentData, files.filter(field => req.body.includes(field.protocol)));
     
     // Save or Update Report
-    // const findReport = await Report.findOne({
-    //   student: studentId,
-    //   type: templateType
-    // })
+    const findReport = await Report.findOne({
+      student: studentId,
+      type: templateType
+    })
 
-    // if (!findReport) {
-    //   const report = new Report({
-    //     student: studentId,
-    //     type: templateType,
-    //     testScores,
-    //     summary,
-    //     author: 'Alexis E. Carter',
-    //     file: generatedContent.fileName,
-    //   });
+    if (!findReport) {
+      const report = new Report({
+        student: studentId,
+        type: templateType,
+        testScores,
+        summary,
+        author: 'Alexis E. Carter',
+        file: generatedContent.fileName,
+      });
   
-    //   await report.save();
-    // } else {
-    //   await Report.updateOne(
-    //     { student: studentId, type: templateType },
-    //     { $set: { testScores, summary, author: 'Alexis E. Carter', file: generatedContent.fileName }}
-    //   );
-    // }
+      await report.save();
+    } else {
+      await Report.updateOne(
+        { student: studentId, type: templateType },
+        { $set: { testScores, summary, author: 'Alexis E. Carter', file: generatedContent.fileName }}
+      );
+    }
 
     res.json({ ...generatedContent });
   } catch (error) {
@@ -99,11 +99,9 @@ const generateReport = async (req, res) => {
 // Get all reports
 const getReports = async (req, res) => {
   try {
-    const reports = req.body;
-    console.log(reports);
-    // const reports = await Report.find()
-    //   .populate('student')
-    //   // .populate('author', 'name');
+    const reports = await Report.find()
+      .populate('student')
+      // .populate('author', 'name');
     res.json(reports);
   } catch (error) {
     res.status(500).json({ message: error.message });

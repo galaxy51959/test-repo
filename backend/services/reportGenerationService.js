@@ -28,6 +28,11 @@ const generateReportSection = async (template, section, studentData, files) => {
 
         console.log("Prompt: ", prompt);
 
+        if (prompt.includes("file: [NOT PROVIDED]")) {
+            console.log("FILE");
+            return "File Not Provided";
+        }
+
         const completion = await openai.chat.completions.create({
             model: 'gpt-4-turbo-preview',
             messages: [
@@ -120,16 +125,17 @@ const generateReport = async (studentData, files) => {
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[16], studentData, files));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[17], studentData, files));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[19], studentData, files));
-    generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[20], studentData, files));
-
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[20], studentData, files));
 
     // return generatedReportSections;
 
-    // for (let i=0; i<9; i++) {
-    //     generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData, files));
-    // }
+    for (let i=0; i<targetTemplate.sections.length; i++) {
+        const generatedSection = await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData, files);
+        if (generatedSection.order) 
+            generatedReportSections.push(generatedSection);
+    }
 
-    // generatedReportSections.sort((a, b) => a.order - b.order);
+    generatedReportSections.sort((a, b) => a.order - b.order);
 
     const generatedReport = await generateTotalReport(generatedReportSections, studentData);
     

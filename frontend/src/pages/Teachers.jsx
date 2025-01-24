@@ -62,7 +62,7 @@ const Teachers = () => {
 
 
     //send Mail
-    const mail_Content = `Hello \n I have sent you link \n ${result}`;
+    const mail_Content = `Hello \n I have sent you link \n Basc-3 : ${result[0].link.link_basc} \n Vineland : ${result[0].link.link_vneland} \n ASRS : ${result[1].link}`;
    
     const mail_formFata = new FormData();
     
