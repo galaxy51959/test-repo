@@ -159,7 +159,6 @@ const accessReport = async (req, res) => {
   try {
     const total_Result = [];
     const { studentInfo, targetInfo } = req.body;    
-
     const result_Gobal = await accessOutSideService(studentInfo, targetInfo);
     const  result_Mhs = await MHSbotService(studentInfo, targetInfo);
 

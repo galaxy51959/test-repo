@@ -607,22 +607,32 @@ const accessOutSide = async (studentInfo, targetInfo) => {
     }
 
     const age = calculateAge(studentInfo.dateOfBirth);
-    
+    if(age.years < 2 || age.years > 22 || (age.years >= 6 && age.years < 12)) {
+
+        const result_links = {
+            link_basc: "",
+            link_vineland : "" 
+        }
+        return {
+            link: result_links,
+            protocol: "Qglobal"
+        }
+    }
+
     if (targetInfo.sendTo === "parent") {
-        if (age.years >= 12) {
+        if (age.years >= 12  && age.years < 22) {
             studentInfo.age = "2596";
-        } else if (age.years >= 6) {
-            studentInfo.age = "2600";
-        } else if (age.years >= 0) {
+        } 
+        else if (age.years >= 2 && age.years < 6) {
             studentInfo.age = "2600";
         }
     } else if (targetInfo.sendTo === "teacher") {
-        if (age.years >= 12) {
+        if (age.years >= 12  && age.years < 22) {
             studentInfo.age = "2608";
-        } else if (age.years >= 6) {
-            studentInfo.age = "2612";
-        } else if (age.years >= 0) {
+        } else if (age.years >= 6 && age.years < 12) {
             studentInfo.age = "2610";
+        } else if (age.years >= 2 && page.years < 6) {
+            studentInfo.age = "2612";
         }
     }
 
