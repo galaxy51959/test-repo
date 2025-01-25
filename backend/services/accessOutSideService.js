@@ -59,7 +59,7 @@ const assessment = async(page, typeOfAssecss, targetInfo,studentInfo)=>
         await page.waitForSelector(`input[value="${studentInfo.age}"]`, { timeout: 3000 }); // 0-6
         await page.$eval(`input[value="${studentInfo.age}"]`, (el) => el.click());	     
     }
-    else {
+    if(typeOfAssecss == "Vineland") {
         if(targetInfo.sendTo =="parent") {
             await page.waitForSelector(`input[value="2728"]`, { timeout: 3000 }); // 0-6
             await page.$eval(`input[value="2728"]`, (el) => el.click());	     
@@ -68,7 +68,8 @@ const assessment = async(page, typeOfAssecss, targetInfo,studentInfo)=>
             await page.waitForSelector(`input[value="2729"]`, { timeout: 3000 }); // 0-6
             await page.$eval(`input[value="2729"`, (el) => el.click());	   
         }
-    }   
+    }  
+
     await page.waitForSelector('input[value="Assign"]', { timeout: 3000 });
     await page.$eval('input[value="Assign"]', (el) => el.click());
     
@@ -264,6 +265,8 @@ const Action = async (page, studentInfo, targetInfo) => {
         });
         await page.click(newExamineeSelector);
         
+
+      
         // Wait for the form page to load
         await delay(3000);
         
@@ -310,8 +313,53 @@ const Action = async (page, studentInfo, targetInfo) => {
         console.log('Successfully filled and submitted the form');
         
         await delay(2000);
+        const linkarray = {};
+        for(let i =0;i < targetInfo.length(); i++) {
+            let sublink_array = [];
+            let target_name = targetInfo[i].sendTo;
+            let link_Basc = await assessment(page, "BASC", targetInfo[i], studentInfo);
+            try {                  
+                await page.evaluate(() => {
+                    const links = Array.from(document.querySelectorAll('a'));
+                    const homeLink = links.find(link => 
+                        link.textContent.trim() === 'Home' && 
+                        (!link.getAttribute('href') || link.getAttribute('href') === '')
+                    );
+                    if (homeLink) {
+                        homeLink.click();
+                    }
+                });
+                console.log('Successfully clicked Sign Out link');
+    
+                // Wait for and click OK button in confirmation dialog
+            } catch (error) {
+                console.error('Failed goint to home process:', error);
+            }
+            let link_Vineland = await assessment(page, "Vineland", targetInfo[i],studentInfo);
 
-         const link_basc = await assessment(page, "BASC", targetInfo, studentInfo);
+            sublink_array.push(link_Basc);
+            sublink_array.push(link_Vineland);
+            linkarray[target_name] = sublink_array;
+
+            try {                  
+                await page.evaluate(() => {
+                    const links = Array.from(document.querySelectorAll('a'));
+                    const homeLink = links.find(link => 
+                        link.textContent.trim() === 'Home' && 
+                        (!link.getAttribute('href') || link.getAttribute('href') === '')
+                    );
+                    if (homeLink) {
+                        homeLink.click();
+                    }
+                });
+                console.log('Successfully clicked Sign Out link');
+    
+                // Wait for and click OK button in confirmation dialog
+            } catch (error) {
+                console.error('Failed goint to home process:', error);
+            }
+        }
+        
         try {                  
             await page.evaluate(() => {
                 const links = Array.from(document.querySelectorAll('a'));
@@ -330,13 +378,11 @@ const Action = async (page, studentInfo, targetInfo) => {
             console.error('Failed goint to home process:', error);
         }
 
-        const link_vineland = await assessment(page, "Vineland", targetInfo,studentInfo);
-
-        const links = {
-            link_basc: link_basc,
-            link_vineland: link_vineland,
-        }
-        console.log(links);
+        // const links = {
+        //     link_basc: link_basc,
+        //     link_vineland: link_vineland,
+        // }
+        console.log(linkarray);
         return links;
     //     const tableSelector = '#examineeGrid';
         

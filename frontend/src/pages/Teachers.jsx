@@ -60,13 +60,11 @@ const Teachers = () => {
       alert("There is something error");
     }
     else{
-       const links = {"Basc" : result[0].link.link_basc, "Asr": result[1].link, "Vineland" : result[0].link.link_vineland};
+       const links = {Basc : result[0].link.link_basc, Asr: result[1].link, Vineland : result[0].link.link_vineland};
       sendMail(links);
       setIsAccessing(false);
       setIsSendingEmail(true);
     }
-     
-
   };
 
     const generateParentEmail = (ParentName, StudentName, Time, links) =>{
