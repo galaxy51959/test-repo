@@ -4,25 +4,33 @@ const createStudent = async (req, res) => {
   try {
     const {
       firstName,
+      middleName,
       lastName,
       dateOfBirth,
+      gender,
       grade,
-      schoolId,
-      parentContact
+      school,
+      language,
+      parent,
+      teacher
     } = req.body;
 
-    const studentExists = await Student.findOne({ schoolId });
+    const studentExists = await Student.findOne({ firstName, lastName, grade, school });
     if (studentExists) {
       return res.status(400).json({ message: 'Student ID already exists' });
     }
 
     const student = new Student({
       firstName,
+      middleName,
       lastName,
       dateOfBirth,
+      gender,
       grade,
-      schoolId,
-      parentContact
+      school,
+      language,
+      parent,
+      teacher
     });
 
     await student.save();
@@ -35,13 +43,13 @@ const createStudent = async (req, res) => {
 const getStudents = async (req, res) => {
   try {
     const { search, grade, page = 1, limit = 10 } = req.query;
-    let query = {};
+    const query = {};
 
     if (search) {
       query.$or = [
         { firstName: new RegExp(search, 'i') },
         { lastName: new RegExp(search, 'i') },
-        { schoolId: new RegExp(search, 'i') }
+        { school: new RegExp(search, 'i') }
       ];
     }
 

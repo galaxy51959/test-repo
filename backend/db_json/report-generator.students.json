@@ -1,0 +1,33 @@
+[{
+  "_id": {
+    "$oid": "67950718ef282cc5c16b2cb0"
+  },
+  "firstName": "Rimel",
+  "middleName": "",
+  "lastName": "Ryder",
+  "gender": true,
+  "dateOfBirth": {
+    "$date": "2019-02-01T00:00:00.000Z"
+  },
+  "grade": 4,
+  "school": "Elementory School",
+  "language": "English",
+  "parent": {
+    "firstName": "Rimel",
+    "lastName": "Johnson",
+    "email": "secretdragon51959@gmail.com"
+  },
+  "teacher": {
+    "firstName": "Rimel",
+    "lastName": "Ryder",
+    "email": "secretdragon51959@gmail.com"
+  },
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-01-25T15:45:28.028Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-25T15:45:28.028Z"
+  },
+  "__v": 0
+}]
