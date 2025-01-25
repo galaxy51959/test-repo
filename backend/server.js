@@ -7,6 +7,7 @@ dotenv.config();
 // Routes
 const reportRoutes = require('./routes/reportRoutes');
 const emailRoutes = require('./routes/emailRoutes');
+const authRoutes = require('./routes/auth');
 // const calendarRoutes = require('./routes/calendarRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 // const callRoutes = require('./routes/callRoutes');
@@ -24,6 +25,7 @@ app.use(express.static('public'));
 // Routes
 app.use('/api/reports', reportRoutes);
 app.use('/api/emails', emailRoutes);
+app.use('/api/auth', authRoutes);
 // app.use('/api/calendar', calendarRoutes);
 app.use('/api/students', studentRoutes);
 // app.use('/api/calls', callRoutes);

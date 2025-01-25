@@ -11,6 +11,8 @@ export default function Students() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  console.log('<!-----------------Students Page Loading')
+
   useEffect(() => {
     fetchStudents();
   }, []);
