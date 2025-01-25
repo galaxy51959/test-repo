@@ -158,9 +158,10 @@ const deleteReport = async (req, res) => {
 const accessReport = async (req, res) => {
   try {
     const total_Result = [];
-    const { studentInfo, targetInfo } = req.body;    
-    const result_Gobal = await accessOutSideService(studentInfo, targetInfo);
-    const  result_Mhs = await MHSbotService(studentInfo, targetInfo);
+    const { studentInfo, targetInfo } = req.body;
+    console.log(req.body);    
+     const result_Gobal = await accessOutSideService(studentInfo, targetInfo);
+    // const  result_Mhs = await MHSbotService(studentInfo, targetInfo);
 
     total_Result.push(result_Gobal);
     total_Result.push(result_Mhs);

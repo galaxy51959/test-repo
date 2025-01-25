@@ -3,12 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { getStudentById } from '../../actions/studentActions';
-
+import { createScore } from '../../actions/scoreActions';
 export default function StudentAssessment() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [student, setStudent] = useState(null);
+  const [student, setStudent] = useState(null); //student info
   const [selectedRecipients, setSelectedRecipients] = useState([]);
 
   useEffect(() => {
@@ -21,6 +21,7 @@ export default function StudentAssessment() {
       // Replace with your actual API call
       const data = await getStudentById(id);
       setStudent(data);
+      console.log(data);
     } catch (error) {
       console.error('Error fetching student details:', error);
     } finally {
@@ -33,11 +34,35 @@ export default function StudentAssessment() {
     setSelectedRecipients(value);
   };
 
-  const handleAssessment = () => {
+  const handleAssessment = async() => {
     if (selectedRecipients.length === 0) {
       alert('Please select at least one recipient');
       return;
     }
+    const studentInfo = {
+          firstName: student.firstName,
+          middleName: student.middleName,
+          lastName: student.lastName,
+          gender: student.gender,
+          dateOfBirth: student.dateOfBirth,  
+        }
+        const targetInfo = [];
+        selectedRecipients.map(item=>{
+            const recipientInfo = {
+              sendTo: item,
+              firstName: student[item].firstName,
+              lastName: student[item].lastName,
+             email: student[item].email};
+             targetInfo.push(recipientInfo);           
+        })
+    
+         const result = await createScore({ studentInfo, targetInfo });
+         console.log("Result: ", result);
+        // if(result[0] == undefined || result[1] == undefined) {
+        //   alert("There is something error");
+        // }
+
+
     // Handle assessment logic here
     console.log('Selected recipients:', selectedRecipients);
   };
