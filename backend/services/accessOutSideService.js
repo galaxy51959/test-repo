@@ -607,7 +607,18 @@ const accessOutSide = async (studentInfo, targetInfo) => {
     }
 
     const age = calculateAge(studentInfo.dateOfBirth);
-    
+    if(age.years < 2 || age.years > 22 || (age.years >= 6 && age.years < 12)) {
+
+        const result_links = {
+            link_basc: "",
+            link_vineland : "" 
+        }
+        return {
+            link: result_links,
+            protocol: "Qglobal"
+        }
+    }
+
     if (targetInfo.sendTo === "parent") {
         if (age.years >= 12) {
             studentInfo.age = "2596";

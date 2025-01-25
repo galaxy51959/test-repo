@@ -1,7 +1,9 @@
 const pt = require("puppeteer-extra");
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const moment  = require("moment");
+const {calculateAge}  = require("../utils");
 pt.use(StealthPlugin());
+
 // const PROXY_CONFIG = {
 //     host: '23.26.94.209',
 //     port: '6191',
@@ -44,6 +46,7 @@ const signIn = async (page) => {
 let browser;
 
 const MainAction = async(page, studentInfo, targetInfo) => {
+    
     try {
         // Wait for 5 seconds after login
         await delay(5000);
@@ -166,9 +169,15 @@ const MainAction = async(page, studentInfo, targetInfo) => {
     }
 }
 
+
 const startScript = async(studentInfo, targetInfo)=>{
     console.log("S: ", studentInfo);
     console.log("T: ", targetInfo);
+    
+    const age = calculateAge(studentInfo.dateOfBirth);
+    console.log(age);
+    if(age.year < 2 || age.year > 18) 
+        return { link: "", protocol: "MHS"};
 
     studentInfo.gender = studentInfo.gender == "male" ? "1": "2";
     targetInfo.sendTo = targetInfo.sendTo == "parent" ? "Parent" : "Teacher";
