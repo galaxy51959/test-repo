@@ -1,18 +1,37 @@
 const OpenAI = require('openai');
 const fs = require('fs');
-const pdfParse = require('pdf-parse');
 const ReportTemplate = require('../models/ReportTemplate');
 const { generateAndSavePDF } = require('./pdfGenerationService');
-const { calculateAge } = require('../utils');
+const { calculateAge, getFullName, parsePdf, parseDocx } = require('../utils');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-const generateReportSection = async (template, section, data) => {
+const generateReportSection = async (template, section, studentData, files) => {
     try {
 
-        console.log(section);
+        const file = files.find(f => f.protocol === section.name);
 
-        const prompt = constructSectionPrompt(section, data);
+        console.log(file, section.name)
+
+        if (file) {
+            let fileContent
+            if (file.file.includes(".pdf"))
+                fileContent = parsePdf(`${file.protocol}-${file.file}`);
+            else if (file.file.includes(".docx"))
+                fileContent = parseDocx(`${file.protocol}-${file.file}`);
+            console.log(fileContent);
+            
+            studentData.file = fileContent;
+        }
+
+        const prompt = constructSectionPrompt(section, studentData);
+
+        console.log("Prompt: ", prompt);
+
+        if (prompt.includes("file: [NOT PROVIDED]")) {
+            console.log("FILE");
+            return "File Not Provided";
+        }
 
         const completion = await openai.chat.completions.create({
             model: 'gpt-4-turbo-preview',
@@ -36,43 +55,13 @@ const generateReportSection = async (template, section, data) => {
         // console.log(completion.choices[0].message.content);
 
         return { order: section.order, content: completion.choices[0].message.content };
-
-        // return formatResponse(completion.choices[0].message.content, template.formatting);
     } catch (error) {
         console.error("Error generating report section:", error);
         throw error;
     }
 }
 
-const summarizePdf = async (pdfPath) => {
 
-    const pdfBuffer = fs.readFileSync(pdfPath);
-    const data = await pdfParse(pdfBuffer);
-    const text = data.text;  
-
-    return text;
-
-    // try {
-    //     const response = await openai.chat.completions.create({
-    //         model: "gpt-4-turbo-preview",
-    //         messages: [
-    //             {
-    //                 role: "user",
-    //                 content: `Summarize the following pdf:\\n\\n${text}`
-    //             }
-    //         ]
-    //     });
-
-    //     console.log(response.choices[0].message.content);
-    //     return response.choices[0].message.content;
-    // } catch (error) {
-    //     console.error("Error summarizing pdf:", error);
-    //     throw error;
-    // }
-
-    
-    
-}
 
 const constructSectionPrompt = (section, data) => {
     let prompt = section.prompt;
@@ -113,10 +102,10 @@ const generateTotalReport = async (sections, studentData) => {
     }
 }
 
-const generateReport = async (studentData, testFiles) => {
+const generateReport = async (studentData, files) => {
 
     console.log('studentData: ', studentData);
-    console.log('testFiles: ', testFiles);
+    console.log('files: ', files);
 
     const templates = await ReportTemplate.find();
     const targetTemplate = templates[0];
@@ -124,23 +113,29 @@ const generateReport = async (studentData, testFiles) => {
     if (!targetTemplate)
         throw new Error(`Template not found for type`);
 
-    studentData.age = calculateAge(studentData.dateOfBirth);
+    studentData.years = calculateAge(studentData.dateOfBirth).years;
+    studentData.months = calculateAge(studentData.dateOfBirth).months;
+    studentData.name = getFullName(studentData);
 
     const generatedReportSections = [];
 
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[4], studentData));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[5], studentData));
     // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[6], studentData));
-    generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[20], studentData));
-    
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[16], studentData, files));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[17], studentData, files));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[19], studentData, files));
+    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[20], studentData, files));
 
     // return generatedReportSections;
 
-    // for (let i=0; i<6; i++) {
-    //     generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData));
-    // }
+    for (let i=0; i<targetTemplate.sections.length; i++) {
+        const generatedSection = await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData, files);
+        if (generatedSection.order) 
+            generatedReportSections.push(generatedSection);
+    }
 
-    // generatedReportSections.sort((a, b) => a.order - b.order);
+    generatedReportSections.sort((a, b) => a.order - b.order);
 
     const generatedReport = await generateTotalReport(generatedReportSections, studentData);
     

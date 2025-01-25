@@ -5,32 +5,30 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import { getStudents } from '../../actions/studentActions';
 import { generateReport } from '../../actions/reportActions';
+import { getFullName } from '../../utils';
 
 export default function GenerateReport() {
   const navigate = useNavigate();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
-  const [additionalFiles, setAdditionalFiles] = useState([]);
   const [testFiles, setTestFiles] = useState([
-    { id: 1, title: '', file: null }
+    { id: 1, protocol: '', file: null }
   ]);
   const [testProtocols] = useState([
-    'BASC-3',
+    'BASC-3-Parent',
+		'BASC-3-Teacher',
     'WISC-V',
-    'KTEA-3',
-    'WIAT-4',
-    'WJ-IV',
-    'BRIEF-2',
-    'ADOS-2',
-    'GARS-3',
-    'CARS-2',
-    'SRS-2',
-    'ABAS-3',
-    'CBCL',
-    'Conners-3',
-    'NEPSY-II',
-    'OWLS-II'
+		'TAPS-4(Auditory Processing)',
+		'TAPS-4(Visual Processing)',
+    'Academic',
+    'GARS-3-Parent',
+    'GARS-3-Teacher',
+    'ASRS',
+		'CTONI-2',
+		'DAY C-2',
+		'WRAML-3',
+		'BG-2'
   ]);
 
   useEffect(() => {
@@ -49,6 +47,19 @@ export default function GenerateReport() {
     }
   }
 
+	const uploadFile = async () => {
+		const lastField = testFiles[testFiles.length - 1];
+		
+		if (!lastField.protocol || !lastField.file)
+			return;
+
+		const formData = new FormData();
+		formData.append('protocol', lastField.protocol);
+		formData.append('file', lastField.file);
+
+		await generateReport(selectedStudent._id, formData);
+	}
+
   const handleStudentChange = (e) => {
     const studentId = e.target.value;
 		
@@ -57,20 +68,17 @@ export default function GenerateReport() {
     setSelectedStudent(student || null);
   };
 
-  const handleAdditionalFiles = (e) => {
-    setAdditionalFiles([...additionalFiles, ...e.target.files]);
-  };
-
-  const handleAddField = () => {
+  const handleAddField = async () => {
+		await uploadFile();
     setTestFiles([
       ...testFiles,
-      { id: Date.now(), title: '', file: null }
+      { id: Date.now(), protocol: '', file: null }
     ]);
   };
 
   const handleTitleChange = (id, value) => {
     setTestFiles(testFiles.map(field => 
-      field.id === id ? { ...field, title: value } : field
+      field.id === id ? { ...field, protocol: value } : field
     ));
   };
 
@@ -80,23 +88,16 @@ export default function GenerateReport() {
     ));
   };
 
+  const handleRemoveField = (id) => {
+    setTestFiles(testFiles.filter(field => field.id !== id));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+		await uploadFile();
     try {
       setLoading(true);
-      
-      const formDataToSend = new FormData();
-      formDataToSend.append('studentId', selectedStudent._id);
-
-      // Append test files with their titles
-      testFiles.forEach((field, index) => {
-        if (field.file) {
-          formDataToSend.append(`files`, field.file);
-          formDataToSend.append(`titles`, field.title);
-        }
-      });
-
-      const result = await generateReport(selectedStudent._id, formDataToSend);
+      const result = await generateReport(selectedStudent._id, testFiles.map(field => field.protocol));
       window.open(`http://localhost:5000/reports/${result.fileName}`, '_blank');
     } catch (error) {
       console.error('Error submitting report:', error);
@@ -205,10 +206,30 @@ export default function GenerateReport() {
             {/* Changed to grid layout with 5 columns */}
             <div className="grid grid-cols-4 gap-4">
               {testFiles.map((field) => (
-                <div key={field.id} className="border rounded-lg p-4 space-y-3 bg-white">
-                  <div className="flex">
+                <div key={field.id} className="border rounded-lg p-4 space-y-3 bg-white relative">
+                  {/* Add remove button */}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveField(field.id)}
+                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                  >
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className="h-5 w-5" 
+                      viewBox="0 0 20 20" 
+                      fill="currentColor"
+                    >
+                      <path 
+                        fillRule="evenodd" 
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
+                        clipRule="evenodd" 
+                      />
+                    </svg>
+                  </button>
+
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Test Protocol
+                      Title
                     </label>
                     <div className="relative">
                       <input
@@ -243,11 +264,6 @@ export default function GenerateReport() {
                         file:bg-blue-50 file:text-blue-700
                         hover:file:bg-blue-100"
                     />
-                    {field.file && (
-                      <p className="mt-1 text-sm text-gray-500 truncate">
-                        Selected: {field.file.name} ({(field.file.size / 1024 / 1024).toFixed(2)} MB)
-                      </p>
-                    )}
                   </div>
                 </div>
               ))}

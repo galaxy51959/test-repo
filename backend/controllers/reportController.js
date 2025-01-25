@@ -4,6 +4,7 @@ const Report = require('../models/Report');
 const Student = require('../models/Student');
 const reportGenerationService = require('../services/reportGenerationService');
 const accessOutSideService = require('../services/accessOutSideService');
+const files = [];
 const MHSbotService = require('../services/MHSbot');
 
 const storage = multer.diskStorage({
@@ -11,11 +12,12 @@ const storage = multer.diskStorage({
     cb(null, 'public/tests');
   },
   filename: (req, file, cb) => {
-    cb(null, `${req.params.id}-${file.originalname}`);
+    cb(null, `${req.body?.protocol}-${file.originalname}`);
   }
 })
 
 const upload = multer({ storage: storage });
+// const upload = multer({ dest: 'public/tests' });
 
 // Create new report
 const createReport = async (req, res) => {
@@ -40,61 +42,68 @@ const generateReport = async (req, res) => {
   try {
 
     console.log("Request Body: ", req.body);
-    console.log("Request Files: ", req.files);
+    console.log("Request Files: ", req.file);
 
-    const { studentId } = req.body;
-    const testFiles = req.files;
+    if (req.file) {
+      if (files.findIndex(f => f.protocol === req.body?.protocol) === -1) {
+        files.push({
+          protocol: req.body?.protocol,
+          file: req.file.originalname
+        })
+      }
+      res.json({ files });
+      return;
+    }
+    const studentId = req.params.id;
 
     const studentData = await Student.findById(studentId);
     if (!studentData) {
       return res.status(404).json({ message: 'Student not found'});
     }
 
-    console.log(testFiles);
-
-    studentData.name = `${studentData.firstName} ${studentData.lastName}`;
+    console.log("Files: ", files);
 
     // return res.json({ content: studentData });
-    const generatedContent = await reportGenerationService.generateReport(studentData, testFiles);
+    const generatedContent = await reportGenerationService.generateReport(studentData, files.filter(field => req.body.includes(field.protocol)));
     
+    const templateType = "Psychoeducational";
+      
     // Save or Update Report
-    // const findReport = await Report.findOne({
-    //   student: studentId,
-    //   type: templateType
-    // })
+    const findReport = await Report.findOne({
+      student: studentId,
+      type: templateType
+    })
 
-    // if (!findReport) {
-    //   const report = new Report({
-    //     student: studentId,
-    //     type: templateType,
-    //     testScores,
-    //     summary,
-    //     author: 'Alexis E. Carter',
-    //     file: generatedContent.fileName,
-    //   });
+    if (!findReport) {
+      const report = new Report({
+        student: studentId,
+        type: templateType,
+        testScores,
+        summary,
+        author: 'Alexis E. Carter',
+        file: generatedContent.fileName,
+      });
   
-    //   await report.save();
-    // } else {
-    //   await Report.updateOne(
-    //     { student: studentId, type: templateType },
-    //     { $set: { testScores, summary, author: 'Alexis E. Carter', file: generatedContent.fileName }}
-    //   );
-    // }
+      await report.save();
+    } else {
+      await Report.updateOne(
+        { student: studentId, type: templateType },
+        { $set: { testScores, summary, author: 'Alexis E. Carter', file: generatedContent.fileName }}
+      );
+    }
 
     res.json({ ...generatedContent });
   } catch (error) {
     res.status(500).json({ message: error.message });
-  }
+  } 
 };
 
 // Get all reports
 const getReports = async (req, res) => {
   try {
-    const reports = req.body;
-    console.log(reports);
-    // const reports = await Report.find()
-    //   .populate('student')
-    //   // .populate('author', 'name');
+    const reports = await Report.find()
+      .populate('student')
+      // .populate('author', 'name');
     res.json(reports);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -165,7 +174,7 @@ const accessReport = async (req, res) => {
 
 module.exports = {
   createReport,
-  generateReport: [upload.array('files'), generateReport],
+  generateReport: [upload.single('file'), generateReport],
   getReports,
   getReportById,
   updateReport,
