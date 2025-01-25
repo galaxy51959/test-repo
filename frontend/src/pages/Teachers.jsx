@@ -60,7 +60,7 @@ const Teachers = () => {
       alert("There is something error");
     }
     else{
-       const links = {"Basc" : result[0].link.link_basc, "Asr": result[1].link, "Vineland" : result[0].link.link_vneland};
+       const links = {"Basc" : result[0].link.link_basc, "Asr": result[1].link, "Vineland" : result[0].link.link_vineland};
       sendMail(links);
       setIsAccessing(false);
       setIsSendingEmail(true);
