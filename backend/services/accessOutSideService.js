@@ -2,7 +2,6 @@ const pt = require("puppeteer-extra");
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const readline = require('readline');
 const moment = require('moment');
-const sendEmailWithDoc = require('./sendEmailWithTemplate');
 // Add stealth plugin to better avoid detection
 pt.use(StealthPlugin());
 
@@ -16,8 +15,9 @@ pt.use(StealthPlugin());
 
 // Helper function for delays
 
-const assessment = async(page, typeOfAssecss, targetInfo,studentInfo)=>
+const assessment = async(page, typeOfAssecss, targetInfo ,studentInfo)=>
 {
+
     const tableSelector = '#examineeGrid';
         
     // Wait for table and first row to be visible
@@ -54,11 +54,31 @@ const assessment = async(page, typeOfAssecss, targetInfo,studentInfo)=>
 
     await delay(3000); // Wait longer after click
     console.log('Successfully clicked Assign New Assessment button');
+    const age = calculateAge(studentInfo.dateOfBirth);
+
+    if (targetInfo.sendTo === "parent") {
+        if (age.years >= 12  && age.years < 22) {
+            studentInfo.age = "2596";
+        } 
+        else if (age.years >= 2 && age.years < 6) {
+            studentInfo.age = "2600";
+        }
+    } else if (targetInfo.sendTo === "teacher") {
+        if (age.years >= 12  && age.years < 22) {
+            studentInfo.age = "2608";
+        } else if (age.years >= 6 && age.years < 12) {
+            studentInfo.age = "2610";
+        } else if (age.years >= 2 && page.years < 6) {
+            studentInfo.age = "2612";
+        }
+    }
 
     if(typeOfAssecss == "BASC") {
+     
         await page.waitForSelector(`input[value="${studentInfo.age}"]`, { timeout: 3000 }); // 0-6
         await page.$eval(`input[value="${studentInfo.age}"]`, (el) => el.click());	     
     }
+    
     if(typeOfAssecss == "Vineland") {
         if(targetInfo.sendTo =="parent") {
             await page.waitForSelector(`input[value="2728"]`, { timeout: 3000 }); // 0-6
@@ -359,7 +379,7 @@ const Action = async (page, studentInfo, targetInfo) => {
                 console.error('Failed goint to home process:', error);
             }
         }
-        
+
         try {                  
             await page.evaluate(() => {
                 const links = Array.from(document.querySelectorAll('a'));
@@ -643,9 +663,6 @@ const calculateAge = dateOfBirth => {
 
 let browser;
 const accessOutSide = async (studentInfo, targetInfo) => {
-    console.log("Student Info: ", studentInfo);
-    console.log("Target Info: ", targetInfo);
-
     if (studentInfo.gender === "male") {
         studentInfo.gender = "50"; // male
     } else {
@@ -665,22 +682,22 @@ const accessOutSide = async (studentInfo, targetInfo) => {
         }
     }
 
-    if (targetInfo.sendTo === "parent") {
-        if (age.years >= 12  && age.years < 22) {
-            studentInfo.age = "2596";
-        } 
-        else if (age.years >= 2 && age.years < 6) {
-            studentInfo.age = "2600";
-        }
-    } else if (targetInfo.sendTo === "teacher") {
-        if (age.years >= 12  && age.years < 22) {
-            studentInfo.age = "2608";
-        } else if (age.years >= 6 && age.years < 12) {
-            studentInfo.age = "2610";
-        } else if (age.years >= 2 && page.years < 6) {
-            studentInfo.age = "2612";
-        }
-    }
+    // if (targetInfo.sendTo === "parent") {
+    //     if (age.years >= 12  && age.years < 22) {
+    //         studentInfo.age = "2596";
+    //     } 
+    //     else if (age.years >= 2 && age.years < 6) {
+    //         studentInfo.age = "2600";
+    //     }
+    // } else if (targetInfo.sendTo === "teacher") {
+    //     if (age.years >= 12  && age.years < 22) {
+    //         studentInfo.age = "2608";
+    //     } else if (age.years >= 6 && age.years < 12) {
+    //         studentInfo.age = "2610";
+    //     } else if (age.years >= 2 && page.years < 6) {
+    //         studentInfo.age = "2612";
+    //     }
+    // }
 
     studentInfo.dateOfBirth = moment(studentInfo.dateOfBirth).format('MM/DD/YYYY');
 
