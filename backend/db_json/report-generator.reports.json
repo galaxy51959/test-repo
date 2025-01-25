@@ -1,0 +1,40 @@
+[{
+  "_id": {
+    "$oid": "678a1fa8467a5a024853cd27"
+  },
+  "student": {
+    "$oid": "678872b3b3dd9b42a4b05a47"
+  },
+  "type": "Triennial",
+  "recommendations": [],
+  "status": "draft",
+  "file": "Lois Lane-Triennial.pdf",
+  "createdAt": {
+    "$date": "2025-01-17T09:15:20.422Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-17T09:15:20.422Z"
+  },
+  "__v": 0,
+  "author": "Alex E.Carter"
+},
+{
+  "_id": {
+    "$oid": "678a7b695a37eada39062d63"
+  },
+  "student": {
+    "$oid": "678872b3b3dd9b42a4b05a47"
+  },
+  "type": "Psychoeducational",
+  "recommendations": [],
+  "status": "draft",
+  "author": "Alexis E. Carter",
+  "file": "Lois Lane-Psychoeducational.pdf",
+  "createdAt": {
+    "$date": "2025-01-17T15:46:49.300Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-17T15:46:49.300Z"
+  },
+  "__v": 0
+}]

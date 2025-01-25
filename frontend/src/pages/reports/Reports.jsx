@@ -91,12 +91,12 @@ export default function Reports() {
                 <tr key={report._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      {`${report.student.firstName} ${report.student.lastName}`}
+                      {`${report?.student?.firstName} ${report?.student?.lastName}`}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">
-                      {report.student.school}
+                      {report?.student?.school}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

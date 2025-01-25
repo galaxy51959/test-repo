@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const testSchema = new mongoose.Schema({
+const assessmentSchema = new mongoose.Schema({
 	protocol: String,
 	file: String,
 });
@@ -12,12 +12,12 @@ const studentSchema = new mongoose.Schema({
 	},
 	middleName: String,
 	lastName: String,
-	dateOfBirth: {
-		type: Date,
-		required: true
-	},
 	gender: {
 		type: Boolean,
+		required: true
+	},
+	dateOfBirth: {
+		type: Date,
 		required: true
 	},
 	grade: {
@@ -28,9 +28,20 @@ const studentSchema = new mongoose.Schema({
 		type: String, 
 		require: true,
 	},
-	guardian: String,
 	language: String,
-	tests: [testSchema],
+	parent: {
+		firstName: String,
+		lastName: String,
+		email: String,
+		phone: String
+	},
+	teacher: {
+		firstName: String,
+		lastName: String,
+		email: String,
+		phone: String
+	},
+	assessments: [assessmentSchema],
 	createdAt: {
 		type: Date,
 		default: Date.now

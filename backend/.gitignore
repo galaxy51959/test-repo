@@ -1,6 +1,6 @@
 node_modules
 public
-db_json
+# db_json
 dist
 
 .env
