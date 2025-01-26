@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
-export default function Layout({ children }) {
+export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -14,7 +15,7 @@ export default function Layout({ children }) {
         
         {/* <main className="flex-1 p-4 lg:ml-64"> */}
         <main className="flex-1 p-4">
-          {children}
+          <Outlet />
         </main>
       </div>
     </div>

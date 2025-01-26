@@ -4,11 +4,11 @@ import {
   DocumentChartBarIcon,
   AcademicCapIcon,
   CalendarIcon,
-  ClipboardDocumentListIcon,
-  CurrencyDollarIcon,
+  // ClipboardDocumentListIcon,
+  // CurrencyDollarIcon,
   Cog6ToothIcon,
   ChatBubbleLeftIcon,
-  BookOpenIcon,
+  // BookOpenIcon,
 } from '@heroicons/react/24/outline';
 import MenuItem from '../ui/MenuItem';
 
@@ -18,10 +18,10 @@ const menuItems = [
   { icon: DocumentChartBarIcon, label: 'Reports', path: '/reports' },
   { icon: AcademicCapIcon, label: 'Teachers', path: '/teachers' },
   { icon: CalendarIcon, label: 'Schedule', path: '/schedule' },
-  { icon: ClipboardDocumentListIcon, label: 'Attendance', path: '/attendance' },
-  { icon: CurrencyDollarIcon, label: 'Payments', path: '/payments' },
+  // { icon: ClipboardDocumentListIcon, label: 'Attendance', path: '/attendance' },
+  // { icon: CurrencyDollarIcon, label: 'Payments', path: '/payments' },
   { icon: ChatBubbleLeftIcon, label: 'Messages', path: '/messages' },
-  { icon: BookOpenIcon, label: 'Courses', path: '/courses' },
+  // { icon: BookOpenIcon, label: 'Courses', path: '/courses' },
   { icon: Cog6ToothIcon, label: 'Settings', path: '/settings' },
 ];
 

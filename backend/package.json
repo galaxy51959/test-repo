@@ -6,6 +6,7 @@
   "dependencies": {
     "@ironsoftware/ironpdf": "^2024.12.9",
     "@ironsoftware/ironpdf-engine-windows-x64": "^2024.12.9",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "docx-parser": "^0.2.1",
     "dotenv": "^16.4.7",

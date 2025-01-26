@@ -34,7 +34,7 @@ const generateReportSection = async (template, section, studentData, files) => {
         }
 
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4-turbo-preview',
+            model: 'gpt-4o-mini',
             messages: [
                 {
                     role: "system",
@@ -129,7 +129,7 @@ const generateReport = async (studentData, files) => {
 
     // return generatedReportSections;
 
-    for (let i=0; i<targetTemplate.sections.length; i++) {
+    for (let i=0; i<2; i++) {
         const generatedSection = await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData, files);
         if (generatedSection.order) 
             generatedReportSections.push(generatedSection);
