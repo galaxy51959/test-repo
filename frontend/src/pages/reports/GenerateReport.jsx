@@ -1,29 +1,24 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
-import { getStudents } from '../../actions/studentActions';
+import { getStudentById, getStudents } from '../../actions/studentActions';
 import { generateReport } from '../../actions/reportActions';
 import { getFullName } from '../../utils';
 
 export default function GenerateReport() {
   const navigate = useNavigate();
-  const [students, setStudents] = useState([]);
+  const { id } = useParams();
+  const [student, setStudent] = useState();
   const [loading, setLoading] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [testFiles, setTestFiles] = useState([
-    { id: 1, protocol: '', file: null }
-  ]);
-  const [testProtocols] = useState([
-    'BASC-3-Parent',
-		'BASC-3-Teacher',
+  const [assessmentProtocols] = useState([
+    'BASC-3',
     'WISC-V',
 		'TAPS-4',
 		'TVPS-4',
     'Academic',
-    'GARS-3-Parent',
-    'GARS-3-Teacher',
+    'GARS-3',
     'ASRS',
 		'CTONI-2',
 		'DAY C-2',
@@ -31,78 +26,62 @@ export default function GenerateReport() {
 		'BG-2'
   ]);
 
-  useEffect(() => {
-    fetchStudents();
-  }, []);
+  const [formData, setFormData] = useState({
+    // File Uploads
+    seisFile: null,
+    customAssessFile: null,
+    
+    // Interview Scripts
+    interviewFiles: [],
+    
+    // Assessment Results
+    assessmentFiles: []
+  });
 
-  const fetchStudents = async () => {
+  useEffect(() => {
+    fetchStudentDetails();
+  }, [id]);
+
+  const fetchStudentDetails = async () => {
     try {
       setLoading(true);
-      const data = await getStudents();
-      setStudents(data.students);
-    } catch (err) {
-      console.error("Error: ", err);
+      // Replace with your actual API call
+      const data = await getStudentById(id);
+      setStudent(data);
+      console.log(data);
+    } catch (error) {
+      console.error('Error fetching student details:', error);
     } finally {
       setLoading(false);
     }
-  }
-
-	const uploadFile = async () => {
-		const lastField = testFiles[testFiles.length - 1];
-		
-		if (!lastField.protocol || !lastField.file)
-			return;
-
-		const formData = new FormData();
-		formData.append('protocol', lastField.protocol);
-		formData.append('file', lastField.file);
-
-		await generateReport(selectedStudent._id, formData);
-	}
-
-  const handleStudentChange = (e) => {
-    const studentId = e.target.value;
-		
-    // Find and set selected student details
-    const student = students.find(s => s._id === studentId);
-    setSelectedStudent(student || null);
-  };
-
-  const handleAddField = async () => {
-		await uploadFile();
-    setTestFiles([
-      ...testFiles,
-      { id: Date.now(), protocol: '', file: null }
-    ]);
-  };
-
-  const handleTitleChange = (id, value) => {
-    setTestFiles(testFiles.map(field => 
-      field.id === id ? { ...field, protocol: value } : field
-    ));
-  };
-
-  const handleFileChange = (id, file) => {
-    setTestFiles(testFiles.map(field => 
-      field.id === id ? { ...field, file } : field
-    ));
-  };
-
-  const handleRemoveField = (id) => {
-    setTestFiles(testFiles.filter(field => field.id !== id));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-		await uploadFile();
+		// await uploadFile();
     try {
       setLoading(true);
-      const result = await generateReport(selectedStudent._id, testFiles.map(field => field.protocol));
+      const result = await generateReport(student._id, assessmentProtocols);
       window.open(`http://localhost:5000/reports/${result.fileName}`, '_blank');
     } catch (error) {
       console.error('Error submitting report:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileChange = (e, fieldName) => {
+    const { files } = e.target;
+    if (fieldName === 'interviewFiles' || fieldName === 'assessmentFiles') {
+      setFormData(prev => ({
+        ...prev,
+        [fieldName]: [...prev[fieldName], ...files]
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [fieldName]: files[0]
+      }));
     }
   };
 
@@ -117,167 +96,157 @@ export default function GenerateReport() {
           >
             <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
           </button>
-          <h1 className="text-2xl font-semibold">Generate New Report</h1>
+          <h1 className="text-2xl font-semibold">Generate Report</h1>
         </div>
 
-        {/* Report Generation Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Student Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Student
-            </label>
-            <select
-              value={selectedStudent?._id}
-              onChange={handleStudentChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select a student</option>
-              {students.map(student => (
-                <option key={student._id} value={student._id}>
-                  {`${student.firstName} ${student.lastName} - ${student.school}`}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Student Details Section */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Student Details</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-500">Full Name</label>
-                <div className="mt-1 text-sm text-gray-900">
-                  {selectedStudent ? `${selectedStudent.firstName} ${selectedStudent.middleName ? selectedStudent.middleName : ''} ${selectedStudent.lastName}` : '-'}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-500">Date of Birth</label>
-                <div className="mt-1 text-sm text-gray-900">
-                  {selectedStudent ? moment(selectedStudent.dateOfBirth).format('MM/DD/YYYY') : '-'}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-500">Age</label>
-                <div className="mt-1 text-sm text-gray-900">
-                  {selectedStudent ? calculateAge(selectedStudent.dateOfBirth) : '-'}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-500">Gender</label>
-                <div className="mt-1 text-sm text-gray-900">
-                  {selectedStudent ? selectedStudent.gender ? 'Male' : 'Female' : '-'}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-500">School</label>
-                <div className="mt-1 text-sm text-gray-900">
-                  {selectedStudent ? selectedStudent.school : '-'}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-500">Grade</label>
-                <div className="mt-1 text-sm text-gray-900">
-                  {selectedStudent ? selectedStudent.grade : '-'}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Test Files Section */}
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-medium text-gray-900">Test Files</h2>
-              <button
-                type="button"
-                onClick={handleAddField}
-                className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
-              >
-                + Add New Test
-              </button>
-            </div>
-            
-            {/* Changed to grid layout with 5 columns */}
-            <div className="grid grid-cols-4 gap-4">
-              {testFiles.map((field) => (
-                <div key={field.id} className="border rounded-lg p-4 space-y-3 bg-white relative">
-                  {/* Add remove button */}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveField(field.id)}
-                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-                  >
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      className="h-5 w-5" 
-                      viewBox="0 0 20 20" 
-                      fill="currentColor"
-                    >
-                      <path 
-                        fillRule="evenodd" 
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
-                        clipRule="evenodd" 
-                      />
-                    </svg>
-                  </button>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Title
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        list="test-protocols"
-                        value={field.title}
-                        onChange={(e) => handleTitleChange(field.id, e.target.value)}
-                        placeholder="Search test protocol"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        autoComplete="off"
-                      />
-                      <datalist id="test-protocols">
-                        {testProtocols.map((protocol, index) => (
-                          <option key={index} value={protocol} />
-                        ))}
-                      </datalist>
+          <div className="grid grid-cols-2 gap-6">
+            {/* Left Column - Student Information */}
+            <div className="space-y-6">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Student Information</h2>
+                
+                {/* Student Info Display */}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Student Name</label>
+                      <p className="mt-1 text-sm text-gray-900">{student ? getFullName(student) : '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Grade</label>
+                      <p className="mt-1 text-sm text-gray-900">{student?.grade || '-'}</p>
                     </div>
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Upload File
-                    </label>
-                    <input
-                      type="file"
-                      onChange={(e) => handleFileChange(field.id, e.target.files[0])}
-                      accept=".pdf,.doc,.docx"
-                      className="block w-full text-sm text-gray-500
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-full file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-blue-50 file:text-blue-700
-                        hover:file:bg-blue-100"
-                    />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">School</label>
+                      <p className="mt-1 text-sm text-gray-900">{student?.school || '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Language</label>
+                      <p className="mt-1 text-sm text-gray-900">{student?.language || '-'}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Parent Name</label>
+                      <p className="mt-1 text-sm text-gray-900">{student?.parent ? getFullName(student.parent) : '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Parent Email</label>
+                      <p className="mt-1 text-sm text-gray-900">{student?.parent?.email || '-'}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Teacher Name</label>
+                      <p className="mt-1 text-sm text-gray-900">{student?.teacher ? getFullName(student.teacher) : '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Teacher Email</label>
+                      <p className="mt-1 text-sm text-gray-900">{student?.teacher?.email || '-'}</p>
+                    </div>
+                  </div>
+
+                  {/* File Upload Section */}
+                  <div className="mt-6 space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">SEIS File</label>
+                      <input
+                        type="file"
+                        onChange={(e) => handleFileChange(e, 'seisFile')}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Custom Assessment File</label>
+                      <input
+                        type="file"
+                        onChange={(e) => handleFileChange(e, 'customAssessFile')}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
-              ))}
+              </div>
+            </div>
+
+            {/* Right Column - Interview Scripts and Assessment Results */}
+            <div className="space-y-6">
+              {/* Interview Scripts */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Interview Script</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload Interview Files</label>
+                    <input
+                      type="file"
+                      multiple
+                      onChange={(e) => handleFileChange(e, 'interviewFiles')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  {/* Display uploaded interview files */}
+                  {formData.interviewFiles.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-sm font-medium text-gray-700">Uploaded Files:</p>
+                      <ul className="mt-1 text-sm text-gray-500">
+                        {formData.interviewFiles.map((file, index) => (
+                          <li key={index}>{file.name}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Assessment Results */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Assessment Results</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload Assessment Files</label>
+                    <input
+                      type="file"
+                      multiple
+                      onChange={(e) => handleFileChange(e, 'assessmentFiles')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  {/* Display uploaded assessment files */}
+                  {formData.assessmentFiles.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-sm font-medium text-gray-700">Uploaded Files:</p>
+                      <ul className="mt-1 text-sm text-gray-500">
+                        {formData.assessmentFiles.map((file, index) => (
+                          <li key={index}>{file.name}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end">
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-4 mt-6">
+            <button
+              type="button"
+              onClick={() => navigate('/reports')}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
-              disabled={loading}
-              className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700"
             >
-              {loading ? 'Generating...' : 'Generate Report'}
+              Generate Report
             </button>
           </div>
         </form>

@@ -56,41 +56,41 @@ const generateReport = async (req, res) => {
     }
     const studentId = req.params.id;
 
-    const studentData = await Student.findById(studentId);
-    if (!studentData) {
+    const studentInfo = await Student.findById(studentId);
+    if (!studentInfo) {
       return res.status(404).json({ message: 'Student not found'});
     }
 
     console.log("Files: ", files);
 
-    // return res.json({ content: studentData });
-    const generatedContent = await reportGenerationService.generateReport(studentData, files.filter(field => req.body.includes(field.protocol)));
+    // return res.json({ content: studentInfo });
+    const generatedContent = await reportGenerationService.generateReport(studentInfo);
     
-    const templateType = "Psychoeducational";
+    // const templateType = "Psychoeducational";
       
     // Save or Update Report
-    const findReport = await Report.findOne({
-      student: studentId,
-      type: templateType
-    })
+    // const findReport = await Report.findOne({
+    //   student: studentId,
+    //   type: templateType
+    // })
 
-    if (!findReport) {
-      const report = new Report({
-        student: studentId,
-        type: templateType,
-        testScores,
-        summary,
-        author: 'Alexis E. Carter',
-        file: generatedContent.fileName,
-      });
+    // if (!findReport) {
+    //   const report = new Report({
+    //     student: studentId,
+    //     type: templateType,
+    //     testScores,
+    //     summary,
+    //     author: 'Alexis E. Carter',
+    //     file: generatedContent.fileName,
+    //   });
   
-      await report.save();
-    } else {
-      await Report.updateOne(
-        { student: studentId, type: templateType },
-        { $set: { testScores, summary, author: 'Alexis E. Carter', file: generatedContent.fileName }}
-      );
-    }
+    //   await report.save();
+    // } else {
+    //   await Report.updateOne(
+    //     { student: studentId, type: templateType },
+    //     { $set: { testScores, summary, author: 'Alexis E. Carter', file: generatedContent.fileName }}
+    //   );
+    // }
 
     res.json({ ...generatedContent });
   } catch (error) {
