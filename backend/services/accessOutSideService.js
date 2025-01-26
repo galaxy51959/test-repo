@@ -55,7 +55,7 @@ const assessment = async(page, typeOfAssecss, targetInfo ,studentInfo)=>
     await delay(3000); // Wait longer after click
     console.log('Successfully clicked Assign New Assessment button');
     const age = calculateAge(studentInfo.dateOfBirth);
-
+    console.log(age);
     if (targetInfo.sendTo === "parent") {
         if (age.years >= 12  && age.years < 22) {
             studentInfo.age = "2596";
@@ -63,18 +63,19 @@ const assessment = async(page, typeOfAssecss, targetInfo ,studentInfo)=>
         else if (age.years >= 2 && age.years < 6) {
             studentInfo.age = "2600";
         }
-    } else if (targetInfo.sendTo === "teacher") {
+    } 
+    else if (targetInfo.sendTo === "teacher") {
         if (age.years >= 12  && age.years < 22) {
             studentInfo.age = "2608";
         } else if (age.years >= 6 && age.years < 12) {
             studentInfo.age = "2610";
-        } else if (age.years >= 2 && page.years < 6) {
+        } else if (age.years >= 2 && age.years < 6) {
             studentInfo.age = "2612";
         }
     }
 
     if(typeOfAssecss == "BASC") {
-     
+     console.log(studentInfo.age);
         await page.waitForSelector(`input[value="${studentInfo.age}"]`, { timeout: 3000 }); // 0-6
         await page.$eval(`input[value="${studentInfo.age}"]`, (el) => el.click());	     
     }
@@ -334,7 +335,7 @@ const Action = async (page, studentInfo, targetInfo) => {
         
         await delay(2000);
         const linkarray = {};
-        for(let i =0;i < targetInfo.length(); i++) {
+        for(let i =0;i < targetInfo.length; i++) {
             let sublink_array = [];
             let target_name = targetInfo[i].sendTo;
             let link_Basc = await assessment(page, "BASC", targetInfo[i], studentInfo);
@@ -403,7 +404,7 @@ const Action = async (page, studentInfo, targetInfo) => {
         //     link_vineland: link_vineland,
         // }
         console.log(linkarray);
-        return links;
+        return linkarray;
     //     const tableSelector = '#examineeGrid';
         
     //     // Wait for table and first row to be visible
@@ -663,7 +664,7 @@ const calculateAge = dateOfBirth => {
 
 let browser;
 const accessOutSide = async (studentInfo, targetInfo) => {
-    if (studentInfo.gender === "male") {
+    if (studentInfo.gender === "true") {
         studentInfo.gender = "50"; // male
     } else {
         studentInfo.gender = "51"; // female
@@ -734,6 +735,7 @@ const accessOutSide = async (studentInfo, targetInfo) => {
             link: result_links,
             protocol: "Qglobal"
          }
+         console.log(result_links);
          return result;
 
      } catch (err) {

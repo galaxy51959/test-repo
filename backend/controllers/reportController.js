@@ -161,7 +161,7 @@ const accessReport = async (req, res) => {
     const { studentInfo, targetInfo } = req.body;
     console.log(req.body);    
      const result_Gobal = await accessOutSideService(studentInfo, targetInfo);
-    // const  result_Mhs = await MHSbotService(studentInfo, targetInfo);
+     const  result_Mhs = await MHSbotService(studentInfo, targetInfo);
 
     total_Result.push(result_Gobal);
     total_Result.push(result_Mhs);

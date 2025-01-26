@@ -2,6 +2,7 @@ const pt = require("puppeteer-extra");
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const moment  = require("moment");
 const {calculateAge}  = require("../utils");
+const { trusted } = require("mongoose");
 pt.use(StealthPlugin());
 
 // const PROXY_CONFIG = {
@@ -90,35 +91,159 @@ const MainAction = async(page, studentInfo, targetInfo) => {
 
         delay(5000);
 
-        await page.waitForSelector('#ddl_Description', { timeout: 20000 });
+        for(let i = 0; i < targetInfo.length; i++) {
+            await page.waitForSelector('#ddl_Description', { timeout: 20000 });
 
-        // Select the option that is not "description"
-        await page.evaluate(() => {
-            const selectElement = document.querySelector('#ddl_Description');
-            const options = Array.from(selectElement.options);
-            const validOption = options.find(option => option.value !== 'Description');
+            // Select the first non-Description option for the current rater
+            await page.evaluate((index) => {
+                // Get all description dropdowns
+                const descriptionDropdowns = Array.from(document.querySelectorAll('#ddl_Description'));
+                const currentDropdown = descriptionDropdowns[index];
+                
+                if (currentDropdown) {
+                    const options = Array.from(currentDropdown.options);
+                    const validOption = options.find(option => 
+                        option.value !== 'Description' && 
+                        option.textContent !== 'Description'
+                    );
+                    
+                    if (validOption) {
+                        currentDropdown.value = validOption.value;
+                        currentDropdown.dispatchEvent(new Event('change', { bubbles: true }));
+                        console.log('Selected option:', validOption.textContent);
+                    }
+                }
+            }, i);
+
+            await delay(2000);
+
+            // Select Parent/Teacher based on index
+            await page.evaluate((index, raterType) => {
+                const raterTypeDropdowns = Array.from(document.querySelectorAll('#ddl_RaterType'));
+                if (raterTypeDropdowns[index]) {
+                    raterTypeDropdowns[index].value = raterType;
+                    raterTypeDropdowns[index].dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }, i, targetInfo[i].sendTo);
+            await delay(2000);
+
+            // Select English for language
+            await page.evaluate((index) => {
+                const languageDropdowns = Array.from(document.querySelectorAll('#ddl_Language'));
+                if (languageDropdowns[index]) {
+                    languageDropdowns[index].value = "English";
+                    languageDropdowns[index].dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }, i);
+            await delay(1000);
+
+            // Input rater name in the correct field
+            await page.evaluate((index, name) => {
+                const nameInputs = Array.from(document.querySelectorAll('input#txtRaterName'));
+                if (nameInputs[index]) {
+                    nameInputs[index].value = name;
+                    nameInputs[index].dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }, i, targetInfo[i].firstName + targetInfo[i].lastName);
             
-            if (validOption) {
-                selectElement.value = validOption.value; // Set the value to the first valid option
-                selectElement.dispatchEvent(new Event('change', { bubbles: true })); // Trigger change event
-            } else {
-                console.error('No valid options found to select.');
+            // Click "ADD ANOTHER RATER" button after first
+            
+            // Click ADD ANOTHER RATER" button after first rater
+            if (i == 0 && targetInfo.length == 2 ) {
+                try {
+                    await page.waitForSelector('button#btn_addRow', { 
+                        visible: true,
+                        timeout: 5000 
+                    });
+                    
+                    await page.click('button#btn_addRow');
+                    console.log('Successfully clicked Add Another Rater button');
+                    await delay(2000);
+                } catch (error) {
+                    console.error('Failed to add new rater:', error);
+                    throw error;
+                }
             }
-        });
+        }
+        // await page.waitForSelector('#ddl_Description', { timeout: 20000 });
 
-        await delay(1000);
+        // // if(targetInfo.length > 0) {
+        //     await page.waitForSelector('button#btn_addRow', { 
+        //         visible: true,
+        //         timeout: 5000 
+        //     });
+            
+        //     // Try multiple methods to click the button
+        //     try {
+        //         await page.click('button#btn_addRow');
+        //     } catch (clickError) {
+        //         // Fallback to evaluate if direct click fails
+        //         await page.evaluate(() => {
+        //             const addButton = document.querySelector('button#btn_addRow');
+        //             if (addButton) addButton.click();
+        //         });
+        //     }
+        // //INPUT parent and teacher info
+        // for(let i=0; i < targetInfo.length; i++) {
+            
+        //     targetInfo[i].fullName = targetInfo[i].firstName + targetInfo[i].lastName;
 
-        await page.waitForSelector('#ddl_RaterType', { timeout: 5000 });
-        await page.select('#ddl_RaterType', targetInfo.sendTo);
-        await delay(1000);
+        //     await page.evaluate((index) => {
+        //         // Get all description dropdowns
+        //         const descriptionDropdowns = Array.from(document.querySelectorAll('#ddl_Description'));
+        //         const currentDropdown = descriptionDropdowns[index];
+                
+        //         if (currentDropdown) {
+        //             const options = Array.from(currentDropdown.options);
+        //             const validOption = options.find(option => 
+        //                 option.value !== 'Description' 
+        //             );
+                    
+        //             if (validOption) {
+        //                 currentDropdown.value = validOption.value; // Set the value to the first valid option
+        //                 currentDropdown.dispatchEvent(new Event('change', { bubbles: true })); // Trigger change event
+        //             } else {
+        //                 console.error('No valid options found to select.');
+        //             }
+        //         }
+        //     }, i);
 
-        await page.waitForSelector('#ddl_Language');
-        await page.select('#ddl_Language', "English");
-        await delay(1000);
+        // // Select the option that is not "description"
+        // //     await page.evaluate(() => {
+        // //     const selectElement = document.querySelector('#ddl_Description');
+        // //     const options = Array.from(selectElement.options);
+        // //     const validOption = options.find(option => option.value !== 'Description');
+            
+        // //     if (validOption) {
+        // //         selectElement.value = validOption.value; // Set the value to the first valid option
+        // //         selectElement.dispatchEvent(new Event('change', { bubbles: true })); // Trigger change event
+        // //     } else {
+        // //         console.error('No valid options found to select.');
+        // //     }
+        // // });
 
-        await page.waitForSelector('input#txtRaterName', { timeout: 10000 });
-        await page.type('input#txtRaterName',targetInfo.fullName, {delay: 100});
+        //     await delay(1000);
+        //     await page.waitForSelector('#ddl_RaterType', { timeout: 5000 });
+        //     await page.select('#ddl_RaterType', targetInfo[i].sendTo);
+        //     await delay(1000);
 
+        
+        //     await page.waitForSelector('#ddl_Language');
+        //     await page.select('#ddl_Language', "English");
+        //     await delay(1000);
+
+        //     await page.waitForSelector('input#txtRaterName', { timeout: 10000 });
+        //     await page.type('input#txtRaterName', targetInfo[i].fullName, {delay: 100});
+        //     //  if(i == 1) break;   
+        //     //add row
+        //     // const addRowButton = document.getElementById('btn_addRow');
+
+        //     // // Add an event listener to the button
+        //     // addRowButton.addEventListener('click', () => {
+        //     //     // Logic to add another rater
+        //     //     console.log('Add another rater button clicked');
+        //     // });
+        // }        
 
 
         await page.waitForSelector('input[value="Next"]', { timeout: 5000 });
@@ -129,16 +254,46 @@ const MainAction = async(page, studentInfo, targetInfo) => {
         await page.waitForSelector('input[value="GENERATE LINKS"]', { timeout: 3000 });
         await page.$eval('input[value="GENERATE LINKS"]', (el) => el.click());
 
-        await page.waitForSelector('#ctrl__Controls_Product_Custom_ASRS_Wizard_InviteWizardContainer_ascx_CreateLink_rptraters_txtLink_0', { timeout: 10000 });
-        const linkContent = await page.$eval('#ctrl__Controls_Product_Custom_ASRS_Wizard_InviteWizardContainer_ascx_CreateLink_rptraters_txtLink_0', el => el.value);
+        await page.waitForSelector('input.txtLinkBox', { 
+            visible: true,
+            timeout: 10000 
+        });
+
+        // Get all links using Array.from
+        const links = await page.evaluate(() => {
+            const linkInputs = Array.from(document.querySelectorAll('input.txtLinkBox'));
+            const result = linkInputs.map(item=>item.value);
+            return result;
+         });
+
+        console.log('Parent link:', links.parent);
+        console.log('Teacher link:', links.teacher);
+
 
         await delay(1000);
         await page.waitForSelector('input[value="CONTINUE TO GENERATE AN EMAIL"]', { timeout: 1000 });
         await page.$eval('input[value="CONTINUE TO GENERATE AN EMAIL"]', (el) => el.click());
 
         await delay(1000);
-        await page.waitForSelector('input[tabindex="10"]', { timeout: 5000 });
-        await page.type('input[tabindex="10"]', targetInfo.email, {delay: 100});
+
+      
+            try {
+                const emailInputs = await page.$$('input[name*="txtTeacherEmail"]');
+                
+                for (let i = 0; i < emailInputs.length; i++) {
+                    await emailInputs[i].type(targetInfo[i].email, { delay: 100 });
+                    await delay(1000); // Small delay between inputs
+                }
+                
+                console.log('Successfully entered all teacher emails');
+            } catch (error) {
+                console.error('Failed to enter teacher emails:', error);
+                throw error;
+            }
+      
+
+        // await page.waitForSelector('input[tabindex="10"]', { timeout: 5000 });
+        // await page.type('input[tabindex="10"]', targetInfo[i].email, {delay: 100});
 
         await page.waitForSelector('input[value="Next"]', { timeout: 1000 });
         await page.$eval('input[value="Next"]', (el) => el.click());
@@ -156,12 +311,9 @@ const MainAction = async(page, studentInfo, targetInfo) => {
         await page.waitForSelector('input[value="Next"]', { timeout: 1000 });
         await page.$eval('input[value="Next"]', (el) => el.click());
 
-        // await page.waitForSelector('input[value="Send Email"]', { timeout: 1000 });
-        // await page.$eval('input[value="Send Email"]', (el) => el.click());
+     
 
-        // await delay(2000);
-
-        return linkContent;
+        return links;
 
     } catch (err) {
         console.error('Failed to complete action:', err.message);
@@ -175,15 +327,17 @@ const startScript = async(studentInfo, targetInfo)=>{
     console.log("T: ", targetInfo);
     
     const age = calculateAge(studentInfo.dateOfBirth);
-    console.log(age);
+
     if(age.year < 2 || age.year > 18) 
         return { link: "", protocol: "MHS"};
 
     studentInfo.gender = studentInfo.gender == "male" ? "1": "2";
-    targetInfo.sendTo = targetInfo.sendTo == "parent" ? "Parent" : "Teacher";
+    targetInfo.forEach((item,index)=>{
+        item.sendTo = item.sendTo == "parent" ? "Parent" : age.years < 6 ? "Teacher/Childcare Provider" : "Teacher";
+    })
+    console.log("updated", targetInfo);
 
-    console.log(studentInfo.gender, targetInfo.sendTo);
-    targetInfo.fullName = targetInfo.firstName + targetInfo.lastName;
+    
     studentInfo.dateOfBirth = moment(studentInfo.dateOfBirth).format('YYYY MMM D');
 
     try {
@@ -206,6 +360,8 @@ const startScript = async(studentInfo, targetInfo)=>{
         //     password: PROXY_CONFIG.password
         // });
     
+        await page.setViewport({ width: 1920, height: 1080 });
+
         await retry(() =>
             page.goto("https://assess.mhs.com/Account/Login.aspx", {
                 waitUntil: "networkidle0",
