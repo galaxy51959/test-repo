@@ -9,7 +9,7 @@ exports.signin = async (req, res) => {
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      if (email.toLowerCase() === process.env.EMAIL_USER) {
+      if (email.toLowerCase() === process.env.EMAIL_USER && password === process.env.EMAIL_PASSWORD) {
         const newUser = new User({
           email: process.env.EMAIL_USER,
           password: process.env.EMAIL_PASSWORD,
@@ -18,7 +18,7 @@ exports.signin = async (req, res) => {
         });
         await newUser.save();
       } else {
-        return res.status(401).json({ message: 'User not found' });
+        return res.status(401).json({ message: 'Invalid email or password' });
       }
     } else {
       const isValidPassword = await bcrypt.compare(password, user.password);

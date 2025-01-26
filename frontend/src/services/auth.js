@@ -24,7 +24,6 @@ export const signIn = async (credentials) => {
 export const signOut = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  navigate('/signin');
 };
 
 export const getToken = () => localStorage.getItem('token');
