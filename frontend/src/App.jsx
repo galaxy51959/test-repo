@@ -45,7 +45,7 @@ function App() {
 
               {/* Reports */}
               <Route path="/reports" element={<Reports />} />
-              <Route path="/reports/new" element={<GenerateReport />} />
+              <Route path="/reports/:id" element={<GenerateReport />} />
 
               {/* Teachers */}
               <Route path="/teachers" element={<Teachers />} />

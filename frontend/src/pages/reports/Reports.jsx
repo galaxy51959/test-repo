@@ -95,7 +95,7 @@ export default function Reports() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {students.map((student) => (
-                  <tr key={student._id} className="hover:bg-gray-50">
+                  <tr key={student._id} className="hover:bg-gray-50" onClick={() => navigate(`${student._id}`)}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-10 w-10 flex-shrink-0">

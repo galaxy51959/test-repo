@@ -6,32 +6,32 @@ const { calculateAge, getFullName, parsePdf, parseDocx } = require('../utils');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-const generateReportSection = async (template, section, studentData, files) => {
+const generateReportSection = async (template, section, studentInfo, files) => {
     try {
 
-        const file = files.find(f => f.protocol === section.name);
+        // const file = files.find(f => f.protocol === section.name);
 
-        console.log(file, section.name)
+        // console.log(file, section.name)
 
-        if (file) {
-            let fileContent
-            if (file.file.includes(".pdf"))
-                fileContent = parsePdf(`${file.protocol}-${file.file}`);
-            else if (file.file.includes(".docx"))
-                fileContent = parseDocx(`${file.protocol}-${file.file}`);
-            console.log(fileContent);
+        // if (file) {
+        //     let fileContent
+        //     if (file.file.includes(".pdf"))
+        //         fileContent = parsePdf(`${file.protocol}-${file.file}`);
+        //     else if (file.file.includes(".docx"))
+        //         fileContent = parseDocx(`${file.protocol}-${file.file}`);
+        //     console.log(fileContent);
             
-            studentData.file = fileContent;
-        }
+        //     studentInfo.file = fileContent;
+        // }
 
-        const prompt = constructSectionPrompt(section, studentData);
+        const prompt = constructSectionPrompt(section, studentInfo);
 
         console.log("Prompt: ", prompt);
 
-        if (prompt.includes("file: [NOT PROVIDED]")) {
-            console.log("FILE");
-            return "File Not Provided";
-        }
+        // if (prompt.includes("file: [NOT PROVIDED]")) {
+        //     console.log("FILE");
+        //     return "File Not Provided";
+        // }
 
         const completion = await openai.chat.completions.create({
             model: 'gpt-4o-mini',
@@ -77,18 +77,21 @@ const constructSectionPrompt = (section, data) => {
 const generateTotalReport = async (sections, studentData) => {
     let htmlContent = '';
 
-    for (let i=0; i<sections.length; i++) {
-        console.log(sections[i].content);
-        const index = sections[i].content.search('<body>');
+    // Process sections in parallel
+    const processedSections = await Promise.all(
+        sections.map(async section => {
+            const index = section.content.search('<body>');
+            if (index > -1) {
+                return section.content.substring(
+                index + 6, 
+                section.content.search('</body>')
+                );
+            }
+            return section.content;
+        })
+    );
 
-        if (index > -1) {
-            const sectionContent = sections[i].content.substring(index+6, sections[i].content.search('</body>'));
-            htmlContent += `${sectionContent}\n`;
-        } else {
-            htmlContent += `${sections[i].content}`;
-        }
-        htmlContent += '<br />';
-    }
+    htmlContent = processedSections.join('<br />');
 
     try {
         const pdf = await generateAndSavePDF(
@@ -100,49 +103,47 @@ const generateTotalReport = async (sections, studentData) => {
         console.error("Error generating total report:", err);
         throw err;
     }
-}
+};
 
-const generateReport = async (studentData, files) => {
+const generateReport = async (studentInfo) => {
+    try {
+        console.log('Starting report generation for:', getFullName(studentInfo));
+        const templates = await ReportTemplate.find();
+        const targetTemplate = templates[0];
 
-    console.log('studentData: ', studentData);
-    console.log('files: ', files);
+        if (!targetTemplate) {
+            throw new Error('Template not found');
+        }
 
-    const templates = await ReportTemplate.find();
-    const targetTemplate = templates[0];
+        studentInfo.years = calculateAge(studentInfo.dateOfBirth).years;
+        studentInfo.months = calculateAge(studentInfo.dateOfBirth).months;
+        studentInfo.name = getFullName(studentInfo);
 
-    if (!targetTemplate)
-        throw new Error(`Template not found for type`);
+        const sectionPromises = targetTemplate.sections.map(section => 
+            generateReportSection(targetTemplate, section, studentInfo)
+        )
 
-    studentData.years = calculateAge(studentData.dateOfBirth).years;
-    studentData.months = calculateAge(studentData.dateOfBirth).months;
-    studentData.name = getFullName(studentData);
+        // Generate sections in parallel
+        // const sectionPromises = targetTemplate.sections.map(section => 
+        //     generateReportSection(targetTemplate, section, studentInfo)
+        // );
 
-    const generatedReportSections = [];
+        const generatedSections = await Promise.all(sectionPromises);
+        
+        // Sort sections by order
+        generatedSections.sort((a, b) => a.order - b.order);
 
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[4], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[5], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[6], studentData));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[16], studentData, files));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[17], studentData, files));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[19], studentData, files));
-    // generatedReportSections.push(await generateReportSection(targetTemplate, targetTemplate.sections[20], studentData, files));
-
-    // return generatedReportSections;
-
-    for (let i=0; i<2; i++) {
-        const generatedSection = await generateReportSection(targetTemplate, targetTemplate.sections[i], studentData, files);
-        if (generatedSection.order) 
-            generatedReportSections.push(generatedSection);
+        // Generate final PDF
+        const generatedReport = await generateTotalReport(generatedSections, studentInfo);
+        
+        return generatedReport;
+    } catch (error) {
+        console.error("Error in report generation:", error);
+        throw error;
     }
-
-    generatedReportSections.sort((a, b) => a.order - b.order);
-
-    const generatedReport = await generateTotalReport(generatedReportSections, studentData);
-    
-    return generatedReport;
-}
+};
 
 module.exports = {
     generateReport,
     generateReportSection
-}
+};
