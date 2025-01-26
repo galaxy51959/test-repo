@@ -6,15 +6,13 @@ exports.signin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log(email);
-
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      if (email.toLowerCase() === 'alexis.carter@ssg-community.com') {
+      if (email.toLowerCase() === process.env.EMAIL_USER) {
         const newUser = new User({
-          email: 'alexis.carter@ssg-community.com',
-          password: password,
+          email: process.env.EMAIL_USER,
+          password: process.env.EMAIL_PASSWORD,
           firstName: 'Alexis',
           lastName: 'Carter'
         });
