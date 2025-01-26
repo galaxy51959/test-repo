@@ -6,6 +6,7 @@ import { Reports, GenerateReport } from './pages/reports';
 import Teachers from './pages/Teachers';
 import SignIn from './pages/SignIn';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -23,33 +24,35 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-      <Routes>
-        {/* Public route */}
-        <Route path="/signin" element={<SignIn />} />
+      <SocketProvider>
+        <Router>
+          <Routes>
+            {/* Public route */}
+            <Route path="/signin" element={<SignIn />} />
 
-        {/* Protected routes with Layout */}
-        <Route element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        }>
-          <Route path="/" element={<Dashboard />} />
+            {/* Protected routes with Layout */}
+            <Route element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }>
+              <Route path="/" element={<Dashboard />} />
 
-          {/* Students */ }
-          <Route path="/students" element={<Students />} />
-          <Route path="/students/new" element={<AddStudent />} />
-          <Route path="/students/:id/assess" element={<StudentAssessment />} />
+              {/* Students */ }
+              <Route path="/students" element={<Students />} />
+              <Route path="/students/new" element={<AddStudent />} />
+              <Route path="/students/:id/assess" element={<StudentAssessment />} />
 
-          {/* Reports */}
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/reports/new" element={<GenerateReport />} />
+              {/* Reports */}
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/reports/new" element={<GenerateReport />} />
 
-          {/* Teachers */}
-          <Route path="/teachers" element={<Teachers />} />
-        </Route>
-      </Routes>
-    </Router>
+              {/* Teachers */}
+              <Route path="/teachers" element={<Teachers />} />
+            </Route>
+          </Routes>
+        </Router>
+      </SocketProvider>
     </AuthProvider>
   );
 }
