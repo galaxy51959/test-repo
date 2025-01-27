@@ -6,7 +6,12 @@ import {
 } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Dashboard from "./pages/Dashboard";
-import { Students, AddStudent, StudentAssessment } from "./pages/students";
+import {
+  Students,
+  AddStudent,
+  StudentAssessment,
+  SendEmail,
+} from "./pages/students";
 import { Reports, GenerateReport } from "./pages/reports";
 import Teachers from "./pages/Teachers";
 import SignIn from "./pages/SignIn";
@@ -51,6 +56,7 @@ function App() {
                 path="/students/:id/assess"
                 element={<StudentAssessment />}
               />
+              <Route path="/students/:id/email" element={<SendEmail />} />
 
               {/* Reports */}
               <Route path="/reports" element={<Reports />} />

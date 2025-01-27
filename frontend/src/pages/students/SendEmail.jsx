@@ -12,7 +12,7 @@ export default function SendEmail() {
   const [student, setStudent] = useState(null);
   const [emailData, setEmailData] = useState({
     parentEmail: "",
-    teacherEmail: ""
+    teacherEmail: "",
   });
 
   useEffect(() => {
@@ -32,9 +32,9 @@ export default function SendEmail() {
   };
 
   const handleEmailChange = (e, recipient) => {
-    setEmailData(prev => ({
+    setEmailData((prev) => ({
       ...prev,
-      [recipient]: e.target.value
+      [recipient]: e.target.value,
     }));
   };
 
@@ -42,7 +42,7 @@ export default function SendEmail() {
     e.preventDefault();
     try {
       await sendEmails(id, emailData);
-      navigate('/students');
+      navigate("/students");
     } catch (error) {
       console.error("Error sending emails:", error);
     }
@@ -69,12 +69,18 @@ export default function SendEmail() {
           <div className="grid grid-cols-2 gap-6 mb-6">
             {/* Parent Email Group */}
             <div className="bg-gray-50 rounded-lg p-4">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Parent Email</h2>
-              
+              <h2 className="text-lg font-medium text-gray-900 mb-4">
+                Parent Email
+              </h2>
+
               {/* Parent Info */}
               <div className="mb-4 p-3 bg-white rounded-lg">
-                <p className="text-sm font-medium text-gray-700">Name: {student.parent?.firstName} {student.parent?.lastName}</p>
-                <p className="text-sm text-gray-600">Email: {student.parent?.email}</p>
+                <p className="text-sm font-medium text-gray-700">
+                  Name: {student.parent?.firstName} {student.parent?.lastName}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Email: {student.parent?.email}
+                </p>
               </div>
 
               {/* Email Text Box */}
@@ -85,7 +91,7 @@ export default function SendEmail() {
                 <textarea
                   rows="10"
                   value={emailData.parentEmail}
-                  onChange={(e) => handleEmailChange(e, 'parentEmail')}
+                  onChange={(e) => handleEmailChange(e, "parentEmail")}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter email content for parent..."
                 />
@@ -94,12 +100,18 @@ export default function SendEmail() {
 
             {/* Teacher Email Group */}
             <div className="bg-gray-50 rounded-lg p-4">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Teacher Email</h2>
-              
+              <h2 className="text-lg font-medium text-gray-900 mb-4">
+                Teacher Email
+              </h2>
+
               {/* Teacher Info */}
               <div className="mb-4 p-3 bg-white rounded-lg">
-                <p className="text-sm font-medium text-gray-700">Name: {student.teacher?.firstName} {student.teacher?.lastName}</p>
-                <p className="text-sm text-gray-600">Email: {student.teacher?.email}</p>
+                <p className="text-sm font-medium text-gray-700">
+                  Name: {student.teacher?.firstName} {student.teacher?.lastName}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Email: {student.teacher?.email}
+                </p>
               </div>
 
               {/* Email Text Box */}
@@ -110,7 +122,7 @@ export default function SendEmail() {
                 <textarea
                   rows="10"
                   value={emailData.teacherEmail}
-                  onChange={(e) => handleEmailChange(e, 'teacherEmail')}
+                  onChange={(e) => handleEmailChange(e, "teacherEmail")}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter email content for teacher..."
                 />
@@ -122,7 +134,7 @@ export default function SendEmail() {
           <div className="flex justify-end space-x-4">
             <button
               type="button"
-              onClick={() => navigate('/students')}
+              onClick={() => navigate("/students")}
               className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
             >
               Cancel
@@ -138,4 +150,4 @@ export default function SendEmail() {
       </div>
     </div>
   );
-} 
+}

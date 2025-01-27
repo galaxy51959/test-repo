@@ -29,11 +29,15 @@ export default function Students() {
     }
   };
 
-  const getMailIcon = (student) => 
+  const getMailIcon = (student) =>
     // Check if student has assessment links
-    student.assessments && 
-      (student.assessments.includes({ rater: 'parent' }) || 
-       student.assessments.includes({ rater: 'teacher' }));
+    student.assessments &&
+    (student.assessments.findIndex(
+      (assessment) => assessment.rater === "parent"
+    ) > -1 ||
+      student.assessments.findIndex(
+        (assessment) => assessment.rater === "teacher"
+      ) > -1);
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -173,11 +177,18 @@ export default function Students() {
                           <EyeIcon className="h-5 w-5" />
                         </button>
                         <button
-                          onClick={() => getMailIcon(student) && navigate(`${student._id}/email`)}
+                          onClick={() =>
+                            getMailIcon(student) &&
+                            navigate(`${student._id}/email`)
+                          }
                           className="text-blue-600 hover:text-blue-900"
                           title="Send Email"
                         >
-                          {getMailIcon(student) ? <MailIconSolid className="h-5 w-5 text-blue-600" /> : <MailIcon className="h-5 w-5 text-gray-400" />}
+                          {getMailIcon(student) ? (
+                            <MailIconSolid className="h-5 w-5 text-blue-600" />
+                          ) : (
+                            <MailIcon className="h-5 w-5 text-gray-400" />
+                          )}
                         </button>
                         <button
                           className="text-green-600 hover:text-green-900"
