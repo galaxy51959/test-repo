@@ -4,6 +4,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { getStudentById } from '../../actions/studentActions';
 import { createScore } from '../../actions/scoreActions';
+import { assignLink } from '../../actions/studentActions';
 export default function StudentAssessment() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -64,9 +65,25 @@ export default function StudentAssessment() {
          res.parent = res.parent.concat(result[0].link.parent);
          res.teacher.push(result[1].link[0].teacher);
          res.parent.push(result[1].link[0].parent);
-         console.log(res);
-
          
+         if(res.teacher.length  == 3) {
+            const mergeditem0 = {protocol: "BASC-3-teacher", link: res.teacher[0]};
+            const mergeditem1 = {protocol: "Vineland-teacher", link: res.teacher[1]};
+            const mergeditem2 = {protocol: "ASR", link: res.teacher[2]};
+            res.teacher[0] = mergeditem0;
+            res.teacher[1] = mergeditem1;
+            res.teacher[2] = mergeditem2;
+         }
+         if(res.parent.length  == 3) {
+          const mergeditem0 = {protocol: "BASC-3-parent", link: res.parent[0]};
+          const mergeditem1 = {protocol: "Vineland-parent", link: res.parent[1]};
+          const mergeditem2 = {protocol: "ASR", link: res.parent[2]};
+          res.parent[0] = mergeditem0;
+          res.parent[1] = mergeditem1;
+          res.parent[2] = mergeditem2;
+       }
+       
+       assignLink(id, res);
          
         // if(result[0] == undefined || result[1] == undefined) {
         //   alert("There is something error");
