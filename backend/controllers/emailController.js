@@ -1,5 +1,5 @@
 const Email = require('../models/Email');
-const GmailService = require('../services/gmailService');
+// const GmailService = require('../services/gmailService');
 
 const sendEmail = async (req, res) => {
     try {
@@ -29,6 +29,13 @@ const sendEmail = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+};
+
+const receiveEmail = async (req, res) => {
+    try {
+        const emailContent = req.body;
+        console.log(emailContent);
+    } catch (error) {}
 };
 
 const getEmails = async (req, res) => {
@@ -83,6 +90,7 @@ const deleteEmail = async (req, res) => {
 };
 
 module.exports = {
+    receiveEmail,
     sendEmail,
     getEmails,
     getEmailById,
