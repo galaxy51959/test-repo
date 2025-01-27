@@ -6,6 +6,6 @@ db_json/
 models/
 
 .env
-.prettierrc.json
+.prettierrc
 package.json
 package-lock.json
