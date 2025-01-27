@@ -3,6 +3,11 @@ const mongoose = require('mongoose');
 const assessmentSchema = new mongoose.Schema({
 	protocol: String,
 	file: String,
+	rater: {
+		type: String,
+		required: true,
+		enum: ['teacher', 'parent'],
+		}
 });
 
 const studentSchema = new mongoose.Schema({

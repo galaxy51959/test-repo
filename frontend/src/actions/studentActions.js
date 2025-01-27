@@ -38,3 +38,21 @@ export const createStudent = async studentData => {
         console.error('Error Creating Students:', error);
     }
 }
+
+
+export const assignLink = async (studentId, linkInfo) => {
+    try {
+        const response = await fetch(`${SERVER_URL}/${studentId}/assign`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(linkInfo)
+        });
+        const result = await response.json();
+
+        return result;
+    } catch (error) {
+        console.error('Error Creating Students:', error);
+    }
+}
