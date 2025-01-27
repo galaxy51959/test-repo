@@ -1,61 +1,48 @@
-const OpenAI = require('openai');
+const { ChatOpenAI } = require('@langchain/openai');
+const {
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+} = require('@langchain/core/prompts');
 const fs = require('fs');
-const ReportTemplate = require('../models/ReportTemplate');
+const ReportSection = require('../models/ReportSection');
 const { generateAndSavePDF } = require('./pdfGenerationService');
 const { calculateAge, getFullName, parsePdf, parseDocx } = require('../utils');
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const model = new ChatOpenAI({
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    modelName: 'gpt-4o-mini',
+    temperature: 0.5,
+});
 
-const generateReportSection = async (template, section, studentInfo, files) => {
+const generateReportSection = async (section, studentInfo, files) => {
     try {
-        // const file = files.find(f => f.protocol === section.name);
+        // const prompt = constructSectionPrompt(section, studentInfo);
 
-        // console.log(file, section.name)
-
-        // if (file) {
-        //     let fileContent
-        //     if (file.file.includes(".pdf"))
-        //         fileContent = parsePdf(`${file.protocol}-${file.file}`);
-        //     else if (file.file.includes(".docx"))
-        //         fileContent = parseDocx(`${file.protocol}-${file.file}`);
-        //     console.log(fileContent);
-
-        //     studentInfo.file = fileContent;
-        // }
-
-        const prompt = constructSectionPrompt(section, studentInfo);
-
-        console.log('Prompt: ', prompt);
+        // console.log('Prompt: ', prompt);
 
         // if (prompt.includes("file: [NOT PROVIDED]")) {
         //     console.log("FILE");
         //     return "File Not Provided";
         // }
 
-        const completion = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: [
-                {
-                    role: 'system',
-                    content: `You are a professional report writer specialized in eucational psychological reports.
-                    ${template.basePrompt}
-                    ${section.promptInstructions || ''}`,
-                },
-                {
-                    role: 'user',
-                    content: prompt,
-                },
-            ],
-            temperature: 0.5,
-            max_tokens: 3000,
+        const chatPrompt = ChatPromptTemplate.fromMessages([
+            SystemMessagePromptTemplate.fromTemplate(section.systemPrompt),
+            HumanMessagePromptTemplate.fromTemplate(section.humanPrompt),
+        ]);
+        // You are a professional report writer specialized in eucational psychological reports
+
+        const chain = chatPrompt.pipe(model);
+
+        const res = await chain.invoke({
+            input: studentInfo,
         });
 
-        console.log(section.order);
-        // console.log(completion.choices[0].message.content);
+        console.log(section.order, res.content);
 
         return {
             order: section.order,
-            content: completion.choices[0].message.content,
+            content: res.content,
         };
     } catch (error) {
         console.error('Error generating report section:', error);
@@ -74,36 +61,36 @@ const constructSectionPrompt = (section, data) => {
     return prompt;
 };
 
-const generateTotalReport = async (sections, studentData) => {
-    let htmlContent = '';
+// const generateTotalReport = async (sections, studentData) => {
+//     let htmlContent = '';
 
-    // Process sections in parallel
-    const processedSections = await Promise.all(
-        sections.map(async (section) => {
-            const index = section.content.search('<body>');
-            if (index > -1) {
-                return section.content.substring(
-                    index + 6,
-                    section.content.search('</body>')
-                );
-            }
-            return section.content;
-        })
-    );
+//     // Process sections in parallel
+//     const processedSections = await Promise.all(
+//         sections.map(async (section) => {
+//             const index = section.content.search('<body>');
+//             if (index > -1) {
+//                 return section.content.substring(
+//                     index + 6,
+//                     section.content.search('</body>')
+//                 );
+//             }
+//             return section.content;
+//         })
+//     );
 
-    htmlContent = processedSections.join('<br />');
+//     htmlContent = processedSections.join('<br />');
 
-    try {
-        const pdf = await generateAndSavePDF(
-            htmlContent,
-            `${studentData.firstName} ${studentData.lastName}-${studentData._id}.pdf`
-        );
-        return pdf;
-    } catch (err) {
-        console.error('Error generating total report:', err);
-        throw err;
-    }
-};
+//     try {
+//         const pdf = await generateAndSavePDF(
+//             htmlContent,
+//             `${studentData.firstName} ${studentData.lastName}-${studentData._id}.pdf`
+//         );
+//         return pdf;
+//     } catch (err) {
+//         console.error('Error generating total report:', err);
+//         throw err;
+//     }
+// };
 
 const generateReport = async (studentInfo) => {
     try {
@@ -111,8 +98,8 @@ const generateReport = async (studentInfo) => {
             'Starting report generation for:',
             getFullName(studentInfo)
         );
-        const templates = await ReportTemplate.find();
-        const targetTemplate = templates[0];
+        const sections = await ReportSection.find();
+        const targetTemplate = sections[0];
 
         if (!targetTemplate) {
             throw new Error('Template not found');
