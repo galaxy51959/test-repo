@@ -1,8 +1,9 @@
 const nodemailer = require('nodemailer');
 // const fs = require('fs');
 console.log(process.env.EMAIL_USER);
-const  sendEmailWithDoc = async (targetInfo) => {
-    const title = targetInfo.sendTo == "parent" ? "Hello Parents" : "Hello Teachers";
+const sendEmailWithDoc = async (targetInfo) => {
+    const title =
+        targetInfo.sendTo == 'parent' ? 'Hello Parents' : 'Hello Teachers';
     const targetEmail = targetInfo.email;
     console.log(title, targetEmail);
     let transporter = nodemailer.createTransport({
@@ -11,13 +12,13 @@ const  sendEmailWithDoc = async (targetInfo) => {
         port: 587,
         secure: false,
         auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASSWORD
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD,
         },
         tls: {
             ciphers: 'SSLv3',
-            rejectUnauthorized: false
-        }
+            rejectUnauthorized: false,
+        },
     });
 
     // Define email options
@@ -37,10 +38,10 @@ const  sendEmailWithDoc = async (targetInfo) => {
     try {
         // Send email
         let info = await transporter.sendMail(mailOptions);
-        console.log("send");
+        console.log('send');
         console.log('Email sent: %s', info.messageId);
     } catch (error) {
         console.error('Error sending email:', error);
     }
-}
-module.exports  = sendEmailWithDoc;
+};
+module.exports = sendEmailWithDoc;

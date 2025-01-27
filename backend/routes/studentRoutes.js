@@ -6,7 +6,7 @@ const {
     getStudents,
     getStudentById,
     updateStudent,
-    deleteStudent
+    deleteStudent,
 } = require('../controllers/studentController');
 
 // router.use(auth); // Apply authentication to all routes

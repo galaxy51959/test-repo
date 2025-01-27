@@ -1,0 +1,11 @@
+node_modules/
+public/
+dist/
+db_json/
+
+models/
+
+.env
+.prettierrc.json
+package.json
+package-lock.json

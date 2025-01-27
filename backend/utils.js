@@ -5,21 +5,22 @@ const docxParser = require('docx-parser');
 exports.parsePdf = async (filePath) => {
     const pdfBuffer = fs.readFileSync(`./public/tests/${filePath}`);
     const data = await pdfParse(pdfBuffer);
-    return data.text
-}
+    return data.text;
+};
 
 exports.parseDocx = (filePath) => {
-  return new Promise((resolve, reject) => {
-    docxParser.parseDocx(`./public/tests/${filePath}`, function(data) {
-      console.log("Parsed DOCX Content:", data);
-      resolve(data);
+    return new Promise((resolve, reject) => {
+        docxParser.parseDocx(`./public/tests/${filePath}`, function (data) {
+            console.log('Parsed DOCX Content:', data);
+            resolve(data);
+        });
     });
-  });
-}
+};
 
-exports.getFullName = x => `${x.firstName} ${x.middleName ? x.middleName : ""} ${x.lastName}`;
+exports.getFullName = (x) =>
+    `${x.firstName} ${x.middleName ? x.middleName : ''} ${x.lastName}`;
 
-exports.calculateAge = dateOfBirth => {
+exports.calculateAge = (dateOfBirth) => {
     if (!dateOfBirth) return '';
 
     const today = new Date();
@@ -43,6 +44,6 @@ exports.calculateAge = dateOfBirth => {
 
     return {
         years: years,
-        months: months
-    }
-}
+        months: months,
+    };
+};

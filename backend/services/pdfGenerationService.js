@@ -8,12 +8,12 @@ const generateAndSavePDF = async (htmlContent, fileName) => {
         // Launch browser and generate PDF as before
         const browser = await puppeteer.launch({
             headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
 
         const page = await browser.newPage();
         await page.setContent(htmlContent, {
-            waitUntil: 'networkidle0'
+            waitUntil: 'networkidle0',
         });
 
         const pdf = await page.pdf({
@@ -23,8 +23,8 @@ const generateAndSavePDF = async (htmlContent, fileName) => {
                 top: '50px',
                 right: '40px',
                 bottom: '50px',
-                left: '40px'
-            }
+                left: '40px',
+            },
         });
 
         await browser.close();
@@ -42,7 +42,7 @@ const generateAndSavePDF = async (htmlContent, fileName) => {
 
         return {
             buffer: pdf,
-            fileName: finalFileName
+            fileName: finalFileName,
         };
     } catch (error) {
         console.error('PDF Generation and Save failed:', error);
