@@ -1,6 +1,6 @@
 const Email = require('../models/Email');
 // const GmailService = require('../services/gmailService');
-
+const socket = require('../socket');
 const sendEmail = async (req, res) => {
     try {
         const { to, subject, body, attachments, scheduledFor } = req.body;
@@ -33,8 +33,11 @@ const sendEmail = async (req, res) => {
 
 const receiveEmail = async (req, res) => {
     try {
-        const emailContent = req.body;
-        console.log(emailContent);
+        const body = req.body;
+        socket.io.emit('Message', {
+            type: 'emailData',
+            data: body,
+        });
     } catch (error) {}
 };
 

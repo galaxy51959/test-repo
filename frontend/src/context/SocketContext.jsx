@@ -35,6 +35,9 @@ export const SocketProvider = ({ children }) => {
         // Handle new assessment notifications
       });
 
+      newSocket.on("Message", (data) => {
+        console.log(data);
+      });
       setSocket(newSocket);
 
       // Cleanup on unmount
