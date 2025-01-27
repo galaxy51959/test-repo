@@ -6,7 +6,8 @@ const {
     getStudents,
     getStudentById,
     updateStudent,
-    deleteStudent
+    deleteStudent,
+    assignStudent
 } = require('../controllers/studentController');
 
 // router.use(auth); // Apply authentication to all routes
@@ -16,5 +17,6 @@ router.get('/', getStudents);
 router.get('/:id', getStudentById);
 router.put('/:id', updateStudent);
 router.delete('/:id', deleteStudent);
+router.post('/:id/assign', assignStudent);
 
 module.exports = router;
