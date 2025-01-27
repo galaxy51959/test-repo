@@ -21,7 +21,7 @@ export default function StudentAssessment() {
       // Replace with your actual API call
       const data = await getStudentById(id);
       setStudent(data);
-      console.log(data);
+      
     } catch (error) {
       console.error('Error fetching student details:', error);
     } finally {
@@ -58,13 +58,23 @@ export default function StudentAssessment() {
     
          const result = await createScore({ studentInfo, targetInfo });
          console.log("Result: ", result);
+
+         const res = {teacher: [], parent : []};
+         res.teacher = res.teacher.concat(result[0].link.teacher);
+         res.parent = res.parent.concat(result[0].link.parent);
+         res.teacher.push(result[1].link[0].teacher);
+         res.parent.push(result[1].link[0].parent);
+         console.log(res);
+
+         
+         
         // if(result[0] == undefined || result[1] == undefined) {
         //   alert("There is something error");
         // }
 
 
     // Handle assessment logic here
-    console.log('Selected recipients:', selectedRecipients);
+    
   };
 
   if (loading) return <LoadingSpinner />;

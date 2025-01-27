@@ -259,15 +259,26 @@ const MainAction = async(page, studentInfo, targetInfo) => {
             timeout: 10000 
         });
 
-        // Get all links using Array.from
         const links = await page.evaluate(() => {
             const linkInputs = Array.from(document.querySelectorAll('input.txtLinkBox'));
             const result = linkInputs.map(item=>item.value);
             return result;
          });
+         const result = links.map((item, index)=>{
+            console.log(item);
+            const subresult = {};
+            console.log(targetInfo[index].sendTo === 'Parent')
+            Object.assign(subresult, targetInfo[index].sendTo === 'Parent' ? { parent: item} : { teacher: item });
+            return subresult;
+            }
+        );
 
-        console.log('Parent link:', links.parent);
-        console.log('Teacher link:', links.teacher);
+
+        // Get all links using Array.from
+        
+        console.log(result);
+
+       
 
 
         await delay(1000);
@@ -313,7 +324,7 @@ const MainAction = async(page, studentInfo, targetInfo) => {
 
      
 
-        return links;
+        return result;
 
     } catch (err) {
         console.error('Failed to complete action:', err.message);
