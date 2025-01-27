@@ -4,10 +4,9 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { getStudentById } from "../../actions/studentActions";
 import { sendEmails } from "../../actions/emailActions";
-import Student from "../../../../backend/models/Student";
 
 const n8nlink =
-  "https://laymond.app.n8n.cloud/webhook/ac3019c4-ac6d-4a34-b2b2-8229de3f29fd/mail";
+  "https://aec.app.n8n.cloud/webhook-test/2f137679-6041-4c14-ba16-305ff69e0fba";
 
 const generateParentEmail = (ParentName, StudentName, Time, links) => {
   return `Dear ${ParentName}, \n  
@@ -117,8 +116,8 @@ export default function SendEmail() {
     e.preventDefault();
     try {
       const mailData = new FormData();
-      mailData.append("from", "Alexis.carter@ssg-community.com");
-      mailData.append("to", Student.parent.email);
+      mailData.append("from", "alexis.carter@provider.presence.com");
+      mailData.append("to", "blackcatkai7@gmail.com");
       mail_formFata.append(
         "subject",
         `Student Initials, School, Grade Completion of Rating Scales for (Student Initials)- \n
