@@ -1,12 +1,12 @@
 const SERVER_URL = "http://localhost:5000/api/emails";
 
-export const sendEmails = async (studentId, emailData) => {
+export const sendEmails = async (n8nlink, mailData) => {
   try {
-    const response = await fetch(`/${studentId}/send-emails`, {
+    const result = await fetch(n8nlink, {
       method: "POST",
-      body: JSON.stringify(emailData),
+      body: mailData,
     });
-    const result = await response.json();
+    console.log(result);
     return result;
   } catch (error) {
     throw error.response?.data?.message || "Error sending emails";
