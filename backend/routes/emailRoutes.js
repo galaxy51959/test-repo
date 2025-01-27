@@ -10,13 +10,15 @@ const {
     deleteReport,
     accessReport,
     receiveEmail,
+    receiveEmailBySocket,
 } = require('../controllers/emailController');
 // router.use(auth); // Apply authentication to all routes
 
 // router.post('/', createReport);
 // router.post('/generate/:id', generateReport);
 //router.post('/', getReports);
-router.post('/socketEmail', receiveEmail);
+router.post('/socketEmail', receiveEmailBySocket);
+router.post('/receiveEmail', receiveEmail);
 // router.get('/:id', getReportById);
 // router.put('/:id', updateReport);
 // router.delete('/:id', deleteReport);

@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext";
-
+import { receiveEmails } from "../actions/emailActions";
 const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
@@ -37,6 +37,7 @@ export const SocketProvider = ({ children }) => {
 
       newSocket.on("Message", (data) => {
         console.log(data);
+        receiveEmails(data);
       });
       setSocket(newSocket);
 

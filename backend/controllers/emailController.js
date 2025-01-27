@@ -33,6 +33,21 @@ const sendEmail = async (req, res) => {
 
 const receiveEmail = async (req, res) => {
     try {
+        const { subject, body, to, from } = req.body;
+        const email = new Email({
+            subject: subject,
+            body: body,
+            to: to,
+            from: from,
+        });
+        await email.save();
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+const receiveEmailBySocket = async (req, res) => {
+    try {
         const body = req.body;
         socket.io.emit('Message', {
             type: 'emailData',
@@ -93,6 +108,7 @@ const deleteEmail = async (req, res) => {
 };
 
 module.exports = {
+    receiveEmailBySocket,
     receiveEmail,
     sendEmail,
     getEmails,
