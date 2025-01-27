@@ -60,15 +60,44 @@ export default function StudentAssessment() {
       targetInfo.push(recipientInfo);
     });
 
-    const result = await createScore({ studentInfo, targetInfo });
+    //const result = await createScore({ studentInfo, targetInfo });
+    const result = [
+      {
+        link: {
+          parent: ["http:/1", "http:/2"],
+          // teacher:["http:/3", "http:/4"]
+        },
+        protocol: "Qglobal",
+      },
+      {
+        link: [
+          {
+            parent: "http:/5",
+          },
+        ],
+        protocol: "MHS",
+      },
+    ];
     console.log("Result: ", result);
 
     const res = { teacher: [], parent: [] };
-    res.teacher = res.teacher.concat(result[0].link.teacher);
-    res.parent = res.parent.concat(result[0].link.parent);
-    res.teacher.push(result[1].link[0].teacher);
-    res.parent.push(result[1].link[0].parent);
+    if (result[0].link.teacher && !result[0].link.teacher.includes(null)) {
+      res.teacher = res.teacher.concat(result[0].link.teacher);
+    }
+    if (result[0].link.parent && !result[0].link.parent.includes(null)) {
+      res.parent = res.parent.concat(result[0].link.parent);
+    }
+    if (
+      result[1].link[0].teacher &&
+      !result[1].link[0].teacher.includes(null)
+    ) {
+      res.teacher.push(result[1].link[0].teacher);
+    }
+    if (result[1].link[0].parent && !result[1].link[0].parent.includes(null)) {
+      res.parent.push(result[1].link[0].parent);
+    }
 
+    console.log(res);
     if (res.teacher.length == 3) {
       const mergeditem0 = { protocol: "BASC-3-teacher", link: res.teacher[0] };
       const mergeditem1 = {
@@ -88,7 +117,12 @@ export default function StudentAssessment() {
       res.parent[1] = mergeditem1;
       res.parent[2] = mergeditem2;
     }
-
+    Object.keys(res).map((key) => {
+      if (res[key].length == 0) {
+        delete res[key];
+      }
+    });
+    console.log(res);
     assignLink(id, res);
 
     // if(result[0] == undefined || result[1] == undefined) {

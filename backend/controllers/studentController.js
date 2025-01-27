@@ -103,12 +103,32 @@ const assignStudent = async (req, res) => {
         const student = await Student.findById(req.params.id).populate(
             'assessments'
         );
-
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });
         }
 
-        res.json(student);
+        const assessments = req.body;
+        const updated = [];
+
+        Object.keys(assessments).map((key) => {
+            assessments[key].forEach((assessment) => {
+                updated.push({
+                    protocol: assessment.protocol,
+                    file: assessment.link,
+                    rater: key,
+                });
+            });
+        });
+        console.log(updated);
+        const result = await Student.updateOne(
+            { _id: student._id },
+            {
+                $set: {
+                    assessments: updated,
+                },
+            }
+        );
+        res.json(result);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
