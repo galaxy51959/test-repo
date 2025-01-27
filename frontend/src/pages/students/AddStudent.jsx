@@ -1,38 +1,38 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { createStudent } from '../../actions/studentActions';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { createStudent } from "../../actions/studentActions";
 
 export default function AddStudent() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     // Student Info
-    firstName: '',
-    middleName: '',
-    lastName: '',
+    firstName: "",
+    middleName: "",
+    lastName: "",
     gender: true,
-    dateOfBirth: '',
-    email: '',
-    grade: '',
-    school: '',
-    language: '',
-    
+    dateOfBirth: "",
+    email: "",
+    grade: "",
+    school: "",
+    language: "",
+
     // Parent Info
-    parentFirstName: '',
-    parentLastName: '',
-    parentEmail: '',
-    
+    parentFirstName: "",
+    parentLastName: "",
+    parentEmail: "",
+
     // Teacher Info
-    teacherFirstName: '',
-    teacherLastName: '',
-    teacherEmail: ''
+    teacherFirstName: "",
+    teacherLastName: "",
+    teacherEmail: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -52,18 +52,18 @@ export default function AddStudent() {
         parent: {
           firstName: formData.parentFirstName,
           lastName: formData.parentLastName,
-          email: formData.parentEmail
+          email: formData.parentEmail,
         },
         teacher: {
           firstName: formData.teacherFirstName,
           lastName: formData.teacherLastName,
-          email: formData.teacherEmail
-        }
+          email: formData.teacherEmail,
+        },
       };
       await createStudent(studentData);
-      navigate('/students');
+      navigate("/students");
     } catch (error) {
-      console.error('Error creating student:', error);
+      console.error("Error creating student:", error);
     }
   };
 
@@ -72,8 +72,8 @@ export default function AddStudent() {
       <div className="p-6">
         {/* Header Section*/}
         <div className="flex items-center mb-6">
-          <button 
-            onClick={() => navigate('/students')}
+          <button
+            onClick={() => navigate("/students")}
             className="mr-4 p-2 hover:bg-gray-100 rounded-lg"
           >
             <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
@@ -85,7 +85,9 @@ export default function AddStudent() {
           <div className="grid grid-cols-2 gap-6 mb-6">
             {/* Student Info - Takes full height of first column */}
             <div className="bg-gray-50 rounded-lg p-4">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Student Information</h2>
+              <h2 className="text-lg font-medium text-gray-900 mb-4">
+                Student Information
+              </h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -212,7 +214,9 @@ export default function AddStudent() {
             <div className="space-y-6">
               {/* Parent Info */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Parent Information</h2>
+                <h2 className="text-lg font-medium text-gray-900 mb-4">
+                  Parent Information
+                </h2>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -241,7 +245,7 @@ export default function AddStudent() {
                         onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
-                      </div>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -261,7 +265,9 @@ export default function AddStudent() {
 
               {/* Teacher Info */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Teacher Information</h2>
+                <h2 className="text-lg font-medium text-gray-900 mb-4">
+                  Teacher Information
+                </h2>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -309,17 +315,17 @@ export default function AddStudent() {
                 </div>
               </div>
               <div className="flex justify-end pr-4">
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700"
-                  >
-                    Save
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700"
+                >
+                  Save
+                </button>
+              </div>
             </div>
           </div>
         </form>
       </div>
     </div>
   );
-} 
+}

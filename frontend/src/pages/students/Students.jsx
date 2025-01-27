@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import moment from 'moment';
-import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
-import { getStudents } from '../../actions/studentActions';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import { useNavigate } from 'react-router-dom';
-import { getFullName } from '../../utils';
+import { useState, useEffect } from "react";
+import moment from "moment";
+import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/outline";
+import { getStudents } from "../../actions/studentActions";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import { useNavigate } from "react-router-dom";
+import { getFullName } from "../../utils";
 
 export default function Students() {
   const [students, setStudents] = useState([]);
@@ -21,11 +21,11 @@ export default function Students() {
       const data = await getStudents();
       setStudents(data.students);
     } catch (err) {
-      console.error('Error: ', err);
+      console.error("Error: ", err);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -33,8 +33,8 @@ export default function Students() {
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Students</h1>
-          <button 
-            onClick={() => navigate('new')} 
+          <button
+            onClick={() => navigate("new")}
             className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             Add New Student
@@ -66,7 +66,9 @@ export default function Students() {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          {loading ? <LoadingSpinner /> : (
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -108,7 +110,8 @@ export default function Students() {
                             {getFullName(student)}
                           </div>
                           <div className="text-sm text-gray-500">
-                            Date Of Birth: {moment(student.dateOfBirth).format("YYYY.MM.DD")}
+                            Date Of Birth:{" "}
+                            {moment(student.dateOfBirth).format("YYYY.MM.DD")}
                           </div>
                         </div>
                       </div>
@@ -124,10 +127,10 @@ export default function Students() {
                     {student.parent ? (
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {getFullName(student.parent) || 'No Name'}
+                          {getFullName(student.parent) || "No Name"}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {student.parent.email || 'No Email'}
+                          {student.parent.email || "No Email"}
                         </div>
                       </td>
                     ) : (
@@ -138,10 +141,10 @@ export default function Students() {
                     {student.teacher ? (
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {getFullName(student.teacher) || 'No Name'}
+                          {getFullName(student.teacher) || "No Name"}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {student.teacher.email || 'No Email'}
+                          {student.teacher.email || "No Email"}
                         </div>
                       </td>
                     ) : (
@@ -154,20 +157,20 @@ export default function Students() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-3">
-                        <button 
+                        <button
                           onClick={() => navigate(`${student._id}/assess`)}
                           className="text-blue-600 hover:text-blue-900"
                           title="View Assessment"
                         >
                           <EyeIcon className="h-5 w-5" />
                         </button>
-                        <button 
+                        <button
                           className="text-green-600 hover:text-green-900"
                           title="Edit"
                         >
                           <PencilIcon className="h-5 w-5" />
                         </button>
-                        <button 
+                        <button
                           className="text-red-600 hover:text-red-900"
                           title="Delete"
                         >
@@ -195,12 +198,16 @@ export default function Students() {
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of{' '}
+                Showing <span className="font-medium">1</span> to{" "}
+                <span className="font-medium">10</span> of{" "}
                 <span className="font-medium">97</span> results
               </p>
             </div>
             <div>
-              <nav className="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+              <nav
+                className="relative z-0 inline-flex shadow-sm -space-x-px"
+                aria-label="Pagination"
+              >
                 <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                   Previous
                 </button>

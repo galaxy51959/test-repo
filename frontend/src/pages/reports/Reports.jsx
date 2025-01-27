@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import moment from 'moment';
-import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
-import { getStudents } from '../../actions/studentActions';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import { getFullName } from '../../utils';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import moment from "moment";
+import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/outline";
+import { getStudents } from "../../actions/studentActions";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import { getFullName } from "../../utils";
 
 export default function Reports() {
   const [students, setStudents] = useState([]);
@@ -21,11 +21,11 @@ export default function Reports() {
       const data = await getStudents();
       setStudents(data.students);
     } catch (err) {
-      console.error('Error: ', err);
+      console.error("Error: ", err);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -33,8 +33,8 @@ export default function Reports() {
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Reports</h1>
-          <button 
-            onClick={() => navigate('new')} 
+          <button
+            onClick={() => navigate("new")}
             className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             Generate New Report
@@ -66,7 +66,9 @@ export default function Reports() {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          {loading ? <LoadingSpinner /> : (
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -95,7 +97,11 @@ export default function Reports() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {students.map((student) => (
-                  <tr key={student._id} className="hover:bg-gray-50" onClick={() => navigate(`${student._id}`)}>
+                  <tr
+                    key={student._id}
+                    className="hover:bg-gray-50"
+                    onClick={() => navigate(`${student._id}`)}
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-10 w-10 flex-shrink-0">
@@ -108,7 +114,8 @@ export default function Reports() {
                             {getFullName(student)}
                           </div>
                           <div className="text-sm text-gray-500">
-                            Date Of Birth: {moment(student.dateOfBirth).format("YYYY.MM.DD")}
+                            Date Of Birth:{" "}
+                            {moment(student.dateOfBirth).format("YYYY.MM.DD")}
                           </div>
                         </div>
                       </div>
@@ -120,12 +127,15 @@ export default function Reports() {
                       {student.school}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                        ${student?.status === 'published' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                        {student?.status || 'Draft'}
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                        ${
+                          student?.status === "published"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {student?.status || "Draft"}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -141,20 +151,20 @@ export default function Reports() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-3">
-                        <button 
+                        <button
                           onClick={() => navigate(`${student._id}`)}
                           className="text-blue-600 hover:text-blue-900"
                           title="View Report"
                         >
                           <EyeIcon className="h-5 w-5" />
                         </button>
-                        <button 
+                        <button
                           className="text-green-600 hover:text-green-900"
                           title="Edit"
                         >
                           <PencilIcon className="h-5 w-5" />
                         </button>
-                        <button 
+                        <button
                           className="text-red-600 hover:text-red-900"
                           title="Delete"
                         >
@@ -182,12 +192,16 @@ export default function Reports() {
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of{' '}
+                Showing <span className="font-medium">1</span> to{" "}
+                <span className="font-medium">10</span> of{" "}
                 <span className="font-medium">97</span> results
               </p>
             </div>
             <div>
-              <nav className="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+              <nav
+                className="relative z-0 inline-flex shadow-sm -space-x-px"
+                aria-label="Pagination"
+              >
                 <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                   Previous
                 </button>

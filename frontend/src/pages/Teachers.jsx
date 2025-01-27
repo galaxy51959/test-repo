@@ -1,37 +1,38 @@
-import React, { useState } from 'react';
-import { createScore } from '../actions/scoreActions';
+import React, { useState } from "react";
+import { createScore } from "../actions/scoreActions";
 
-const n8nlink = "https://aec.app.n8n.cloud/webhook/ac3019c4-ac6d-4a34-b2b2-8229de3f29fd/mail";
+const n8nlink =
+  "https://aec.app.n8n.cloud/webhook/ac3019c4-ac6d-4a34-b2b2-8229de3f29fd/mail";
 
 const Teachers = () => {
   const [formData, setFormData] = useState({
-    studentFirstName: '',
-    studentMiddleName: '',
-    studentLastName: '',
-    gender: '',
-    dateOfBirth: '',
-    sendTo: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    file: null
+    studentFirstName: "",
+    studentMiddleName: "",
+    studentLastName: "",
+    gender: "",
+    dateOfBirth: "",
+    sendTo: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    file: null,
   });
 
-  const [isAccessing , setIsAccessing] = useState(false);
+  const [isAccessing, setIsAccessing] = useState(false);
   const [issendEmail, setIsSendingEmail] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleFileChange = (e) => {
     console.log(e.target.files);
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      file: e.target.files[0]
+      file: e.target.files[0],
     }));
   };
 
@@ -44,31 +45,34 @@ const Teachers = () => {
       middleName: formData.studentMiddleName,
       lastName: formData.studentLastName,
       gender: formData.gender,
-      dateOfBirth: formData.dateOfBirth,  
-    }
+      dateOfBirth: formData.dateOfBirth,
+    };
 
     const targetInfo = {
       sendTo: formData.sendTo,
       firstName: formData.firstName,
       lastName: formData.lastName,
-      email: formData.email
-    }
+      email: formData.email,
+    };
 
-     const result = await createScore({ studentInfo, targetInfo });
-     console.log("Result: ", result);
-    if(result[0] == undefined || result[1] == undefined) {
+    const result = await createScore({ studentInfo, targetInfo });
+    console.log("Result: ", result);
+    if (result[0] == undefined || result[1] == undefined) {
       alert("There is something error");
-    }
-    else{
-       const links = {Basc : result[0].link.link_basc, Asr: result[1].link, Vineland : result[0].link.link_vineland};
+    } else {
+      const links = {
+        Basc: result[0].link.link_basc,
+        Asr: result[1].link,
+        Vineland: result[0].link.link_vineland,
+      };
       sendMail(links);
       setIsAccessing(false);
       setIsSendingEmail(true);
     }
   };
 
-    const generateParentEmail = (ParentName, StudentName, Time, links) =>{
-      return `Dear ${ParentName}, \n  
+  const generateParentEmail = (ParentName, StudentName, Time, links) => {
+    return `Dear ${ParentName}, \n  
       I hope this message finds you well. I am reaching out regarding ${StudentName})
       current special education evaluation. Your input is essential to your ${StudentName}’s overall
       evaluation, as the information you provide will play a critical role in determining appropriate
@@ -91,42 +95,49 @@ const Teachers = () => {
       Warm regards,
       Alexis E. Carter
       School Psychologist, MS, LEP, NCSP`;
-    }
-    const sendMail = async(links) =>{
+  };
+  const sendMail = async (links) => {
     const parentName = formData.firstName + formData.lastName;
-    const studentName = formData.firstName + formData.middleName + formData.lastName;
+    const studentName =
+      formData.firstName + formData.middleName + formData.lastName;
 
-    const mail_Content = generateParentEmail(parentName, studentName, "2025y 1m 25", links);
-   
+    const mail_Content = generateParentEmail(
+      parentName,
+      studentName,
+      "2025y 1m 25",
+      links
+    );
+
     const mail_formFata = new FormData();
-    
-    mail_formFata.append('from', 'Alexis.carter@ssg-community.com'); 
-    mail_formFata.append('to', formData.email); 
-    mail_formFata.append('subject', `Student Initials, School, Grade Completion of Rating Scales for (Student Initials)- \n
-                          Evaluation`); 
-    mail_formFata.append('html',  mail_Content);
-    mail_formFata.append('file', formData.file, formData.file.name); 
-   
+
+    mail_formFata.append("from", "Alexis.carter@ssg-community.com");
+    mail_formFata.append("to", formData.email);
+    mail_formFata.append(
+      "subject",
+      `Student Initials, School, Grade Completion of Rating Scales for (Student Initials)- \n
+                          Evaluation`
+    );
+    mail_formFata.append("html", mail_Content);
+    mail_formFata.append("file", formData.file, formData.file.name);
+
     try {
       const result = await fetch(n8nlink, {
-          method: "POST",
-          body: mail_formFata
-      })
+        method: "POST",
+        body: mail_formFata,
+      });
 
       const msgSending = await result.json();
-      if(msgSending.message == "Success") {
+      if (msgSending.message == "Success") {
         alert("Sent Email successfully");
         setIsSendingEmail(false);
-      }
-      else{
+      } else {
         alert("Sending Email is failed");
         setIsSendingEmail(false);
       }
-
-      } catch (error) {
-          alert(" You can't access n8n ");
-      }
-  }  
+    } catch (error) {
+      alert(" You can't access n8n ");
+    }
+  };
   return (
     <div className="bg-white rounded-lg shadow">
       <div className="p-6">
@@ -138,7 +149,9 @@ const Teachers = () => {
           {/* Student Info Section */}
           <div className="mb-6">
             <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
-              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Student Info</h4>
+              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Student Info
+              </h4>
             </div>
             <div className="p-6 space-y-4">
               <div>
@@ -236,7 +249,9 @@ const Teachers = () => {
           {/* Parent/Teacher Info Section */}
           <div className="mb-6">
             <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
-              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Parent/Teacher Info</h4>
+              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Parent/Teacher Info
+              </h4>
             </div>
             <div className="p-6 space-y-4">
               <div>
@@ -286,7 +301,9 @@ const Teachers = () => {
           {/* Add File Upload Field */}
           <div className="mb-6">
             <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
-              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider">File Upload</h4>
+              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                File Upload
+              </h4>
             </div>
             <div className="p-6 space-y-4">
               <div>
@@ -306,7 +323,8 @@ const Teachers = () => {
                 />
                 {formData.file && (
                   <p className="mt-1 text-sm text-gray-500">
-                    Selected: {formData.file.name} ({(formData.file.size / 1024 / 1024).toFixed(2)} MB)
+                    Selected: {formData.file.name} (
+                    {(formData.file.size / 1024 / 1024).toFixed(2)} MB)
                   </p>
                 )}
               </div>
@@ -319,11 +337,17 @@ const Teachers = () => {
           >
             Send
           </button>
-          {isAccessing ? '      Accessing...    ' : issendEmail ? 'Complete Accessing -> Sending Email ...' : isAccessing && issendEmail ? "Sent Email successfully" : "Please Start"}
+          {isAccessing
+            ? "      Accessing...    "
+            : issendEmail
+              ? "Complete Accessing -> Sending Email ..."
+              : isAccessing && issendEmail
+                ? "Sent Email successfully"
+                : "Please Start"}
         </form>
       </div>
     </div>
   );
 };
 
-export default Teachers; 
+export default Teachers;
