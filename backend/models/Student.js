@@ -7,7 +7,7 @@ const assessmentSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		enum: ['teacher', 'parent'],
-		}
+	}
 });
 
 const studentSchema = new mongoose.Schema({
