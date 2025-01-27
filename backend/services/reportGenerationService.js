@@ -113,11 +113,6 @@ const generateReport = async (studentInfo) => {
             generateReportSection(targetTemplate, section, studentInfo)
         );
 
-        // Generate sections in parallel
-        // const sectionPromises = targetTemplate.sections.map(section =>
-        //     generateReportSection(targetTemplate, section, studentInfo)
-        // );
-
         const generatedSections = await Promise.all(sectionPromises);
 
         // Sort sections by order

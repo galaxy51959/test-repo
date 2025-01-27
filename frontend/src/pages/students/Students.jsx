@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import moment from "moment";
 import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/outline";
+import { EnvelopeIcon as MailIcon } from "@heroicons/react/24/outline";
+import { EnvelopeIcon as MailIconSolid } from "@heroicons/react/24/solid";
 import { getStudents } from "../../actions/studentActions";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +28,12 @@ export default function Students() {
       setLoading(false);
     }
   };
+
+  const getMailIcon = (student) => 
+    // Check if student has assessment links
+    student.assessments && 
+      (student.assessments.includes({ rater: 'parent' }) || 
+       student.assessments.includes({ rater: 'teacher' }));
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -160,9 +168,16 @@ export default function Students() {
                         <button
                           onClick={() => navigate(`${student._id}/assess`)}
                           className="text-blue-600 hover:text-blue-900"
-                          title="View Assessment"
+                          title="Assess"
                         >
                           <EyeIcon className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => getMailIcon(student) && navigate(`${student._id}/email`)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="Send Email"
+                        >
+                          {getMailIcon(student) ? <MailIconSolid className="h-5 w-5 text-blue-600" /> : <MailIcon className="h-5 w-5 text-gray-400" />}
                         </button>
                         <button
                           className="text-green-600 hover:text-green-900"
