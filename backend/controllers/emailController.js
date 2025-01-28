@@ -32,33 +32,22 @@ const sendEmail = async (req, res) => {
     }
 };
 
-let filename;
+let file = {};
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         console.log(req);
         cb(null, 'public/reports');
     },
     filename: (req, file, cb) => {
-        filename = `${Date.now()}-${file.originalname}`;
+        file.path = `"localhost://5000/"${Date.now()}-${file.originalname}`;
+        file.name = file.originalname;
         cb(null, `${Date.now()}-${file.originalname}`);
-        
     },
 });
 const upload = multer({ storage: storage });
 
 const receiveEmail = async (req, res) => {
     try {
-        const { subject, body, to, from } = req.body;
-       // console.log(req.body);
-        //console.log("backend", req.body);
-        const email = new Email({
-            subject: subject,
-            body: body,
-            to: to,
-            from: from,
-        });
-        
-        await email.save();
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -66,12 +55,23 @@ const receiveEmail = async (req, res) => {
 
 const receiveEmailBySocket = async (req, res) => {
     try {
-        const body = req.body;
-        console.log(req.body);
+        const { subject, body, to, from } = req.body;
+        // console.log(req.body);
+        //console.log("backend", req.body);
+        const email = new Email({
+            subject: subject,
+            body: body,
+            to: to,
+            from: from,
+            attachments: {
+                filename: file.name,
+                path: file.path,
+            },
+        });
+
+        await email.save();
         socket.io.emit('Message', body);
     } catch (error) {}
-
-    
 };
 
 const getEmails = async (req, res) => {

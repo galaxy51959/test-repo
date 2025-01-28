@@ -3,7 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const http = require('http');
-const socket = require("./socket");
+const socket = require('./socket');
 dotenv.config();
 
 // Routes
