@@ -5,30 +5,47 @@ const multer = require('multer');
 
 let fileContent = {};
 const sendEmail = async (req, res) => {
+    // try {
+    //     const { to, subject, body, attachments, scheduledFor } = req.body;
+
+    //     const email = new Email({
+    //         to,
+    //         subject,
+    //         body,
+    //         from: req.user.email,
+    //         attachments,
+    //         scheduledFor,
+    //         status: scheduledFor ? 'scheduled' : 'sent',
+    //     });
+
+    //     if (!scheduledFor) {
+    //         await GmailService.sendEmail({
+    //             to,
+    //             subject,
+    //             body,
+    //             attachments,
+    //         });
+    //     }
+
+    //     await email.save();
+    //     res.status(201).json(email);
+    // } catch (error) {
+    //     res.status(500).json({ message: error.message });
+    // }
     try {
-        const { to, subject, body, attachments, scheduledFor } = req.body;
-
+        const { subject, body, to, from } = req.body;
         const email = new Email({
-            to,
-            subject,
-            body,
-            from: req.user.email,
-            attachments,
-            scheduledFor,
-            status: scheduledFor ? 'scheduled' : 'sent',
+            subject: subject,
+            body: body,
+            to: to,
+            from: from,
+            attachments: {
+                filename: fileContent.name,
+                path: fileContent.path,
+            },
         });
-
-        if (!scheduledFor) {
-            await GmailService.sendEmail({
-                to,
-                subject,
-                body,
-                attachments,
-            });
-        }
-
         await email.save();
-        res.status(201).json(email);
+        res.json(email);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -56,19 +73,17 @@ const receiveEmail = async (req, res) => {
 const receiveEmailBySocket = async (req, res) => {
     try {
         const { subject, body, to, from } = req.body;
-        // console.log(req.body);
-        //console.log("backend", req.body);
         const email = new Email({
             subject: subject,
             body: body,
             to: to,
             from: from,
             attachments: {
-                filename: fileContent.path,
-                path: fileContent.name,
+                filename: fileContent.name,
+                path: fileContent.path,
             },
         });
-        console.log(email);
+
         await email.save();
         socket.io.emit('Message', req.body);
     } catch (error) {}
@@ -77,21 +92,23 @@ const receiveEmailBySocket = async (req, res) => {
 const getEmailbyAccount = async (req, res) => {
     try {
         const account = req.params.account;
-        console.log('account', account);
-        console.log(account);
-        const emails = await Email.aggregate([
-            {
-                $match: { to: account },
-            },
-        ]);
-
-        console.log(emails);
-        res.json(emails);
-        // const emails = await Email.find()
-        //     .sort({ createdAt: -1 })
-        //     .skip((page - 1) * limit)
-        //     .limit(limit);
-        // res.json(emails);
+        const folder = req.params.folder;
+        if (folder === 'inbox') {
+            const emails = await Email.aggregate([
+                {
+                    $match: { to: account },
+                },
+            ]);
+            res.json(emails);
+        }
+        if (folder === 'sent') {
+            const emails = await Email.aggregate([
+                {
+                    $match: { from: account },
+                },
+            ]);
+            res.json(emails);
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -104,6 +121,23 @@ const getEmailById = async (req, res) => {
             return res.status(404).json({ message: 'Email not found' });
         }
         res.json(email);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const getEmails = async (req, res) => {
+    try {
+        const searchKey = req.query.search;
+        console.log(searchKey);
+        const emails = await Email.find({
+            $or: [
+                { body: { $regex: searchKey, $options: 'i' } },
+                { subject: { $regex: searchKey, $options: 'i' } },
+            ],
+        });
+        console.log(emails);
+        res.json(emails);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -137,9 +171,9 @@ const deleteEmail = async (req, res) => {
 
 module.exports = {
     receiveEmailBySocket: [upload.single('attachment'), receiveEmailBySocket],
-    receiveEmail,
-    sendEmail,
+    sendEmail: [upload.single('attachment'), sendEmail],
     getEmailbyAccount,
+    getEmails,
     getEmailById,
     updateEmail,
     deleteEmail,

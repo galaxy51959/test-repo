@@ -9,7 +9,6 @@ dotenv.config();
 // Routes
 const reportRoutes = require('./routes/reportRoutes');
 const emailRoutes = require('./routes/emailRoutes');
-const promptRoutes = require('./routes/promptRoutes');
 const authRoutes = require('./routes/auth');
 // const calendarRoutes = require('./routes/calendarRoutes');
 const studentRoutes = require('./routes/studentRoutes');
@@ -28,7 +27,6 @@ app.use(express.static('public'));
 // Routes
 app.use('/api/reports', reportRoutes);
 app.use('/api/emails', emailRoutes);
-app.use('/api/prompts', promptRoutes);
 app.use('/api/auth', authRoutes);
 // app.use('/api/calendar', calendarRoutes);
 app.use('/api/students', studentRoutes);
@@ -44,6 +42,8 @@ mongoose
     .catch((err) => console.error('MongoDB connection error:', err));
 
 const server = http.createServer(app);
-const io = socket.init(server);
+
+// Initialize socket.io
+socket.init(server);
 
 server.listen(process.env.PORT || 5000);
