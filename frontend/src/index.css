@@ -72,6 +72,10 @@ button:focus-visible {
 @tailwind utilities;
 
 /* Handsontable Custom Styles */
+.htCustomStyles .current-header {
+  background-color: rgba(20, 63, 138, 0.4) !important;
+}
+
 .htCustomStyles .current-row {
   background-color: rgba(233, 237, 244, 0.4);
 }
