@@ -5,7 +5,7 @@ const {
     HumanMessagePromptTemplate,
 } = require('@langchain/core/prompts');
 const fs = require('fs');
-const ReportSection = require('../models/ReportSection');
+const ReportSection = require('../models/Prompt');
 const { generateAndSavePDF } = require('./pdfGenerationService');
 const { calculateAge, getFullName, parsePdf, parseDocx } = require('../utils');
 

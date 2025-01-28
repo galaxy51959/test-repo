@@ -10,7 +10,7 @@ exports.signin = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) {
             if (
-                email.toLowerCase() === process.env.EMAIL_USER &&
+                email.toLowerCase() === process.env.EMAIL_USER.toLowerCase() &&
                 password === process.env.EMAIL_PASSWORD
             ) {
                 const newUser = new User({

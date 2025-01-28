@@ -1,23 +1,10 @@
 const mongoose = require('mongoose');
 
-const reportSectionSchema = new mongoose.Schema({
-	protocol: {
-		type: String,
-		required: true
-	},
-	humanPrompt: {
-		type: String,
-		required: true
-	},
-	systemPrompt: {
-		type: String,
-		required: true
-	},
-	order: {
-		type: Number,
-		required: true
-	},
-	// requiredFields: [String]
+const promptSchema = new mongoose.Schema({
+	protocol: String,
+	humanPrompt: String,
+	systemPrompt: String,
+	order: Number
 });
 
 // const reportTemplateSchema = new mongoose.Schema({
@@ -46,4 +33,4 @@ const reportSectionSchema = new mongoose.Schema({
 // 	}
 // });
 
-module.exports = mongoose.model("ReportSection", reportSectionSchema);
+module.exports = mongoose.model("Prompt", promptSchema);
