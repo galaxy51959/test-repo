@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const promptSchema = new mongoose.Schema({
+	section: String,
 	protocol: String,
 	humanPrompt: String,
 	systemPrompt: String,

@@ -11,6 +11,33 @@ export const getPrompts = async () => {
   }
 };
 
+export const getPromptsBySection = async () => {
+  try {
+    const response = await fetch(`${SERVER_URL}/section`);
+    const result = await response.json();
+
+    return result;
+  } catch (error) {
+    console.log("Error fetching prompts: ", error);
+  }
+};
+
+export const createPrompt = async (promptData) => {
+  try {
+    const response = await fetch(`${SERVER_URL}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(promptData),
+    });
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.log("Error Creating Prompts: ", error);
+  }
+};
+
 export const updatePrompt = async (promptId, promptData) => {
   try {
     await fetch(`${SERVER_URL}/${promptId}`, {

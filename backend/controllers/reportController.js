@@ -6,13 +6,14 @@ const reportGenerationService = require('../services/reportGenerationService');
 const accessOutSideService = require('../services/accessOutSideService');
 const files = [];
 const MHSbotService = require('../services/MHSbot');
+const extractSEIS = require('../services/extractSEISService');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'public/tests');
     },
     filename: (req, file, cb) => {
-        cb(null, `${req.body?.protocol}-${file.originalname}`);
+        cb(null, file.originalname);
     },
 });
 
@@ -100,6 +101,17 @@ const generateReport = async (req, res) => {
     }
 };
 
+const extractInfo = async (req, res) => {
+    try {
+        const file = req.file;
+
+        const result = await extractSEIS(file);
+        res.json(JSON.parse(result));
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // Get all reports
 const getReports = async (req, res) => {
     try {
@@ -179,6 +191,7 @@ const accessReport = async (req, res) => {
 module.exports = {
     createReport,
     generateReport: [upload.single('file'), generateReport],
+    extractInfo: [upload.single('file'), extractInfo],
     getReports,
     getReportById,
     updateReport,

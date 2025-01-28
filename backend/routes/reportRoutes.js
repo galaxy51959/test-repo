@@ -4,6 +4,7 @@ const auth = require('../middleware/auth');
 const {
     createReport,
     generateReport,
+    extractInfo,
     getReports,
     getReportById,
     updateReport,
@@ -14,6 +15,7 @@ const {
 
 router.post('/', createReport);
 router.post('/generate/:id', generateReport);
+router.post('/extract', extractInfo);
 router.get('/', getReports);
 router.get('/:id', getReportById);
 router.put('/:id', updateReport);

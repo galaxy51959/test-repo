@@ -7,7 +7,11 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 
-import { getPrompts, updatePrompt } from "../../actions/promptActions";
+import {
+  getPrompts,
+  updatePrompt,
+  createPrompt,
+} from "../../actions/promptActions";
 
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import HyperFormula from "hyperformula";
@@ -16,8 +20,8 @@ registerAllModules();
 
 export default function Prompts() {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  const dataRef = useRef(data);
+  const [prompts, setPrompts] = useState([]);
+  const promptsRef = useRef(prompts);
   const hotRef = useRef(null);
 
   const hyperformulaInstance = HyperFormula.buildEmpty({
@@ -33,14 +37,42 @@ export default function Prompts() {
     value,
     cellProperties
   ) => {
-    td.innerHTML = value.substring(0, 100) + "...";
+    td.innerHTML = value && value.substring(0, 100) + "...";
   };
 
   const columns = [
-    { data: "protocol", title: "Protocol" },
+    { data: "section", title: "Section" },
+    {
+      data: "protocol",
+      title: "Protocol",
+      type: "dropdown",
+      source: [
+        "DAY-C-2",
+        "WRAML-3",
+        "CTONI-2",
+        "WJV",
+        "CAS-2",
+        "TAPS-4",
+        "TVPS-4",
+        "MVPT-4",
+        "BVPT-6",
+        "BG-2",
+        "VMI",
+        "BASC-3(Parent)",
+        "BASC-3(Teacher)",
+        "BASC-3(Self)",
+        "Vineland-3",
+        "FAR",
+        "KTEA-3",
+        "WRAT-5",
+        "GARS-3(Parent)",
+        "GARS-3(Teacher)",
+        "ASRS-3",
+      ],
+    },
     { data: "humanPrompt", title: "Prompt", renderer: promptRenderer },
     // { data: "systemPrompt", title: "System Prompt" },
-    // { data: "order", title: "Order" },
+    { data: "order", title: "Order" },
   ];
 
   useEffect(() => {
@@ -64,14 +96,14 @@ export default function Prompts() {
   }, []);
 
   useEffect(() => {
-    dataRef.current = data;
-  }, [data]);
+    promptsRef.current = prompts;
+  }, [prompts]);
 
   const fetchPrompts = async () => {
     try {
       setLoading(true);
       const response = await getPrompts();
-      setData(response);
+      setPrompts(response);
     } catch (error) {
       console.error("Error fetching prompts:", error);
     } finally {
@@ -82,13 +114,17 @@ export default function Prompts() {
   const handleChange = async (changes, source) => {
     console.log(changes, source);
 
-    if (source === "edit" || source === "paste") {
+    if (source === "edit" || source === "CopyPaste.paste") {
       for (const [row, prop, oldValue, newValue] of changes) {
         if (oldValue !== newValue) {
           try {
-            data[row]._id
-              ? await updatePrompt(data[row]._id, { [prop]: newValue })
-              : await createPrompt({ [prop]: newValue });
+            if (prompts[row]._id) {
+              await updatePrompt(prompts[row]._id, { [prop]: newValue });
+            } else {
+              const data = await createPrompt({ [prop]: newValue });
+              prompts.splice(row, 1, data);
+              setPrompts(prompts);
+            }
           } catch (error) {
             console.error("Error updating cell:", error);
           }
@@ -97,98 +133,35 @@ export default function Prompts() {
     }
   };
 
-  //   const addNewStudent = async () => {
-  //     console.log("Add Student:");
-  //     const newStudent = {
-  //       firstName: "",
-  //       lastName: "",
-  //       gender: "Male",
-  //       dateOfBirth: "",
-  //       grade: "",
-  //       school: "",
-  //       parentName: "",
-  //       parentPhone: "",
-  //       parentEmail: "",
-  //       teacherName: "",
-  //       teacherPhone: "",
-  //       teacherEmail: "",
-  //     };
+  const handleRemoveRow = (index, amount, physicalRows, [source]) => {
+    console.log(index, amount, physicalRows, source);
+    // console.log(prompts[index]);
+  };
 
-  //     setData([...data, newStudent]);
+  const handleRowMove = (
+    movedRows,
+    finalIndex,
+    dropIndex,
+    movePossible,
+    orderChanged
+  ) => {
+    console.log(movedRows, finalIndex, dropIndex, movePossible, orderChanged);
+    if (!movePossible) {
+      return;
+    }
+    const originalLength = prompts.length;
+    prompts.splice(
+      finalIndex,
+      0,
+      movedRows.map((row) => prompts[row])
+    );
+    console.log(prompts);
+    prompts.splice(originalLength);
+    console.log(prompts);
+    setPrompts(prompts);
+  };
 
-  //     const response = await addStudent(newStudent);
-  //     data.push(response);
-  //     setData(data);
-
-  //     // Focus on the first cell of the new row
-  //     if (hotRef.current && hotRef.current.hotInstance) {
-  //       setTimeout(() => {
-  //         hotRef.current.hotInstance.selectCell(data.length, 0);
-  //       }, 100);
-  //     }
-  //   };
-
-  //   const handleExport = () => {
-  //     console.log(data);
-  //     // Create worksheet from the current data
-  //     const ws = XLSX.utils.json_to_sheet(
-  //       data.map((item) => ({
-  //         "First Name": item.firstName,
-  //         "Last Name": item.lastName,
-  //         Gender: item.gender,
-  //         "Date of Birth": item.dateOfBirth,
-  //         Grade: item.grade,
-  //         School: item.school,
-  //         Language: item.language,
-  //         "Parent Name": item.parentName,
-  //         "Parent Phone": item.parentPhone,
-  //         "Parent Email": item.parentEmail,
-  //         "Teacher Name": item.teacherName,
-  //         "Teacher Phone": item.teacherPhone,
-  //         "Teacher Email": item.teacherEmail,
-  //       }))
-  //     );
-
-  //     // Create workbook and add the worksheet
-  //     const wb = XLSX.utils.book_new();
-  //     XLSX.utils.book_append_sheet(wb, ws, "Students");
-
-  //     // Save to file
-  //     XLSX.writeFile(wb, "students.xlsx");
-  //   };
-
-  //   const handleImport = (e) => {
-  //     const file = e.target.files[0];
-  //     if (file) {
-  //       const reader = new FileReader();
-  //       reader.onload = (e) => {
-  //         const workbook = XLSX.read(e.target.result, { type: "array" });
-  //         const sheetName = workbook.SheetNames[0];
-  //         const worksheet = workbook.Sheets[sheetName];
-  //         const importedData = XLSX.utils.sheet_to_json(worksheet);
-
-  //         // Transform imported data to match your data structure
-  //         const transformedData = importedData.map((row) => ({
-  //           firstName: row["First Name"] || "",
-  //           lastName: row["Last Name"] || "",
-  //           gender: row["Gender"] || "",
-  //           dateOfBirth: row["Date of Birth"] || "",
-  //           grade: row["Grade"] || "",
-  //           school: row["School"] || "",
-  //           parentName: row["Parent Name"] || "",
-  //           parentPhone: row["Parent Phone"] || "",
-  //           parentEmail: row["Parent Email"] || "",
-  //           teacherName: row["Teacher Name"] || "",
-  //           teacherPhone: row["Teacher Phone"] || "",
-  //           teacherEmail: row["Teacher Email"] || "",
-  //           _id: Date.now() + Math.random(), // Temporary ID for new rows
-  //         }));
-
-  //         setData([...transformedData, ...data]);
-  //       };
-  //       reader.readAsArrayBuffer(file);
-  //     }
-  //   };
+  console.log(prompts);
 
   return (
     <div className="rounded-lg">
@@ -210,7 +183,7 @@ export default function Prompts() {
                   sheetName: "Prompts",
                 }}
                 ref={hotRef}
-                data={data}
+                data={prompts}
                 columns={columns}
                 colHeaders={true}
                 rowHeaders={true}
@@ -218,12 +191,15 @@ export default function Prompts() {
                 width="100%"
                 licenseKey="non-commercial-and-evaluation"
                 afterChange={handleChange}
+                afterRemoveRow={handleRemoveRow}
+                afterRowMove={handleRowMove}
                 contextMenu={true}
                 filters={true}
                 dropdownMenu={true}
                 multiColumnSorting={true}
                 manualColumnResize={true}
                 manualRowResize={true}
+                manualRowMove={true}
                 stretchH="all"
                 autoWrapRow={true}
                 className="htCustomStyles"

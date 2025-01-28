@@ -1,16 +1,31 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-
-import { getStudents } from "../../actions/studentActions";
-import { generateReport } from "../../actions/reportActions";
-import { getFullName } from "../../utils";
+import { ArrowLeftIcon, ArrowUpTrayIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "../../context/AuthContext";
+import { extractStudentInfo } from "../../actions/reportActions";
+import { getPromptsBySection } from "../../actions/promptActions";
+import { calculateAge } from "../../utils";
 
 export default function GenerateReport() {
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [student, setStudent] = useState();
+  const [student, setStudent] = useState({
+    name: "",
+    school: "",
+    dateOfBirth: "",
+    parent_guardians: "",
+    age: "",
+    team: "RSP Teacher, School Psychologist",
+    language: "",
+    evaluation_date: new Date(),
+    grade: "",
+    psychologist: user.name,
+    report_date: new Date(),
+    assessment: "",
+  });
+  const [prompts, setPrompts] = useState([]);
+  const [seisFile, setSeisFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [assessmentProtocols] = useState([
     "BASC-3",
@@ -28,7 +43,6 @@ export default function GenerateReport() {
 
   const [formData, setFormData] = useState({
     // File Uploads
-    seisFile: null,
     customAssessFile: null,
 
     // Interview Scripts
@@ -39,298 +53,151 @@ export default function GenerateReport() {
   });
 
   useEffect(() => {
-    fetchStudentDetails();
-  }, [id]);
+    fetchPrompts();
+  }, []);
 
-  const fetchStudentDetails = async () => {
+  const fetchPrompts = async () => {
     try {
       setLoading(true);
-      // Replace with your actual API call
-      // const data = await getStudentById(id);
-      const data = {};
-      setStudent(data);
-      console.log(data);
+      const response = await getPromptsBySection();
+      setPrompts(response);
     } catch (error) {
-      console.error("Error fetching student details:", error);
+      console.error("Error fetching prompts:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // await uploadFile();
-    try {
-      setLoading(true);
-      const result = await generateReport(student._id, assessmentProtocols);
-      window.open(`http://localhost:5000/reports/${result.fileName}`, "_blank");
-    } catch (error) {
-      console.error("Error submitting report:", error);
-    } finally {
-      setLoading(false);
+  const handleSeisFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSeisFile(file);
+
+      // Here you would add logic to extract student info from SEIS file
+      const formData = new FormData();
+      formData.append("file", file);
+      const data = await extractStudentInfo(formData);
+
+      // For now, we'll simulate some data
+      setStudent({
+        name: data?.name || "",
+        school: data?.school || "",
+        dateOfBirth: data?.birthdate || "",
+        parent_guardians: data?.parent_guardians || "",
+        age: calculateAge(data?.birthdate || ""),
+        team: "RSP Teacher, School Psychologist",
+        language: data?.reporting_language || "",
+        evaluation_date: new Date(),
+        grade: data?.grade || "",
+        psychologist: user.name,
+        report_date: new Date(),
+        assessment: "",
+      });
     }
   };
 
-  const handleFileChange = (e, fieldName) => {
-    const { files } = e.target;
-    if (fieldName === "interviewFiles" || fieldName === "assessmentFiles") {
-      setFormData((prev) => ({
-        ...prev,
-        [fieldName]: [...prev[fieldName], ...files],
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [fieldName]: files[0],
-      }));
+  const getValue = (key, value) => {
+    switch (key) {
+      // case 'parent_guardians':
+      // return value.map((parent) => parent.email).join(', ');
+      case "dateOfBirth":
+        return moment(value).format("MM/DD/YYYY");
+      case "evaluation_date":
+        return moment(value).format("MM/DD/YYYY");
+      case "report_date":
+        return moment(value).format("MM/DD/YYYY");
+      case "age":
+        return `${value.years} years ${value.months} months`;
+      default:
+        return value || "N/A";
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-6">
-        {/* Header with back button */}
-        <div className="flex items-center mb-6">
-          <button
-            onClick={() => navigate("/reports")}
-            className="mr-4 p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
-          </button>
-          <h1 className="text-2xl font-semibold">Generate Report</h1>
+    <div className="flex flex-col min-h-screen bg-gray-50 p-6 space-y-8">
+      {/* Header */}
+      <div className="flex items-center">
+        <button
+          onClick={() => navigate("/reports")}
+          className="mr-4 p-2 hover:bg-gray-100 rounded-lg"
+        >
+          <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
+        </button>
+        <h1 className="text-2xl font-semibold">Generate Report</h1>
+      </div>
+
+      {/* Section 1: SEIS File Upload and Student Info */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-semibold">Student Information</h2>
+          <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors">
+            <ArrowUpTrayIcon className="h-5 w-5" />
+            Upload SEIS File
+            <input
+              type="file"
+              onChange={handleSeisFileUpload}
+              className="hidden"
+              accept=".pdf,.doc,.docx"
+            />
+          </label>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-6">
-            {/* Left Column - Student Information */}
-            <div className="space-y-6">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">
-                  Student Information
-                </h2>
-
-                {/* Student Info Display */}
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Student Name
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900">
-                        {student ? getFullName(student) : "-"}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Grade
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900">
-                        {student?.grade || "-"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        School
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900">
-                        {student?.school || "-"}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Language
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900">
-                        {student?.language || "-"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Parent Name
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900">
-                        {student?.parent ? getFullName(student.parent) : "-"}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Parent Email
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900">
-                        {student?.parent?.email || "-"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Teacher Name
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900">
-                        {student?.teacher ? getFullName(student.teacher) : "-"}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Teacher Email
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900">
-                        {student?.teacher?.email || "-"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* File Upload Section */}
-                  <div className="mt-6 space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        SEIS File
-                      </label>
-                      <input
-                        type="file"
-                        onChange={(e) => handleFileChange(e, "seisFile")}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Custom Assessment File
-                      </label>
-                      <input
-                        type="file"
-                        onChange={(e) =>
-                          handleFileChange(e, "customAssessFile")
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                </div>
+        <div className="px-6 grid grid-cols-2">
+          {Object.entries(student).map(([key, value]) => (
+            <div key={key} className="px-6 py-2 flex items-center">
+              <label className="text-sm font-medium text-gray-500 capitalize">
+                {key.replace(/([A-Z])/g, " $1").trim()}:&nbsp;
+              </label>
+              <div type="text" className="text-gray-900">
+                {value ? getValue(key, value) : "-"}
               </div>
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* Right Column - Interview Scripts and Assessment Results */}
-            <div className="space-y-6">
-              {/* Interview Scripts */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">
-                  Interview Script
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Upload Interview Files
-                    </label>
+      {/* Section 2: Assessment Protocol Uploads */}
+      {prompts &&
+        prompts.map((section) => (
+          <div className="py-4" key={section._id}>
+            <h2 className="p-2 text-lg font-semibold border-b-4 border-gray-300 mb-4">
+              {section._id}
+            </h2>
+            <div className="flex flex-wrap gap-4">
+              {section.protocols.map((protocol) => (
+                <div key={protocol} className="relative group">
+                  <label className="flex flex-col items-center justify-center relative h-40 w-40 border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer group-hover:border-blue-500 transition-colors bg-gray-50 group-hover:bg-blue-50">
+                    <ArrowUpTrayIcon className="h-8 w-8 text-gray-400 group-hover:text-blue-500 mb-2" />
+                    <span className="absolute top-2 left-3 text-sm font-medium text-gray-700 group-hover:text-blue-600">
+                      {protocol}
+                    </span>
                     <input
                       type="file"
-                      multiple
-                      onChange={(e) => handleFileChange(e, "interviewFiles")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="hidden"
+                      accept=".pdf,.doc,.docx"
+                      onChange={(e) =>
+                        console.log(`${protocol} file:`, e.target.files[0])
+                      }
                     />
-                  </div>
-                  {/* Display uploaded interview files */}
-                  {formData.interviewFiles.length > 0 && (
-                    <div className="mt-2">
-                      <p className="text-sm font-medium text-gray-700">
-                        Uploaded Files:
-                      </p>
-                      <ul className="mt-1 text-sm text-gray-500">
-                        {formData.interviewFiles.map((file, index) => (
-                          <li key={index}>{file.name}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  </label>
                 </div>
-              </div>
-
-              {/* Assessment Results */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">
-                  Assessment Results
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Upload Assessment Files
-                    </label>
-                    <input
-                      type="file"
-                      multiple
-                      onChange={(e) => handleFileChange(e, "assessmentFiles")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  {/* Display uploaded assessment files */}
-                  {formData.assessmentFiles.length > 0 && (
-                    <div className="mt-2">
-                      <p className="text-sm font-medium text-gray-700">
-                        Uploaded Files:
-                      </p>
-                      <ul className="mt-1 text-sm text-gray-500">
-                        {formData.assessmentFiles.map((file, index) => (
-                          <li key={index}>{file.name}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
+              ))}
             </div>
           </div>
+        ))}
 
-          {/* Action Buttons */}
-          <div className="flex justify-end space-x-4 mt-6">
-            <button
-              type="button"
-              onClick={() => navigate("/reports")}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700"
-            >
-              Generate Report
-            </button>
+      {/* Section 3: Generate Button */}
+      <div className="flex justify-center py-8">
+        <button
+          onClick={() => console.log("Generating report...")}
+          className="w-48 h-48 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transform transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          <div className="flex flex-col items-center justify-center">
+            <span className="text-xl font-bold mb-2">GENERATE</span>
+            <span className="text-xl opacity-75">REPORT</span>
           </div>
-        </form>
+        </button>
       </div>
     </div>
   );
 }
-
-// Helper function to calculate age
-const calculateAge = (birthDate) => {
-  if (!birthDate) return "-";
-
-  const today = new Date();
-  const birth = new Date(birthDate);
-
-  let years = today.getFullYear() - birth.getFullYear();
-  let months = today.getMonth() - birth.getMonth();
-
-  if (months < 0 || (months === 0 && today.getDate() < birth.getDate())) {
-    years--;
-    months += 12;
-  }
-
-  // Adjust for when today's date is less than birth date
-  if (today.getDate() < birth.getDate()) {
-    months--;
-    if (months < 0) {
-      months = 11;
-      years--;
-    }
-  }
-
-  return `${years} years ${months} months`;
-};

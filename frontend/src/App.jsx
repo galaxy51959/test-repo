@@ -13,6 +13,7 @@ import {
   SendEmail,
 } from "./pages/students";
 import { Reports, GenerateReport, Prompt } from "./pages/reports";
+import Schedule from "./pages/Schedule";
 // import Teachers from "./pages/Teachers";
 import Mails from "./pages/Mails";
 import SignIn from "./pages/SignIn";
@@ -66,6 +67,10 @@ function App() {
               <Route path="/reports" element={<Reports />} />
               <Route path="/reports/:id" element={<GenerateReport />} />
               <Route path="/reports/prompts" element={<Prompt />} />
+
+              {/* Schedule */}
+              <Route path="/schedule" element={<Schedule />} />
+
               {/* Teachers */}
               {/* <Route path="/teachers" element={<Teachers />} /> */}
             </Route>

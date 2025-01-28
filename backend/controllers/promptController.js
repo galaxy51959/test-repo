@@ -14,7 +14,7 @@ const createPrompt = async (req, res) => {
 // Get all Prompts
 const getPrompts = async (req, res) => {
     try {
-        const prompts = await Prompt.find();
+        const prompts = await Prompt.find().sort({ order: 1 });
         console.log(prompts);
         res.json(prompts);
     } catch (error) {
@@ -30,6 +30,24 @@ const getPromptById = async (req, res) => {
             return res.status(404).json({ message: 'Prompt not found' });
         }
         res.json(prompt);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const getPromptsBySection = async (req, res) => {
+    try {
+        const prompts = await Prompt.aggregate([
+            {
+                $group: {
+                    _id: '$section',
+                    protocols: { $push: '$protocol' },
+                    order: { $min: '$order' },
+                },
+            },
+            { $sort: { order: 1 } },
+        ]);
+        res.json(prompts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -69,6 +87,7 @@ module.exports = {
     createPrompt,
     getPrompts,
     getPromptById,
+    getPromptsBySection,
     updatePrompt,
     deletePrompt,
 };

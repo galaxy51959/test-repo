@@ -5,6 +5,7 @@ const {
     createPrompt,
     getPrompts,
     getPromptById,
+    getPromptsBySection,
     updatePrompt,
     deletePrompt,
 } = require('../controllers/promptController');
@@ -13,6 +14,7 @@ const {
 
 router.post('/', createPrompt);
 router.get('/', getPrompts);
+router.get('/section', getPromptsBySection);
 router.get('/:id', getPromptById);
 router.patch('/:id', updatePrompt);
 router.delete('/:id', deletePrompt);

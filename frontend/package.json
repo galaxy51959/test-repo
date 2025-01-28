@@ -11,6 +11,10 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
+    "@fullcalendar/timegrid": "^6.1.15",
     "@handsontable/react": "^15.0.0",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
