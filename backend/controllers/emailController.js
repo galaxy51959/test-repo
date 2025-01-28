@@ -1,6 +1,7 @@
 const Email = require('../models/Email');
 // const GmailService = require('../services/gmailService');
-
+const socket = require('../socket');
+const multer = require('multer');
 const sendEmail = async (req, res) => {
     try {
         const { to, subject, body, attachments, scheduledFor } = req.body;
@@ -31,10 +32,39 @@ const sendEmail = async (req, res) => {
     }
 };
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/tests');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    },
+});
+const upload = multer({ storage: storage });
+
 const receiveEmail = async (req, res) => {
     try {
-        const emailContent = req.body;
-        console.log(emailContent);
+        const { subject, body, to, from } = req.body;
+        const email = new Email({
+            subject: subject,
+            body: body,
+            to: to,
+            from: from,
+        });
+        await email.save();
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+const receiveEmailBySocket = async (req, res) => {
+    try {
+        const body = req.body;
+        console.log(body);
+        socket.io.emit('Message', {
+            type: 'emailData',
+            data: body,
+        });
     } catch (error) {}
 };
 
@@ -90,6 +120,7 @@ const deleteEmail = async (req, res) => {
 };
 
 module.exports = {
+    receiveEmailBySocket: [upload.single('attachment'), receiveEmailBySocket],
     receiveEmail,
     sendEmail,
     getEmails,

@@ -6,7 +6,7 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { sendEmails } from "../../actions/emailActions";
 
 const n8nlink =
-  "https://aec.app.n8n.cloud/webhook-test/2f137679-6041-4c14-ba16-305ff69e0fba";
+  "https://aec.app.n8n.cloud/webhook-test/a9426f97-c771-43c7-a287-e3ef9559893a";
 
 const generateParentEmail = (ParentName, StudentName, Time, links) => {
   return `Dear ${ParentName}, \n  
@@ -117,14 +117,14 @@ export default function SendEmail() {
     e.preventDefault();
     try {
       const mailData = new FormData();
-      mailData.append("from", "alexis.carter@provider.presence.com");
+      mailData.append("from", "acarter@dlinorthcounty.org");
       mailData.append("to", "blackcatkai7@gmail.com");
-      mail_formFata.append(
+      mailData.append(
         "subject",
         `Student Initials, School, Grade Completion of Rating Scales for (Student Initials)- \n
                             Evaluation`
       );
-      mail_formFata.append("html", emailData.parentEmail);
+      mailData.append("html", emailData.parentEmail);
       // mail_formFata.append("file", formData.file, formData.file.name);
 
       await sendEmails(n8nlink, mailData);
