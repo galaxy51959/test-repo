@@ -34,12 +34,15 @@ const sendEmail = async (req, res) => {
 const receiveEmail = async (req, res) => {
     try {
         const { subject, body, to, from } = req.body;
+       // console.log(req.body);
+        //console.log("backend", req.body);
         const email = new Email({
             subject: subject,
             body: body,
             to: to,
             from: from,
         });
+        
         await email.save();
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -49,10 +52,8 @@ const receiveEmail = async (req, res) => {
 const receiveEmailBySocket = async (req, res) => {
     try {
         const body = req.body;
-        socket.io.emit('Message', {
-            type: 'emailData',
-            data: body,
-        });
+        console.log(req);
+        socket.io.emit('Message', body);
     } catch (error) {}
 };
 
