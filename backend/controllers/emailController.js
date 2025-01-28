@@ -2,6 +2,8 @@ const Email = require('../models/Email');
 // const GmailService = require('../services/gmailService');
 const socket = require('../socket');
 const multer = require('multer');
+
+let fileContent = {};
 const sendEmail = async (req, res) => {
     try {
         const { to, subject, body, attachments, scheduledFor } = req.body;
@@ -32,7 +34,6 @@ const sendEmail = async (req, res) => {
     }
 };
 
-let fileContent = {};
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'public/reports');
@@ -73,14 +74,24 @@ const receiveEmailBySocket = async (req, res) => {
     } catch (error) {}
 };
 
-const getEmails = async (req, res) => {
+const getEmailbyAccount = async (req, res) => {
     try {
-        const { folder = 'inbox', page = 1, limit = 20 } = req.query;
-        const emails = await Email.find()
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(limit);
+        const account = req.params.account;
+        console.log('account', account);
+        console.log(account);
+        const emails = await Email.aggregate([
+            {
+                $match: { to: account },
+            },
+        ]);
+
+        console.log(emails);
         res.json(emails);
+        // const emails = await Email.find()
+        //     .sort({ createdAt: -1 })
+        //     .skip((page - 1) * limit)
+        //     .limit(limit);
+        // res.json(emails);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -128,7 +139,7 @@ module.exports = {
     receiveEmailBySocket: [upload.single('attachment'), receiveEmailBySocket],
     receiveEmail,
     sendEmail,
-    getEmails,
+    getEmailbyAccount,
     getEmailById,
     updateEmail,
     deleteEmail,

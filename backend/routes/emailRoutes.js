@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const {
     createReport,
+    getEmailbyAccount,
     generateReport,
     getReports,
     getReportById,
@@ -19,7 +20,7 @@ const {
 //router.post('/', getReports);
 router.post('/socketEmail', receiveEmailBySocket);
 router.post('/receiveEmail', receiveEmail);
-// router.get('/:id', getReportById);
+router.get('/:account', getEmailbyAccount);
 // router.put('/:id', updateReport);
 // router.delete('/:id', deleteReport);
 // router.post('/access-outside', accessReport);
