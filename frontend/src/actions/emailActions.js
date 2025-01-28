@@ -18,11 +18,21 @@ export const receiveEmails = async (data) => {
     const result = await fetch(`${SERVER_URL}/receiveEmail`, {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
     console.log(result);
+    return result;
+  } catch (error) {
+    throw error.response?.data?.message || "Error sending emails";
+  }
+};
+
+export const getEmailsByAccount = async (account) => {
+  try {
+    const response = await fetch(`${SERVER_URL}/${account}`);
+    const result = await response.json();
     return result;
   } catch (error) {
     throw error.response?.data?.message || "Error sending emails";

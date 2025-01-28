@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MagnifyingGlassIcon,
@@ -9,33 +9,21 @@ import {
   PaperAirplaneIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-
+import { getEmailsByAccount } from "../actions/emailActions";
 const Mails = () => {
   const [selectedMail, setSelectedMail] = useState(null);
   const [expandedMenus, setExpandedMenus] = useState({});
+  const [firstMailInbox, setFirstMailInbox] = useState([]);
+  const [secondMailInbox, setSecondMailInbox] = useState([]);
+  const [thirdMailInbox, setThirdMailInbox] = useState([]);
+  const [totalMailBox, setTotalBox] = useState([]);
 
-  // Sample email accounts data
   const emailAccounts = [
     {
       id: 1,
-      email: "work@example.com",
+      email: "Alexis.Carter@ssg-community.com",
       folders: {
-        inbox: [
-          {
-            id: 1,
-            subject: "Meeting Tomorrow",
-            from: "john@example.com",
-            content: "Let's discuss the project...",
-            date: "2024-03-20",
-          },
-          {
-            id: 2,
-            subject: "Project Update",
-            from: "sarah@example.com",
-            content: "Here's the latest update...",
-            date: "2024-03-19",
-          },
-        ],
+        inbox: [],
         drafts: [],
         sent: [],
         trash: [],
@@ -43,23 +31,26 @@ const Mails = () => {
     },
     {
       id: 2,
-      email: "personal@example.com",
+      email: "alexis.cartetr@provider.presence.com",
       folders: {
-        inbox: [
-          {
-            id: 3,
-            subject: "Family Gathering",
-            from: "mom@example.com",
-            content: "About this weekend...",
-            date: "2024-03-18",
-          },
-        ],
+        inbox: [],
+        drafts: [],
+        sent: [],
+        trash: [],
+      },
+    },
+    {
+      id: 3,
+      email: "acarter@dlinorthcounty.org",
+      folders: {
+        inbox: [],
         drafts: [],
         sent: [],
         trash: [],
       },
     },
   ];
+  // Sample email accounts data
 
   const toggleMenu = (accountId) => {
     setExpandedMenus((prev) => ({
@@ -68,8 +59,11 @@ const Mails = () => {
     }));
   };
 
-  const handleMailClick = (mail) => {
-    setSelectedMail(mail);
+  const handleMailClick = async (email) => {
+    const result = await getEmailsByAccount(email);
+    console.log(result);
+    console.log(email);
+    setSelectedMail(result);
   };
 
   return (
@@ -105,13 +99,15 @@ const Mails = () => {
                       expandedMenus[account.id] ? "rotate-90" : ""
                     }`}
                   />
-                  <span className="px-1 font-medium">{account.email}</span>
+                  <span className="px-1 font-medium">
+                    {account.email.substring(0, 20)}...
+                  </span>
                 </button>
 
                 {expandedMenus[account.id] && (
                   <div className="ml-4 mt-2 space-y-1">
                     <button
-                      onClick={() => handleMailClick(account.folders.inbox[0])}
+                      onClick={() => handleMailClick(account.email)}
                       className="flex items-center space-x-2 w-full p-2 hover:bg-gray-100 rounded-lg"
                     >
                       <InboxIcon className="h-4 w-4" />
@@ -138,18 +134,27 @@ const Mails = () => {
           {/* Content */}
           <div className="flex-1 overflow-y-auto px-6">
             {selectedMail ? (
-              <div className="bg-white shadow p-6">
-                <h2 className="text-xl font-semibold mb-4">
-                  {selectedMail.subject}
-                </h2>
-                <div className="text-sm text-gray-600 mb-2">
-                  From: {selectedMail.from}
+              selectedMail.map((mail) => (
+                <div className="bg-white shadow p-6">
+                  <h2 className="text-xl font-semibold mb-4">{mail.subject}</h2>
+                  <div className="text-sm text-gray-600 mb-2">
+                    From: {mail.from}
+                  </div>
+                  {/* <div className="text-sm text-gray-600 mb-4">
+                Date: {new Date(selectedMail.date).toLocaleDateString()}
+              </div> */}
+                  {mail.attachments.map((file) => (
+                    <a
+                      className="text-sm text-gray-600 mb-4"
+                      href={`http://localhost:5000/reports/${file.filename}`}
+                    >
+                      {file.path}
+                    </a>
+                  ))}
+
+                  <div className="border-t pt-4">{mail.body}</div>
                 </div>
-                <div className="text-sm text-gray-600 mb-4">
-                  Date: {new Date(selectedMail.date).toLocaleDateString()}
-                </div>
-                <div className="border-t pt-4">{selectedMail.content}</div>
-              </div>
+              ))
             ) : (
               <div className="text-center text-gray-500 pt-10 bg-gray-200 h-full">
                 Select an email to view its contents
