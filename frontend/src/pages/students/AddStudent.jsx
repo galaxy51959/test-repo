@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { createStudent } from "../../actions/studentActions";
+// import { createStudent } from "../../actions/studentActions";
 
 export default function AddStudent() {
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ export default function AddStudent() {
           email: formData.teacherEmail,
         },
       };
-      await createStudent(studentData);
+      // await createStudent(studentData);
       navigate("/students");
     } catch (error) {
       console.error("Error creating student:", error);

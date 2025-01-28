@@ -19,8 +19,8 @@ export default function Navbar({ onMenuClick }) {
   };
 
   return (
-    <nav className="bg-primary text-white shadow-lg">
-      <div className="max-w-7xl mx-auto px-4">
+    <nav className="bg-primary text-white">
+      <div className="mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <button
@@ -29,7 +29,7 @@ export default function Navbar({ onMenuClick }) {
             >
               <Bars3Icon className="h-6 w-6" />
             </button>
-            <span className="ml-2 text-xl font-semibold">
+            <span className="ml-2 text-lg font-semibold">
               Report Generation
             </span>
           </div>

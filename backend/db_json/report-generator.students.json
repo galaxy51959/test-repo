@@ -5,7 +5,7 @@
   "firstName": "Rimel",
   "middleName": "",
   "lastName": "Ryder",
-  "gender": true,
+  "gender": "Male",
   "dateOfBirth": {
     "$date": "2019-02-01T00:00:00.000Z"
   },
@@ -13,14 +13,14 @@
   "school": "Elementory School",
   "language": "English",
   "parent": {
-    "firstName": "Rimel",
-    "lastName": "Johnson",
-    "email": "secretdragon51959@gmail.com"
+    "email": "secretdragon51959@gmail.com",
+    "name": "Rimel Johnson",
+    "phone": "+1(294)29302"
   },
   "teacher": {
-    "firstName": "Rimel",
-    "lastName": "Ryder",
-    "email": "secretdragon51959@gmail.com"
+    "email": "secretdragon51959@gmail.com",
+    "name": "Rimel Ryder",
+    "phone": "+1(294)29302"
   },
   "assessments": [],
   "createdAt": {
@@ -30,4 +30,36 @@
     "$date": "2025-01-25T15:45:28.028Z"
   },
   "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6798711fcbf1bf92910088bc"
+  },
+  "firstName": "Kai",
+  "lastName": "Cat",
+  "gender": "Male",
+  "dateOfBirth": {
+    "$date": "2004-06-03T04:00:00.000Z"
+  },
+  "grade": 3,
+  "school": "Inventory School",
+  "parent": {
+    "name": "",
+    "email": "",
+    "phone": ""
+  },
+  "teacher": {
+    "name": "",
+    "email": "",
+    "phone": ""
+  },
+  "assessments": [],
+  "createdAt": {
+    "$date": "2025-01-28T05:54:39.660Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-28T05:54:39.660Z"
+  },
+  "__v": 0,
+  "language": "English"
 }]

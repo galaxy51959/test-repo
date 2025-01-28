@@ -70,3 +70,47 @@ button:focus-visible {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Handsontable Custom Styles */
+.htCustomStyles .current-row {
+  background-color: rgba(233, 237, 244, 0.4);
+}
+
+.htCustomStyles .current-col {
+  background-color: rgba(233, 237, 244, 0.4);
+}
+
+.htCustomStyles .invalid-cell {
+  background-color: #ffebee;
+}
+
+.handsontable {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+.handsontable th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+  text-align: center;
+}
+
+.handsontable td {
+  color: #1e293b;
+}
+
+.handsontable .htDimmed {
+  color: #94a3b8;
+}
+
+.handsontable .currentRow {
+  background-color: #f1f5f9;
+}
+
+.handsontable .htInvalid {
+  background-color: #fee2e2 !important;
+}

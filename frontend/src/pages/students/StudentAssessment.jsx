@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
-import { getStudentById } from "../../actions/studentActions";
+// import { getStudentById } from "../../actions/studentActions";
 import { createScore } from "../../actions/scoreActions";
 import { assignLink } from "../../actions/studentActions";
 export default function StudentAssessment() {
@@ -20,8 +20,8 @@ export default function StudentAssessment() {
     try {
       setLoading(true);
       // Replace with your actual API call
-      const data = await getStudentById(id);
-      setStudent(data);
+      // const data = await getStudentById(id);
+      // setStudent(data);
     } catch (error) {
       console.error("Error fetching student details:", error);
     } finally {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
-import { getStudentById } from "../../actions/studentActions";
+// import { getStudentById } from "../../actions/studentActions";
 import { sendEmails } from "../../actions/emailActions";
 
 const n8nlink =
@@ -76,7 +76,8 @@ export default function SendEmail() {
   const fetchStudentDetails = async () => {
     try {
       setLoading(true);
-      const data = await getStudentById(id);
+      // const data = await getStudentById(id);
+      const data = {};
       setStudent(data);
 
       const parentLinks = {};
