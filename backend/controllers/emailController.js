@@ -35,7 +35,8 @@ const sendEmail = async (req, res) => {
 let filename;
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/tests');
+        console.log(req);
+        cb(null, 'public/reports');
     },
     filename: (req, file, cb) => {
         filename = `${Date.now()}-${file.originalname}`;
@@ -48,12 +49,15 @@ const upload = multer({ storage: storage });
 const receiveEmail = async (req, res) => {
     try {
         const { subject, body, to, from } = req.body;
+       // console.log(req.body);
+        //console.log("backend", req.body);
         const email = new Email({
             subject: subject,
             body: body,
             to: to,
             from: from,
         });
+        
         await email.save();
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -63,11 +67,8 @@ const receiveEmail = async (req, res) => {
 const receiveEmailBySocket = async (req, res) => {
     try {
         const body = req.body;
-        console.log(body);
-        socket.io.emit('Message', {
-            type: 'emailData',
-            data: body,
-        });
+        console.log(req.body);
+        socket.io.emit('Message', body);
     } catch (error) {}
 
     

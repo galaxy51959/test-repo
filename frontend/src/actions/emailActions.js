@@ -14,9 +14,13 @@ export const sendEmails = async (n8nlink, mailData) => {
 };
 export const receiveEmails = async (data) => {
   try {
+    console.log(data);
     const result = await fetch(`${SERVER_URL}/receiveEmail`, {
       method: "POST",
-      body: data,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
     });
     console.log(result);
     return result;

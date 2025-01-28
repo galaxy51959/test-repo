@@ -3,7 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const http = require('http');
-const socketIO = require('./services/socketService');
+const socket = require("./socket");
 dotenv.config();
 
 // Routes
@@ -42,6 +42,6 @@ mongoose
     .catch((err) => console.error('MongoDB connection error:', err));
 
 const server = http.createServer(app);
-const io = socketIO.init(server);
+const io = socket.init(server);
 
 server.listen(process.env.PORT || 5000);
