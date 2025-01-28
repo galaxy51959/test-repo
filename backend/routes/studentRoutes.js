@@ -15,7 +15,7 @@ const {
 router.post('/', createStudent);
 router.get('/', getStudents);
 router.get('/:id', getStudentById);
-router.put('/:id', updateStudent);
+router.patch('/:id', updateStudent);
 router.delete('/:id', deleteStudent);
 router.post('/:id/assign', assignStudent);
 

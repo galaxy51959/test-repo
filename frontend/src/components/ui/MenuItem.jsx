@@ -8,7 +8,7 @@ export default function MenuItem({ icon: Icon, label, path }) {
     <Link
       to={path}
       className={`
-        flex items-center px-4 py-2 text-sm font-medium
+        flex items-center px-4 py-3 text-md font-medium
         ${
           isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
         }

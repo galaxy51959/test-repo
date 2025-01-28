@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-import { getStudentById, getStudents } from "../../actions/studentActions";
+import { getStudents } from "../../actions/studentActions";
 import { generateReport } from "../../actions/reportActions";
 import { getFullName } from "../../utils";
 
@@ -46,7 +46,8 @@ export default function GenerateReport() {
     try {
       setLoading(true);
       // Replace with your actual API call
-      const data = await getStudentById(id);
+      // const data = await getStudentById(id);
+      const data = {};
       setStudent(data);
       console.log(data);
     } catch (error) {

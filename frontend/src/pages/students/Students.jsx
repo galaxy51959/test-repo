@@ -1,257 +1,376 @@
-import { useState, useEffect } from "react";
-import moment from "moment";
-import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/outline";
-import { EnvelopeIcon as MailIcon } from "@heroicons/react/24/outline";
-import { EnvelopeIcon as MailIconSolid } from "@heroicons/react/24/solid";
-import { getStudents } from "../../actions/studentActions";
+import { useState, useEffect, useRef } from "react";
+import { HotTable } from "@handsontable/react";
+import { registerAllModules } from "handsontable/registry";
+import {
+  ArrowDownTrayIcon,
+  ArrowUpTrayIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
+// import "handsontable/dist/handsontable.full.min.css";
+import {
+  getStudents,
+  updateStudent,
+  addStudent,
+  deleteStudent,
+} from "../../actions/studentActions";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
-import { useNavigate } from "react-router-dom";
-import { getFullName } from "../../utils";
+import Tooltip from "../../components/ui/Tooltip";
+import * as XLSX from "xlsx";
+import HyperFormula from "hyperformula";
+
+registerAllModules();
 
 export default function Students() {
-  const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [data, setData] = useState([]);
+  const dataRef = useRef(data);
+  const hotRef = useRef(null);
+
+  const hyperformulaInstance = HyperFormula.buildEmpty({
+    licenseKey: "internal-use-in-handsontable",
+  });
+
+  const columns = [
+    { data: "firstName", title: "First Name" },
+    { data: "lastName", title: "Last Name" },
+    {
+      data: "gender",
+      title: "Gender",
+      type: "dropdown",
+      source: ["Male", "Female"],
+    },
+    {
+      data: "dateOfBirth",
+      title: "Date of Birth",
+      type: "date",
+      dateFormat: "DD/MM/YYYY",
+    },
+    { data: "grade", title: "Grade", type: "numeric" },
+    { data: "school", title: "School" },
+    {
+      data: "language",
+      title: "Language",
+      type: "dropdown",
+      source: [
+        "English",
+        "Arabic",
+        "French",
+        "Spanish",
+        "German",
+        "Italian",
+        "Portuguese",
+        "Dutch",
+        "Russian",
+        "Chinese",
+        "Japanese",
+        "Korean",
+        "Hindi",
+        "Urdu",
+        "Bengali",
+        "Punjabi",
+        "Tamil",
+        "Telugu",
+        "Marathi",
+        "Gujarati",
+        "Kannada",
+        "Malayalam",
+        "Tulu",
+        "Konkani",
+        "Maithili",
+        "Odia",
+        "Assamese",
+        "Bhojpuri",
+        "Nepali",
+        "Sindhi",
+        "Sanskrit",
+        "Other",
+      ],
+    },
+    { data: "parentName", title: "Parent Name" },
+    { data: "parentPhone", title: "Parent Phone" },
+    {
+      data: "parentEmail",
+      title: "Parent Email",
+      type: "text",
+      validator: function (value, callback) {
+        if (!value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      },
+    },
+    { data: "teacherName", title: "Teacher Name" },
+    { data: "teacherPhone", title: "Teacher Phone" },
+    {
+      data: "teacherEmail",
+      title: "Teacher Email",
+      type: "text",
+      validator: function (value, callback) {
+        if (!value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      },
+    },
+  ];
 
   useEffect(() => {
     fetchStudents();
+    return () => {
+      console.log(dataRef.current);
+      const lastStudent = dataRef.current[dataRef.current.length - 1];
+      if (
+        lastStudent &&
+        Object.keys(lastStudent).findIndex(
+          (key) =>
+            lastStudent[key] === "" ||
+            lastStudent[key] === null ||
+            lastStudent[key] === undefined
+        ) > -1
+      ) {
+        console.log("DELETE");
+        deleteStudent(lastStudent._id);
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
 
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const data = await getStudents();
-      setStudents(data.students);
-    } catch (err) {
-      console.error("Error: ", err);
+      const response = await getStudents();
+      // Transform the data to match our column structure
+      const transformedData = response.students.map((student) => ({
+        _id: student._id,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        gender: student.gender,
+        dateOfBirth: new Date(student.dateOfBirth),
+        grade: student.grade,
+        school: student.school,
+        language: student.language,
+        parentName: student.parent ? student.parent.name : "",
+        parentPhone: student.parent ? student.parent.phone : "",
+        parentEmail: student.parent ? student.parent.email : "",
+        teacherName: student.teacher ? student.teacher.name : "",
+        teacherPhone: student.teacher ? student.teacher.phone : "",
+        teacherEmail: student.teacher ? student.teacher.email : "",
+      }));
+      setData(transformedData);
+    } catch (error) {
+      console.error("Error fetching students:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const getMailIcon = (student) =>
-    // Check if student has assessment links
-    student.assessments &&
-    (student.assessments.findIndex(
-      (assessment) => assessment.rater === "parent"
-    ) > -1 ||
-      student.assessments.findIndex(
-        (assessment) => assessment.rater === "teacher"
-      ) > -1);
+  const handleChange = async (changes, source) => {
+    console.log(changes, source);
+
+    if (source === "edit" || source === "paste") {
+      for (const [row, prop, oldValue, newValue] of changes) {
+        if (oldValue !== newValue) {
+          try {
+            const studentId = data[row]._id;
+            await updateStudent(studentId, { [prop]: newValue });
+          } catch (error) {
+            console.error("Error updating cell:", error);
+          }
+        }
+      }
+    }
+  };
+
+  const addNewStudent = async () => {
+    console.log("Add Student:");
+    const newStudent = {
+      firstName: "",
+      lastName: "",
+      gender: "Male",
+      dateOfBirth: "",
+      grade: "",
+      school: "",
+      parentName: "",
+      parentPhone: "",
+      parentEmail: "",
+      teacherName: "",
+      teacherPhone: "",
+      teacherEmail: "",
+    };
+
+    setData([...data, newStudent]);
+
+    const response = await addStudent(newStudent);
+    data.push(response);
+    setData(data);
+
+    // Focus on the first cell of the new row
+    if (hotRef.current && hotRef.current.hotInstance) {
+      setTimeout(() => {
+        hotRef.current.hotInstance.selectCell(data.length, 0);
+      }, 100);
+    }
+  };
+
+  console.log(data);
+
+  const handleExport = () => {
+    console.log(data);
+    // Create worksheet from the current data
+    const ws = XLSX.utils.json_to_sheet(
+      data.map((item) => ({
+        "First Name": item.firstName,
+        "Last Name": item.lastName,
+        Gender: item.gender,
+        "Date of Birth": item.dateOfBirth,
+        Grade: item.grade,
+        School: item.school,
+        Language: item.language,
+        "Parent Name": item.parentName,
+        "Parent Phone": item.parentPhone,
+        "Parent Email": item.parentEmail,
+        "Teacher Name": item.teacherName,
+        "Teacher Phone": item.teacherPhone,
+        "Teacher Email": item.teacherEmail,
+      }))
+    );
+
+    // Create workbook and add the worksheet
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Students");
+
+    // Save to file
+    XLSX.writeFile(wb, "students.xlsx");
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const workbook = XLSX.read(e.target.result, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const importedData = XLSX.utils.sheet_to_json(worksheet);
+
+        // Transform imported data to match your data structure
+        const transformedData = importedData.map((row) => ({
+          firstName: row["First Name"] || "",
+          lastName: row["Last Name"] || "",
+          gender: row["Gender"] || "",
+          dateOfBirth: row["Date of Birth"] || "",
+          grade: row["Grade"] || "",
+          school: row["School"] || "",
+          parentName: row["Parent Name"] || "",
+          parentPhone: row["Parent Phone"] || "",
+          parentEmail: row["Parent Email"] || "",
+          teacherName: row["Teacher Name"] || "",
+          teacherPhone: row["Teacher Phone"] || "",
+          teacherEmail: row["Teacher Email"] || "",
+          _id: Date.now() + Math.random(), // Temporary ID for new rows
+        }));
+
+        setData([...transformedData, ...data]);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  };
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      {/* Header Section */}
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold">Students</h1>
-          <button
-            onClick={() => navigate("new")}
-            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            Add New Student
-          </button>
+    <div className="rounded-lg">
+      <div className="py-4">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="pl-4 text-xl font-semibold">Students</h1>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
+              <Tooltip text="Add Student" placement="top">
+                <button
+                  onClick={addNewStudent}
+                  className="px-4 py-2 bg-blue-600 text-sm text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                >
+                  <PlusIcon className="h-5 w-5 text-white" />
+                </button>
+              </Tooltip>
+              <Tooltip text="Export Excel" placement="top">
+                <button
+                  onClick={handleExport}
+                  className="px-4 py-2 bg-green-600 text-sm text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+                >
+                  <ArrowDownTrayIcon className="h-5 w-5 text-white" />
+                </button>
+              </Tooltip>
+              {/* <Tooltip text="Import Excel" placement="top"> */}
+              <label className="px-4 py-2 bg-orange-600 text-sm text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors cursor-pointer">
+                <ArrowUpTrayIcon className="h-5 w-5 text-white" />
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleImport}
+                  className="hidden"
+                />
+              </label>
+              {/* </Tooltip> */}
+            </div>
+          </div>
         </div>
+        {/* <div className="px-6 py-4 border-b border-gray-200">
+          
+        </div> */}
 
-        {/* Filters */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <input
-            type="text"
-            placeholder="Search students..."
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          <select className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-            <option value="">All Grades</option>
-            <option value="6">6th Grade</option>
-            <option value="7">7th Grade</option>
-            <option value="8">8th Grade</option>
-          </select>
-          <select className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-            <option value="">All Schools</option>
-            <option value="lincoln">Lincoln High School</option>
-            <option value="washington">Washington Middle School</option>
-          </select>
-          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-            Reset Filters
-          </button>
-        </div>
-
-        {/* Table */}
-        <div className="overflow-x-auto">
+        {/* Main Content */}
+        <div className="flex-1">
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Student Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Grade
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    School
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Parent
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Teacher
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created At
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {students.map((student) => (
-                  <tr key={student._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="h-10 w-10 flex-shrink-0">
-                          <span className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
-                            {student.firstName.charAt(0)}
-                          </span>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {getFullName(student)}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            Date Of Birth:{" "}
-                            {moment(student.dateOfBirth).format("YYYY.MM.DD")}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {student.grade}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {student.school}
-                    </td>
-                    {student.parent ? (
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {getFullName(student.parent) || "No Name"}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {student.parent.email || "No Email"}
-                        </div>
-                      </td>
-                    ) : (
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        No Parent
-                      </td>
-                    )}
-                    {student.teacher ? (
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {getFullName(student.teacher) || "No Name"}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {student.teacher.email || "No Email"}
-                        </div>
-                      </td>
-                    ) : (
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        No Teacher
-                      </td>
-                    )}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {moment(student.createdAt).format("YYYY.MM.DD")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-3">
-                        <button
-                          onClick={() => navigate(`${student._id}/assess`)}
-                          className="text-blue-600 hover:text-blue-900"
-                          title="Assess"
-                        >
-                          <EyeIcon className="h-5 w-5" />
-                        </button>
-                        <button
-                          onClick={() =>
-                            getMailIcon(student) &&
-                            navigate(`${student._id}/email`)
-                          }
-                          className="text-blue-600 hover:text-blue-900"
-                          title="Send Email"
-                        >
-                          {getMailIcon(student) ? (
-                            <MailIconSolid className="h-5 w-5 text-blue-600" />
-                          ) : (
-                            <MailIcon className="h-5 w-5 text-gray-400" />
-                          )}
-                        </button>
-                        <button
-                          className="text-green-600 hover:text-green-900"
-                          title="Edit"
-                        >
-                          <PencilIcon className="h-5 w-5" />
-                        </button>
-                        <button
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete"
-                        >
-                          <TrashIcon className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="border rounded-lg shadow-sm">
+              <HotTable
+                formulas={{
+                  engine: hyperformulaInstance,
+                  sheetName: "Students",
+                }}
+                ref={hotRef}
+                data={data}
+                columns={columns}
+                colHeaders={true}
+                rowHeaders={true}
+                height="calc(100vh - 200px)"
+                width="100%"
+                licenseKey="non-commercial-and-evaluation"
+                afterChange={handleChange}
+                contextMenu={true}
+                filters={true}
+                dropdownMenu={true}
+                multiColumnSorting={true}
+                manualColumnResize={true}
+                manualRowResize={true}
+                stretchH="all"
+                autoWrapRow={true}
+                className="htCustomStyles"
+                settings={{
+                  className: "htMiddle",
+                  currentRowClassName: "current-row",
+                  currentColClassName: "current-col",
+                  invalidCellClassName: "invalid-cell",
+                }}
+                style={{
+                  fontSize: "14px",
+                  fontFamily: "Inter, sans-serif",
+                }}
+                customBorders={true}
+                comments={true}
+                search={true}
+                mergeCells={true}
+                copyPaste={true}
+                fillHandle={true}
+              />
+            </div>
           )}
-        </div>
-
-        {/* Pagination */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 sm:px-6">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              Previous
-            </button>
-            <button className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              Next
-            </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">1</span> to{" "}
-                <span className="font-medium">10</span> of{" "}
-                <span className="font-medium">97</span> results
-              </p>
-            </div>
-            <div>
-              <nav
-                className="relative z-0 inline-flex shadow-sm -space-x-px"
-                aria-label="Pagination"
-              >
-                <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                  Previous
-                </button>
-                <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                  1
-                </button>
-                <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary text-sm font-medium text-white">
-                  2
-                </button>
-                <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                  3
-                </button>
-                <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                  Next
-                </button>
-              </nav>
-            </div>
-          </div>
         </div>
       </div>
     </div>

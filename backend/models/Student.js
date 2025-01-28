@@ -11,38 +11,23 @@ const assessmentSchema = new mongoose.Schema({
 });
 
 const studentSchema = new mongoose.Schema({
-  	firstName: {
-		type: String,
-		required: true
-	},
-	middleName: String,
+  	firstName: String,
 	lastName: String,
 	gender: {
-		type: Boolean,
-		required: true
+		type: String,
+		enum: ['Male', 'Female']
 	},
-	dateOfBirth: {
-		type: Date,
-		required: true
-	},
-	grade: {
-		type: Number,
-		required: true
-	},
-	school: {
-		type: String, 
-		require: true,
-	},
+	dateOfBirth: Date,
+	grade: Number,
+	school: String,
 	language: String,
 	parent: {
-		firstName: String,
-		lastName: String,
+		name: String,
 		email: String,
 		phone: String
 	},
 	teacher: {
-		firstName: String,
-		lastName: String,
+		name: String,
 		email: String,
 		phone: String
 	},

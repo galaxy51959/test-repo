@@ -14,6 +14,7 @@ import {
 } from "./pages/students";
 import { Reports, GenerateReport } from "./pages/reports";
 import Teachers from "./pages/Teachers";
+import Mails from "./pages/Mails";
 import SignIn from "./pages/SignIn";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
@@ -57,6 +58,9 @@ function App() {
                 element={<StudentAssessment />}
               />
               <Route path="/students/:id/email" element={<SendEmail />} />
+
+              {/* Mails */}
+              <Route path="/mails" element={<Mails />} />
 
               {/* Reports */}
               <Route path="/reports" element={<Reports />} />
