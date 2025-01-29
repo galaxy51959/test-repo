@@ -24,7 +24,7 @@ export default function Schedule() {
     },
     tasks: [],
   });
-
+  const [selectedEvent, setSelectedEvent] = useState({});
   // Sample data - Replace with actual Notion API calls
   const sampleDatabases = [
     { id: 1, name: "Student Records", lastSync: "2024-03-20" },
@@ -71,6 +71,23 @@ export default function Schedule() {
     setLoading(true);
     const data = await getNotionData();
     console.log(data);
+    const tasks = data
+      .filter((item) => item.properties.Due?.date?.start != undefined)
+      .map((page, id) => {
+        return {
+          id: id,
+          title: page.properties["Task name"].title[0].plain_text,
+          start: page.properties.Due?.date?.start,
+          end: page.properties.Due?.date?.end,
+          backgroundColor: "#3B82F6",
+          borderColor: "#2563EB",
+          // Add other properties as needed
+        };
+      });
+    setEvents(tasks);
+
+    console.log(tasks);
+    //console.log(data);
     try {
       // Simulate API call
       setTimeout(() => {
@@ -106,14 +123,19 @@ export default function Schedule() {
   };
 
   const handleEventClick = (clickInfo) => {
-    if (
-      confirm(
-        `Are you sure you want to delete the event '${clickInfo.event.title}'`
-      )
-    ) {
-      clickInfo.event.remove();
-      setEvents(events.filter((event) => event.id !== clickInfo.event.id));
-    }
+    setSelectedEvent(events.filter((event) => event.id == clickInfo.event.id));
+    console.log(selectedEvent);
+    // confirm(
+    //        `Are you sure you want to delete the event '${events.filter((event) => event.id == clickInfo.event.id)}'`
+    //    )
+    // if (
+    //   confirm(
+    //     `Are you sure you want to delete the event '${clickInfo.event.title}'`
+    //   )
+    // ) {
+    //   clickInfo.event.remove();
+    //   setEvents(events.filter((event) => event.id !== clickInfo.event.id));
+    // }
   };
 
   return (
