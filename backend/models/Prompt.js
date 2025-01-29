@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const promptSchema = new mongoose.Schema({
 	section: String,
-	protocol: String,
+	type: String,
 	humanPrompt: String,
 	systemPrompt: String,
 	order: Number

@@ -17,6 +17,15 @@ exports.parseDocx = (filePath) => {
     });
 };
 
+exports.parseFile = async (file) => {
+    switch (file.mimetype) {
+        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+            return await this.parseDocx(file.name);
+        case 'application/pdf':
+            return await this.parsePdf(file.name);
+    }
+};
+
 exports.getFullName = (x) =>
     `${x.firstName} ${x.middleName ? x.middleName : ''} ${x.lastName}`;
 

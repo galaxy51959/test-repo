@@ -13,7 +13,7 @@ const model = new ChatOpenAI({
 });
 
 const extractSEIS = async (file) => {
-    const fileContent = await parsePdf(file.originalname);
+    const fileContent = await parsePdf(file.name);
 
     const chatPrompt = ChatPromptTemplate.fromMessages([
         SystemMessagePromptTemplate.fromTemplate(

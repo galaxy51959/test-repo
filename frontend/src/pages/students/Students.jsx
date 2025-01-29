@@ -286,7 +286,7 @@ export default function Students() {
       <div className="py-4">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <h1 className="pl-4 text-xl font-semibold">Students</h1>
+          <h1 className="px-4 text-xl font-semibold">Students</h1>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
               <Tooltip text="Add Student" placement="top">

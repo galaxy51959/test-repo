@@ -15,8 +15,7 @@ const createPrompt = async (req, res) => {
 const getPrompts = async (req, res) => {
     try {
         const prompts = await Prompt.find().sort({ order: 1 });
-        console.log(prompts);
-        res.json(prompts);
+        res.json(prompts.slice(1));
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -41,7 +40,7 @@ const getPromptsBySection = async (req, res) => {
             {
                 $group: {
                     _id: '$section',
-                    protocols: { $push: '$protocol' },
+                    types: { $push: '$type' },
                     order: { $min: '$order' },
                 },
             },

@@ -43,10 +43,11 @@ export default function Prompts() {
   const columns = [
     { data: "section", title: "Section" },
     {
-      data: "protocol",
-      title: "Protocol",
+      data: "type",
+      title: "Type",
       type: "dropdown",
       source: [
+        "SEIS",
         "DAY-C-2",
         "WRAML-3",
         "CTONI-2",

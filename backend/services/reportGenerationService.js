@@ -5,9 +5,9 @@ const {
     HumanMessagePromptTemplate,
 } = require('@langchain/core/prompts');
 const fs = require('fs');
-const ReportSection = require('../models/Prompt');
+const Prompt = require('../models/Prompt');
 const { generateAndSavePDF } = require('./pdfGenerationService');
-const { calculateAge, getFullName, parsePdf, parseDocx } = require('../utils');
+const { parseFile } = require('../utils');
 
 const model = new ChatOpenAI({
     openAIApiKey: process.env.OPENAI_API_KEY,
@@ -15,30 +15,30 @@ const model = new ChatOpenAI({
     temperature: 0.5,
 });
 
-const generateReportSection = async (section, studentInfo, files) => {
+const generateReportSection = async (section, studentInfo, file) => {
     try {
         // const prompt = constructSectionPrompt(section, studentInfo);
 
-        // console.log('Prompt: ', prompt);
+        // console.log(file);
 
-        // if (prompt.includes("file: [NOT PROVIDED]")) {
-        //     console.log("FILE");
-        //     return "File Not Provided";
-        // }
+        const fileContent = await parseFile(file);
 
         const chatPrompt = ChatPromptTemplate.fromMessages([
-            SystemMessagePromptTemplate.fromTemplate(section.systemPrompt),
-            HumanMessagePromptTemplate.fromTemplate(section.humanPrompt),
+            SystemMessagePromptTemplate.fromTemplate(
+                'You are a professional report writer specialized in education psychological reports. Given the prompt, output result like html code only body content. Note: Each Table Style must follow styles: border-collapse. Each Paragraph Style: Bold Style, Strong Tag, Left Align.'
+            ),
+            HumanMessagePromptTemplate.fromTemplate(` ${section.humanPrompt}`),
         ]);
         // You are a professional report writer specialized in eucational psychological reports
 
         const chain = chatPrompt.pipe(model);
 
         const res = await chain.invoke({
-            input: studentInfo,
+            file: fileContent,
+            ...studentInfo,
         });
 
-        console.log(section.order, res.content);
+        console.log(section.order);
 
         return {
             order: section.order,
@@ -50,77 +50,80 @@ const generateReportSection = async (section, studentInfo, files) => {
     }
 };
 
-const constructSectionPrompt = (section, data) => {
-    let prompt = section.prompt;
+// const constructSectionPrompt = (section, data) => {
+//     let prompt = section.prompt;
 
-    for (const field of section.requiredFields) {
-        const value = data[field] || '[NOT PROVIDED]';
-        prompt += `\n${field}: ${value}`;
-    }
-
-    return prompt;
-};
-
-// const generateTotalReport = async (sections, studentData) => {
-//     let htmlContent = '';
-
-//     // Process sections in parallel
-//     const processedSections = await Promise.all(
-//         sections.map(async (section) => {
-//             const index = section.content.search('<body>');
-//             if (index > -1) {
-//                 return section.content.substring(
-//                     index + 6,
-//                     section.content.search('</body>')
-//                 );
-//             }
-//             return section.content;
-//         })
-//     );
-
-//     htmlContent = processedSections.join('<br />');
-
-//     try {
-//         const pdf = await generateAndSavePDF(
-//             htmlContent,
-//             `${studentData.firstName} ${studentData.lastName}-${studentData._id}.pdf`
-//         );
-//         return pdf;
-//     } catch (err) {
-//         console.error('Error generating total report:', err);
-//         throw err;
+//     for (const field of section.requiredFields) {
+//         const value = data[field] || '[NOT PROVIDED]';
+//         prompt += `\n${field}: ${value}`;
 //     }
+
+//     return prompt;
 // };
 
-const generateReport = async (studentInfo) => {
+const generateTotalReport = async (sections, studentData) => {
+    let htmlContent = '';
+
+    // Process sections in parallel
+    const processedSections = await Promise.all(
+        sections.map(async (section) => {
+            // const index = section.content.search('<body>');
+            // if (index > -1) {
+            //     const idx = section.content.indexOf()
+            // }
+            // return section.content;
+            return section.content.substring(7, section.content.length - 4);
+        })
+    );
+
+    htmlContent = processedSections.join('<br />');
+
     try {
-        console.log(
-            'Starting report generation for:',
-            getFullName(studentInfo)
+        const pdf = await generateAndSavePDF(
+            htmlContent,
+            `${studentData.name}-${new Date().toLocaleDateString('en-CA', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            })}.pdf`
         );
-        const sections = await ReportSection.find();
-        const targetTemplate = sections[0];
+        return pdf;
+    } catch (err) {
+        console.error('Error generating total report:', err);
+        throw err;
+    }
+};
 
-        if (!targetTemplate) {
-            throw new Error('Template not found');
-        }
+const generateReport = async (studentInfo, files) => {
+    try {
+        console.log('Starting report generation for:', studentInfo.name);
+        const sections = await Prompt.find().sort({ order: 1 });
 
-        studentInfo.years = calculateAge(studentInfo.dateOfBirth).years;
-        studentInfo.months = calculateAge(studentInfo.dateOfBirth).months;
-        studentInfo.name = getFullName(studentInfo);
+        // if (!targetTemplate) {
+        //     throw new Error('Template not found');
+        // }
 
-        const sectionPromises = targetTemplate.sections.map((section) =>
-            generateReportSection(targetTemplate, section, studentInfo)
-        );
+        // const generatedSections = [];
+
+        // const file = files.find(f => f.type === sections[0].type);
+
+        // generatedSections.push(await generateReportSection(sections[0], studentInfo, file));
+
+        const sectionPromises = sections.map((section) => {
+            const file = files.find((f) => f.type === section.type);
+            if (file) return generateReportSection(section, studentInfo, file);
+        });
 
         const generatedSections = await Promise.all(sectionPromises);
 
         // Sort sections by order
-        generatedSections.sort((a, b) => a.order - b.order);
+        const filteredSection = generatedSections
+            .filter((section) => section !== undefined)
+            .sort((a, b) => a.order - b.order);
 
         // Generate final PDF
         const generatedReport = await generateTotalReport(
-            generatedSections,
+            filteredSection,
             studentInfo
         );
 

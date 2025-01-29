@@ -1,30 +1,31 @@
 const SERVER_URL = `http://localhost:5000/api/reports`;
 
-export const generateReport = async (studentId, formData) => {
+export const generateReport = async (formData) => {
   try {
-    if (formData.length) {
-      const response = await fetch(`${SERVER_URL}/generate/${studentId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const result = await response.json();
-      console.log("Generate Result: ", result);
-      return result;
-    } else {
-      const response = await fetch(`${SERVER_URL}/generate/${studentId}`, {
-        method: "POST",
-        body: formData,
-      });
-      const result = await response.json();
-      console.log("Generate Result: ", result);
-      return result;
-    }
+    const response = await fetch(`${SERVER_URL}/generate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+    const result = await response.json();
+    console.log("Generate Result: ", result);
+    return result;
   } catch (error) {
     console.error("Generate Report Error: ", error);
     throw error;
+  }
+};
+
+export const uploadFile = async (formData) => {
+  try {
+    await fetch(`${SERVER_URL}/upload`, {
+      method: "POST",
+      body: formData,
+    });
+  } catch (error) {
+    console.error("Error File Upload: ", error);
   }
 };
 
@@ -41,7 +42,7 @@ export const getReports = async () => {
 
 export const extractStudentInfo = async (formData) => {
   try {
-    // const response = await fetch(`${SERVER_URL}/extract`, {
+    // const response = await fetch(`${SERVER_URL}/upload`, {
     //   method: "POST",
     //   body: formData,
     // });

@@ -1,7 +1,5 @@
 const multer = require('multer');
-
 const Report = require('../models/Report');
-const Student = require('../models/Student');
 const reportGenerationService = require('../services/reportGenerationService');
 const accessOutSideService = require('../services/accessOutSideService');
 const files = [];
@@ -13,7 +11,16 @@ const storage = multer.diskStorage({
         cb(null, 'public/tests');
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname);
+        if (files.findIndex((f) => f.type === req.body.type) === -1)
+            files.push({
+                mimetype: file.mimetype,
+                name: `${req.body?.type && req.body.type + '---'}${file.originalname}`,
+                type: req.body.type,
+            });
+        cb(
+            null,
+            `${req.body?.type && req.body.type + '---'}${file.originalname}`
+        );
     },
 });
 
@@ -42,32 +49,16 @@ const createReport = async (req, res) => {
 const generateReport = async (req, res) => {
     try {
         console.log('Request Body: ', req.body);
-        console.log('Request Files: ', req.file);
 
-        if (req.file) {
-            if (
-                files.findIndex((f) => f.protocol === req.body?.protocol) === -1
-            ) {
-                files.push({
-                    protocol: req.body?.protocol,
-                    file: req.file.originalname,
-                });
-            }
-            res.json({ files });
-            return;
-        }
-        const studentId = req.params.id;
+        const { student } = req.body;
 
-        const studentInfo = await Student.findById(studentId);
-        if (!studentInfo) {
-            return res.status(404).json({ message: 'Student not found' });
-        }
-
-        console.log('Files: ', files);
+        console.log('Student Info: ', student);
 
         // return res.json({ content: studentInfo });
-        const generatedContent =
-            await reportGenerationService.generateReport(studentInfo);
+        const generatedContent = await reportGenerationService.generateReport(
+            student,
+            files
+        );
 
         // const templateType = "Psychoeducational";
 
@@ -95,18 +86,23 @@ const generateReport = async (req, res) => {
         //   );
         // }
 
-        res.json({ ...generatedContent });
+        res.json({ student });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-const extractInfo = async (req, res) => {
+const uploadFile = async (req, res) => {
     try {
         const file = req.file;
-
-        const result = await extractSEIS(file);
-        res.json(JSON.parse(result));
+        console.log(file);
+        const { type } = req.body;
+        console.log(type);
+        if (type === 'SEIS') {
+            const seisFile = files.find((f) => f.type === 'SEIS');
+            const result = await extractSEIS(seisFile);
+            res.json(JSON.parse(result));
+        } else res.json({ type });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -190,8 +186,8 @@ const accessReport = async (req, res) => {
 };
 module.exports = {
     createReport,
-    generateReport: [upload.single('file'), generateReport],
-    extractInfo: [upload.single('file'), extractInfo],
+    generateReport,
+    uploadFile: [upload.single('file'), uploadFile],
     getReports,
     getReportById,
     updateReport,

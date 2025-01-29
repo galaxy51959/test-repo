@@ -4,18 +4,18 @@ const auth = require('../middleware/auth');
 const {
     createReport,
     generateReport,
-    extractInfo,
     getReports,
     getReportById,
     updateReport,
     deleteReport,
     accessReport,
+    uploadFile,
 } = require('../controllers/reportController');
 // router.use(auth); // Apply authentication to all routes
 
 router.post('/', createReport);
-router.post('/generate/:id', generateReport);
-router.post('/extract', extractInfo);
+router.post('/generate', generateReport);
+router.post('/upload', uploadFile);
 router.get('/', getReports);
 router.get('/:id', getReportById);
 router.put('/:id', updateReport);
