@@ -24,7 +24,11 @@ export default function Schedule() {
     },
     tasks: [],
   });
-
+  const [selectedEvent, setSelectedEvent] = useState({
+    title: "",
+    start: "",
+    end: "",    
+  })
   // Sample data - Replace with actual Notion API calls
   const sampleDatabases = [
     { id: 1, name: "Student Records", lastSync: "2024-03-20" },
@@ -48,16 +52,16 @@ export default function Schedule() {
     {
       id: "1",
       title: "Student Assessment",
-      start: "2024-03-25T10:00:00",
-      end: "2024-03-25T11:30:00",
+      start: "2025-03-25",
+      end: "2025-03-25",
       backgroundColor: "#3B82F6",
       borderColor: "#2563EB",
     },
     {
       id: "2",
       title: "Parent Meeting",
-      start: "2024-03-26T14:30:00",
-      end: "2024-03-26T15:30:00",
+      start: "2025-03-26",
+      end: "2025-03-26",
       backgroundColor: "#10B981",
       borderColor: "#059669",
     },
@@ -106,14 +110,19 @@ export default function Schedule() {
   };
 
   const handleEventClick = (clickInfo) => {
-    if (
-      confirm(
-        `Are you sure you want to delete the event '${clickInfo.event.title}'`
-      )
-    ) {
-      clickInfo.event.remove();
-      setEvents(events.filter((event) => event.id !== clickInfo.event.id));
-    }
+    setSelectedEvent(events.filter((event) => event.id == clickInfo.event.id));
+    // console.log(selectedEvent);
+    confirm(
+           `Are you sure you want to delete the event '${events.filter((event) => event.id == clickInfo.event.id)}'`
+       )
+    // if (
+    //   confirm(
+    //     `Are you sure you want to delete the event '${clickInfo.event.title}'`
+    //   )
+    // ) {
+    //   clickInfo.event.remove();
+    //   setEvents(events.filter((event) => event.id !== clickInfo.event.id));
+    // }
   };
 
   return (
