@@ -12,7 +12,7 @@ import {
   ArrowPathIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-
+import { getNotionData } from "../actions/notionAction";
 export default function Schedule() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -69,6 +69,8 @@ export default function Schedule() {
 
   const fetchNotionData = async () => {
     setLoading(true);
+    const data = await getNotionData();
+    console.log(data);
     try {
       // Simulate API call
       setTimeout(() => {

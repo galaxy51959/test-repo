@@ -4,12 +4,14 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const http = require('http');
 const socket = require('./socket');
+
 dotenv.config();
 
 // Routes
 const reportRoutes = require('./routes/reportRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const authRoutes = require('./routes/auth');
+const calendarRoutes = require('./routes/calendarRoutes');
 // const calendarRoutes = require('./routes/calendarRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 // const callRoutes = require('./routes/callRoutes');
@@ -28,7 +30,7 @@ app.use(express.static('public'));
 app.use('/api/reports', reportRoutes);
 app.use('/api/emails', emailRoutes);
 app.use('/api/auth', authRoutes);
-// app.use('/api/calendar', calendarRoutes);
+app.use('/api/calendar', calendarRoutes);
 app.use('/api/students', studentRoutes);
 // app.use('/api/calls', callRoutes);
 
