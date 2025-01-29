@@ -13,7 +13,7 @@ import {
   SendEmail,
 } from "./pages/students";
 import { Reports, GenerateReport, Prompt } from "./pages/reports";
-import Schedule from "./pages/Schedule";
+import Schedule from "./pages/schedule";
 // import Teachers from "./pages/Teachers";
 import Mails from "./pages/Mails";
 import SignIn from "./pages/SignIn";
