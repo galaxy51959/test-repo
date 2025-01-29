@@ -3,7 +3,7 @@ const { Client } = require('@notionhq/client');
 const notion = new Client({
     auth: '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',
 });
-const databaseId = '123d34b2ab098047bd38000c692c830c';
+const databaseId = '123d34b2ab098066a485e51f116dedfc';
 const createEvent = async (req, res) => {
     try {
         const {
@@ -78,28 +78,22 @@ const getEvents = async (req, res) => {
     try {
         const response = await notion.databases.query({
             database_id: databaseId,
-            filter: {
-                property: 'Date',
-                date: {
-                    on_or_before: new Date().toISOString(), // Get events starting today
-                },
-            },
         });
+        console.log(response.results);
+        // const events = response.results.map((page) => {
+        //     const dateProperty = page.properties.Name.title;
+        //     const startDate = page.properties.Attendees.people;
+        //     // const endDate = dateProperty.date.end; // Optional
 
-        const events = response.results.map((page) => {
-            const dateProperty = page.properties.Date;
-            const startDate = dateProperty.date.start;
-            const endDate = dateProperty.date.end; // Optional
-
-            return {
-                title: page.properties.Name.title[0].plain_text,
-                start: startDate,
-                end: endDate, // Optional
-                // Add other relevant properties
-            };
-        });
-
-        return events;
+        //     return {
+        //         dataProperty: dateProperty,
+        //         startDate: startDate, // Optional
+        //         // Add other relevant properties
+        //     };
+        // });
+        // console.log(events);
+        res.json(response.results);
+        //return events;
     } catch (error) {
         console.log('ERROR', error);
         res.status(500).json({ message: error.message });
