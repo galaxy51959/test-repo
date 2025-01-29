@@ -42,6 +42,8 @@ mongoose
     .catch((err) => console.error('MongoDB connection error:', err));
 
 const server = http.createServer(app);
-const io = socket.init(server);
+
+// Initialize socket.io
+socket.init(server);
 
 server.listen(process.env.PORT || 5000);
