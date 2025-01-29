@@ -12,7 +12,7 @@ import {
   ArrowPathIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import { getNotionData } from "../actions/notionAction";
+import { getNotionData, createNotionData } from "../actions/notionAction";
 export default function Schedule() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,17 @@ export default function Schedule() {
     },
     tasks: [],
   });
-  const [selectedEvent, setSelectedEvent] = useState({});
+  const [selectedEvent, setSelectedEvent] = useState({
+    title: "",
+    created_At: "",
+    due_At: "",
+    state: "",
+  });
+  const [createdEvent, setCreatedEvent] = useState({
+    title: "",
+    created_At: "",
+    due_At: "",
+  });
   // Sample data - Replace with actual Notion API calls
   const sampleDatabases = [
     { id: 1, name: "Student Records", lastSync: "2024-03-20" },
@@ -71,19 +81,19 @@ export default function Schedule() {
     setLoading(true);
     const data = await getNotionData();
     console.log(data);
-    const tasks = data
-      .filter((item) => item.properties.Due?.date?.start != undefined)
-      .map((page, id) => {
-        return {
-          id: id,
-          title: page.properties["Task name"].title[0].plain_text,
-          start: page.properties.Due?.date?.start,
-          end: page.properties.Due?.date?.end,
-          backgroundColor: "#3B82F6",
-          borderColor: "#2563EB",
-          // Add other properties as needed
-        };
-      });
+    const tasks = data.map((page, id) => {
+      return {
+        id: id,
+        created_time: page.created_time,
+        title: page.properties["Task name"].title[0].plain_text,
+        start: page.properties.Due?.date?.start,
+        end: page.properties.Due?.date?.end,
+        state: page.properties.Status.status.name,
+        backgroundColor: "#3B82F6",
+        borderColor: "#2563EB",
+        // Add other properties as needed
+      };
+    });
     setEvents(tasks);
 
     console.log(tasks);
@@ -108,18 +118,14 @@ export default function Schedule() {
   };
 
   const handleDateSelect = (selectInfo) => {
-    const title = prompt("Please enter a new title for your event");
-    if (title) {
-      const newEvent = {
-        id: String(Date.now()),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        backgroundColor: "#3B82F6",
-        borderColor: "#2563EB",
-      };
-      setEvents([...events, newEvent]);
-    }
+    const newEvent = {
+      title: "New Task",
+      created_time: "2025-01-29T20:35:00.000Z",
+      start: selectInfo.startStr,
+      end: selectInfo.endStr,
+    };
+    console.log(newEvent);
+    createNotionData(newEvent);
   };
 
   const handleEventClick = (clickInfo) => {
