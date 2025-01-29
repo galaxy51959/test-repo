@@ -18,7 +18,7 @@ export const receiveEmails = async (data) => {
     const result = await fetch(`${SERVER_URL}/receiveEmail`, {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
