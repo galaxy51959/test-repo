@@ -90,6 +90,7 @@ export default function Schedule() {
   }, []);
 
   const fetchNotionData = async () => {
+    console.log("fetch");
     setLoading(true);
     const data = await getNotionData();
     console.log(data);
@@ -107,9 +108,6 @@ export default function Schedule() {
       };
     });
     setEvents(tasks);
-
-    console.log(tasks);
-    //console.log(data);
     try {
       // Simulate API call
       setTimeout(() => {
@@ -137,8 +135,6 @@ export default function Schedule() {
         start: selectInfo.startStr,
         end: selectInfo.endStr,
       };
-
-      console.log(newEvent);
       setCreatedEvent(newEvent);
       setSelectedEvent(null);
       setShowSidebar(true);
@@ -150,7 +146,6 @@ export default function Schedule() {
       clickInfo.jsEvent.preventDefault();
       const event = events.find((event) => event.id == clickInfo.event.id);
       setSelectedEvent(event);
-      console.log(event);
       setCreatedEvent(null);
       setShowSidebar(true);
     }
@@ -162,9 +157,9 @@ export default function Schedule() {
     setShowDeleteModal(true);
   };
 
-  const handleDeleteEvent = () => {
+  const handleDeleteEvent = async () => {
     deleteNotionData(selectedEventId);
-    // setEvents(events.filter((event) => event.id !== selectedEventId));
+    await fetchNotionData();
     setShowDeleteModal(false);
   };
 
@@ -366,7 +361,7 @@ export default function Schedule() {
                       Start At
                     </label>
                     <input
-                      type="datetime-local"
+                      type="datetime"
                       value={selectedEvent.start?.slice(0, 16) || ""}
                       onChange={(e) =>
                         setSelectedEvent({
@@ -382,7 +377,7 @@ export default function Schedule() {
                       End At
                     </label>
                     <input
-                      type="datetime-local"
+                      type="datetime"
                       value={selectedEvent.end?.slice(0, 16) || ""}
                       onChange={(e) =>
                         setSelectedEvent({
@@ -453,7 +448,7 @@ export default function Schedule() {
                       Start
                     </label>
                     <input
-                      type="datetime-local"
+                      type="datetime"
                       value={createdEvent.start?.slice(0, 16) || ""}
                       onChange={(e) =>
                         setCreatedEvent({
@@ -469,7 +464,7 @@ export default function Schedule() {
                       End
                     </label>
                     <input
-                      type="datetime-local"
+                      type="datetime"
                       value={createdEvent.end?.slice(0, 16) || ""}
                       onChange={(e) =>
                         setCreatedEvent({
@@ -484,18 +479,17 @@ export default function Schedule() {
               )}
 
               <button
-                onClick={() => {
+                onClick={async () => {
                   if (selectedEvent) {
                     // Update existing event
-                    setEvents(
-                      events.map((event) =>
-                        event.id === selectedEvent.id ? selectedEvent : event
-                      )
-                    );
-                    updateNotionData(selectedEvent);
+                    const response = await updateNotionData(selectedEvent);
+                    alert(response.message);
+                    fetchNotionData();
                   } else {
                     // Create new event
-                    createNotionData(createdEvent);
+                    const response = createNotionData(createdEvent);
+                    alert(response.message);
+                    fetchNotionData();
                   }
                   setShowSidebar(false);
                 }}

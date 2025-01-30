@@ -24,5 +24,8 @@
   "scripts": {
     "format": "concurrently \"npm --prefix ./backend run format\" \"npm --prefix ./frontend run format\"",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2"
   }
 }

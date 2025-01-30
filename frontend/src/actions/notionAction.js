@@ -1,9 +1,13 @@
 const SERVER_URL = "http://localhost:5000/api/calendar";
 
 export const getNotionData = async () => {
-  const response = await fetch(`${SERVER_URL}`);
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch(`${SERVER_URL}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const createNotionData = async (Data) => {
@@ -24,7 +28,6 @@ export const createNotionData = async (Data) => {
 
 export const updateNotionData = async (Data) => {
   try {
-    console.log(Data);
     const response = await fetch(`${SERVER_URL}/${Data.id}`, {
       method: "PUT",
       headers: {
@@ -33,6 +36,7 @@ export const updateNotionData = async (Data) => {
       body: JSON.stringify(Data),
     });
     const result = await response.json();
+    console.log(result);
     return result;
   } catch (error) {
     console.log("Error Creating Prompts: ", error);
