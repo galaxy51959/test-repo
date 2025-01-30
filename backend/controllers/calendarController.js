@@ -104,8 +104,6 @@ const createEvents = async (req, res) => {
                 },
             },
         });
-
-        console.log('Page created successfully:', response);
         res.status(200).send({
             message: 'Task created successfully',
             data: response,
@@ -115,8 +113,88 @@ const createEvents = async (req, res) => {
         res.status(400).send({ error: error.message || error.body });
     }
 };
+
+const updateEvents = async (req, res) => {
+    try {
+        // Validate the input to ensure `pageId`, `title`, or `start` are present
+        if (!req.params.pageid) {
+            throw new Error("Missing required field: 'pageId'");
+        }
+        if (!req.body.title && !req.body.start) {
+            throw new Error(
+                "You must provide at least one field to update: 'title' or 'start'"
+            );
+        }
+
+        const { title, start, end, state } = req.body;
+        console.log(req.body);
+        const pageId = req.params.pageid;
+        // Prepare the properties to update
+        const properties = {};
+
+        // Update the title if provided
+        if (title) {
+            properties['Task name'] = {
+                title: [
+                    {
+                        text: {
+                            content: title, // The updated task title
+                        },
+                    },
+                ],
+            };
+        }
+
+        // Update the due date if provided
+        if (start) {
+            properties['Due'] = {
+                date: {
+                    start: start, // The updated start date
+                    end: end || null, // Optional end date
+                },
+            };
+        }
+        if (state) {
+            properties['Status'] = {
+                status: {
+                    name: state, // The updated status (e.g., "To Do", "In Progress", "Completed")
+                },
+            };
+        }
+
+        // Call the Notion API to update the page
+        const response = await notion.pages.update({
+            page_id: pageId, // The ID of the page to update
+            properties: properties, // The properties to update
+        });
+
+        console.log('Page updated successfully:', response);
+        res.status(200).send({
+            message: 'Task updated successfully',
+            data: response,
+        });
+    } catch (error) {
+        console.error('Error updating page:', error.message);
+        res.status(400).send({ error: error.message || error.body });
+    }
+};
+
+const deleteEvents = async (req, res) => {
+    try {
+        const pageId = req.params.pageid;
+        const response = await notion.blocks.delete({ block_id: pageId });
+        console.log('Deleted page:', pageId);
+        res.status(200).send({
+            message: 'Task updated successfully',
+            data: response,
+        });
+    } catch (error) {
+        console.error('Error deleting page:', error.message);
+        res.status(400).send({ error: error.message || error.body });
+    }
+};
+
 const getEvents = async (req, res) => {
-    console.log('Hello');
     try {
         const response = await notion.databases.query({
             database_id: databaseId,
@@ -144,28 +222,28 @@ const getEventById = async (req, res) => {
     }
 };
 
-const updateEvent = async (req, res) => {
-    try {
-        const event = await Calendar.findById(req.params.id);
-        if (!event) {
-            return res.status(404).json({ message: 'Event not found' });
-        }
+// const updateEvent = async (req, res) => {
+//     try {
+//         const event = await Calendar.findById(req.params.id);
+//         if (!event) {
+//             return res.status(404).json({ message: 'Event not found' });
+//         }
 
-        // Update in Google Calendar
-        if (event.googleEventId) {
-            await GoogleCalendarService.updateEvent(
-                event.googleEventId,
-                req.body
-            );
-        }
+//         // Update in Google Calendar
+//         if (event.googleEventId) {
+//             await GoogleCalendarService.updateEvent(
+//                 event.googleEventId,
+//                 req.body
+//             );
+//         }
 
-        Object.assign(event, req.body);
-        await event.save();
-        res.json(event);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-};
+//         Object.assign(event, req.body);
+//         await event.save();
+//         res.json(event);
+//     } catch (error) {
+//         res.status(400).json({ message: error.message });
+//     }
+// };
 
 const deleteEvent = async (req, res) => {
     try {
@@ -190,6 +268,6 @@ module.exports = {
     createEvents,
     getEvents,
     getEventById,
-    updateEvent,
-    deleteEvent,
+    updateEvents,
+    deleteEvents,
 };

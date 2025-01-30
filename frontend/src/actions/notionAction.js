@@ -21,3 +21,31 @@ export const createNotionData = async (Data) => {
     console.log("Error Creating Prompts: ", error);
   }
 };
+
+export const updateNotionData = async (Data) => {
+  try {
+    console.log(Data);
+    const response = await fetch(`${SERVER_URL}/${Data.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(Data),
+    });
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.log("Error Creating Prompts: ", error);
+  }
+};
+
+export const deleteNotionData = async (id) => {
+  try {
+    console.log(id);
+    const response = await fetch(`${SERVER_URL}/${id}`);
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.log("Error Creating Prompts: ", error);
+  }
+};
