@@ -90,7 +90,6 @@ export default function Schedule() {
   }, []);
 
   const fetchNotionData = async () => {
-    console.log("fetch");
     setLoading(true);
     const data = await getNotionData();
     console.log(data);
@@ -102,11 +101,12 @@ export default function Schedule() {
         start: page.properties.Due?.date?.start,
         end: page.properties.Due?.date?.end,
         state: page.properties.Status.status.name,
-        backgroundColor: "#3B82F6",
+        backgroundColor: page.properties?.Priority?.select?.color,
         borderColor: "#2563EB",
         // Add other properties as needed
       };
     });
+    console.log(tasks);
     setEvents(tasks);
     try {
       // Simulate API call
