@@ -6,7 +6,7 @@ import {
   InboxIcon,
   PencilSquareIcon,
   PaperAirplaneIcon,
-  PlusIcon,
+  DocumentTextIcon,
   TrashIcon,
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
@@ -86,12 +86,15 @@ const Mails = () => {
   };
 
   const handleClickMail = async (mail) => {
+    setSendEmailData();
     setSelectMail(mail);
   };
 
   const handleClose = () => setShowModal(false);
-  const handleShow = () => {
+
+  const handleNewMail = () => {
     if (selectedMail != null) {
+      setSelectMail();
       setSendEmailData({ ...sendEmailData, from: selectedMail.email });
     } else {
       setSendEmailData({
@@ -99,7 +102,7 @@ const Mails = () => {
         from: "alexis.cartetr@provider.presence.com",
       });
     }
-    setShowModal(true);
+    // setShowModal(true);
   };
 
   const handleChange = (e) => {
@@ -111,9 +114,10 @@ const Mails = () => {
   };
 
   const handleFileChange = (e) => {
+    const attachment = e.target.files[0];
     setSendEmailData((prev) => ({
       ...prev,
-      attachment: e.target.files[0],
+      attachment: attachment,
     }));
   };
 
@@ -153,31 +157,33 @@ const Mails = () => {
       <div className="py-4 h-full flex flex-col">
         {/* Header Section */}
         <div className="flex items-center mb-4">
-          <h1 className="pl-4 text-xl font-semibold">Mail</h1>
-          <form
-            onSubmit={submitSearch}
-            className="flex items-center max-w-md w-full"
-          >
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="Search emails..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  console.log(searchTerm);
-                }}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-            </div>
+          <div className="w-60">
             <button
-              type="submit"
-              className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-blue-600 rounded hover:bg-blue-700 text-white py-1 px-4 flex gap-2 items-center"
+              onClick={handleNewMail}
             >
-              Search
+              <PaperAirplaneIcon className="h-5 w-5" />
+              New Mail
             </button>
-          </form>
+          </div>
+          <div className="w-72">
+            <form onSubmit={submitSearch} className="flex items-center w-full">
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  placeholder="Search emails..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    console.log(searchTerm);
+                  }}
+                  className="w-full pl-10 pr-4 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              </div>
+              <input type="submit" hidden />
+            </form>
+          </div>
         </div>
 
         {/* Body Section */}
@@ -266,7 +272,83 @@ const Mails = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto rounded-r-md shadow-sm">
-              {selectMail ? (
+              {sendEmailData ? (
+                <div className="flex flex-col h-full overflow-hidden gap-2 rounded-md">
+                  <div className="flex bg-white justify-between px-3 py-2">
+                    <button
+                      className="bg-blue-600 rounded hover:bg-blue-700 text-white py-1 px-4 flex gap-2 items-center"
+                      onClick={handleNewMail}
+                    >
+                      <PaperAirplaneIcon className="h-5 w-5" />
+                      Send Mail
+                    </button>
+                    <button className="rounded p-1 flex items-center cursor-pointer hover:bg-gray-100">
+                      <TrashIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <div className="flex flex-col bg-white px-3">
+                    <div className="flex items-center gap-2 py-3">
+                      <label className="w-fit">To:</label>
+                      <input
+                        type="text"
+                        name="to"
+                        value={sendEmailData.to}
+                        onChange={handleChange}
+                        className="w-full p-1 border-b-2 focus:border-blue-700 focus:outline-none transition duration-100"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 py-3">
+                      <label className="w-fit">Subject:</label>
+                      <input
+                        type="text"
+                        name="subject"
+                        value={sendEmailData.subject}
+                        onChange={handleChange}
+                        className="w-full p-1 border-b-2 focus:border-blue-700 focus:outline-none transition duration-100"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <label className="w-fit flex items-center py-3">
+                        Attachments:
+                      </label>
+                      {sendEmailData.attachment && (
+                        <label className="relative w-40 border-2 px-2 flex gap-2 items-center rounded border-gray-400">
+                          <div>
+                            <DocumentTextIcon className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <p className="line-clamp-1 text-sm ">
+                              {sendEmailData.attachment.name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {sendEmailData.attachment.name.includes(".docx")
+                                ? "DOCX"
+                                : "PDF"}
+                            </p>
+                          </div>
+                        </label>
+                      )}
+                      <label className="flex-1 border-b-2 my-2 focus:border-blue-700 focus:outline-none transition duration-100">
+                        <input
+                          type="file"
+                          accept=".pdf, .doc, .docx"
+                          multiple
+                          hidden
+                          onChange={handleFileChange}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                  <div className="flex-1 rounded-md">
+                    <textarea
+                      name="message"
+                      value={sendEmailData.message}
+                      onChange={handleChange}
+                      className="w-full h-full border-none focus:outline-none p-4 text-sm"
+                    />
+                  </div>
+                </div>
+              ) : selectMail ? (
                 <div className="flex flex-col gap-2 h-full">
                   <div className="bg-white px-3 py-2 w-full rounded-sm shadow-sm">
                     <p className="font-medium">{selectMail.subject}</p>
@@ -307,12 +389,12 @@ const Mails = () => {
         </div>
 
         {/* New Mail Button */}
-        <button
+        {/* <button
           className="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
           onClick={handleShow}
         >
           <PlusIcon className="h-5 w-5" />
-        </button>
+        </button> */}
 
         {/* Email Composition Modal */}
         {/* <Modal
