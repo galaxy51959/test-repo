@@ -47,13 +47,13 @@ export default function Sidebar({ isOpen }) {
     <aside
       className={`
       fixed lg:static inset-y-0 left-0 z-50
-      w-64 bg-white shadow-lg transform 
+      w-64 bg-slate-800 shadow-lg transform 
       ${isOpen ? "translate-x-0" : "-translate-x-full"}
       lg:translate-x-0 transition-transform duration-300 ease-in-out
     `}
     >
       <div className="h-full overflow-y-auto">
-        <div className="space-y-1">
+        <div className="">
           {menuItems.map((item) => (
             <div key={item.label}>
               {item.subMenus ? (
@@ -61,7 +61,7 @@ export default function Sidebar({ isOpen }) {
                 <div>
                   <button
                     onClick={() => toggleSubmenu(item.label)}
-                    className="flex items-center justify-between w-full px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-slate-50 hover:bg-gray-100 hover:text-gray-900"
                   >
                     <div className="flex items-center">
                       <item.icon className="h-5 w-5 mr-3" />
@@ -75,7 +75,7 @@ export default function Sidebar({ isOpen }) {
                   </button>
                   {/* Submenu items */}
                   {expandedMenu === item.label && (
-                    <div className="ml-6 space-y-1">
+                    <div className="pl-6">
                       {item.subMenus.map((subItem) => (
                         <MenuItem
                           key={subItem.label}

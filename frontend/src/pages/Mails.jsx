@@ -6,20 +6,25 @@ import {
   InboxIcon,
   PencilSquareIcon,
   PaperAirplaneIcon,
+  PlusIcon,
   TrashIcon,
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  EllipsisVerticalIcon,
 } from "@heroicons/react/24/outline";
 import {
   getEmailsByAccount,
   sendEmails,
   getEmails,
 } from "../actions/emailActions";
-import { Modal, Button, Form, Container } from "react-bootstrap";
-import { FaPlus, FaPaperPlane, FaPaperclip } from "react-icons/fa";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+// import { Modal, Button, Form, Container } from "react-bootstrap";
+// import { FaPlus, FaPaperPlane, FaPaperclip } from "react-icons/fa";
+// import ReactQuill from "react-quill";
+// import "react-quill/dist/quill.snow.css";
 
 const Mails = () => {
   const [selectedMail, setSelectedMail] = useState(null);
+  const [selectMail, setSelectMail] = useState();
   const [expandedMenus, setExpandedMenus] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [selectedMails, setSelectedMails] = useState([]);
@@ -78,6 +83,10 @@ const Mails = () => {
     const result = await getEmailsByAccount(account.email, folder);
     setSelectedMails(result);
     setSearchTerm("");
+  };
+
+  const handleClickMail = async (mail) => {
+    setSelectMail(mail);
   };
 
   const handleClose = () => setShowModal(false);
@@ -174,9 +183,9 @@ const Mails = () => {
         {/* Body Section */}
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar */}
-          <div className="w-64 bg-white border-r overflow-y-auto">
+          <div className="w-60 bg-white border-r overflow-y-auto">
             {emailAccounts.map((account) => (
-              <div key={account.id} className="p-4">
+              <div key={account.id} className="p-3">
                 <button
                   onClick={() => toggleMenu(account.id)}
                   className="flex items-center w-full text-left p-2 hover:bg-gray-100 rounded-lg"
@@ -186,32 +195,32 @@ const Mails = () => {
                       expandedMenus[account.id] ? "rotate-90" : ""
                     }`}
                   />
-                  <span className="px-1 font-medium">
-                    {account.email.substring(0, 20)}...
+                  <span className="px-1 font-medium line-clamp-1">
+                    {account.email}
                   </span>
                 </button>
 
                 {expandedMenus[account.id] && (
-                  <div className="ml-4 mt-2 space-y-1">
+                  <div className="ml-4 mt-2">
                     <button
                       onClick={() => handleMailClick("inbox", account)}
-                      className="flex items-center space-x-2 w-full p-2 hover:bg-gray-100 rounded-lg"
+                      className="flex items-center space-x-2 w-full px-1 py-2 hover:bg-gray-200 focus:bg-gray-200 transition duration-300 rounded-md"
                     >
                       <InboxIcon className="h-4 w-4" />
                       <span>Inbox</span>
                     </button>
-                    <button className="flex items-center space-x-2 w-full p-2 hover:bg-gray-100 rounded-lg">
+                    <button className="flex items-center space-x-2 w-full px-1 py-2 hover:bg-gray-200 focus:bg-gray-200 transition duration-300 rounded-md">
                       <PencilSquareIcon className="h-4 w-4" />
                       <span>Drafts</span>
                     </button>
                     <button
                       onClick={() => handleMailClick("sent", account)}
-                      className="flex items-center space-x-2 w-full p-2 hover:bg-gray-100 rounded-lg"
+                      className="flex items-center space-x-2 w-full px-1 py-2 hover:bg-gray-200 focus:bg-gray-200 transition duration-300 rounded-md"
                     >
                       <PaperAirplaneIcon className="h-4 w-4" />
                       <span>Sent</span>
                     </button>
-                    <button className="flex items-center space-x-2 w-full p-2 hover:bg-gray-100 rounded-lg">
+                    <button className="flex items-center space-x-2 w-full px-1 py-2 hover:bg-gray-200 focus:bg-gray-200 transition duration-300 rounded-md">
                       <TrashIcon className="h-4 w-4" />
                       <span>Trash</span>
                     </button>
@@ -222,37 +231,78 @@ const Mails = () => {
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto px-6">
-            {selectedMails ? (
-              selectedMails.map((mail) => (
-                <div className="bg-white shadow p-6 mb-4" key={mail._id}>
-                  <h2 className="text-xl font-semibold mb-4">{mail.subject}</h2>
-                  <div className="text-sm text-gray-600 mb-2">
-                    From: {mail.from}
+          <div className="flex-1 flex overflow-hidden gap-2">
+            <div className="w-72 overflow-y-auto bg-white rounded-r-md shadow-sm">
+              {selectedMails ? (
+                selectedMails.map((mail) => (
+                  <div
+                    className="border-b-2 border-gray-300 flex cursor-pointer"
+                    key={mail._id}
+                    onClick={() => handleClickMail(mail)}
+                  >
+                    <div className="flex w-20 justify-end pl-3 pt-3">
+                      <span className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
+                        {mail.from.charAt(0)}
+                      </span>
+                    </div>
+                    <div className="px-2 pt-2 pb-1">
+                      <h2 className="text-md font-normal mb-1 first-letter:capitalize">
+                        {mail.from}
+                      </h2>
+                      <p className="text-sm text-gray-600 mb-2">
+                        {mail.Subject || "No Subject"}
+                      </p>
+                      <p className="text-sm text-gray-600 line-clamp-1">
+                        {mail.body}
+                      </p>
+                    </div>
                   </div>
-                  {mail.attachments.map((file) => (
-                    <a
-                      key={file.filename}
-                      className="text-sm text-gray-600 mb-4"
-                      href={`http://localhost:5000/reports/${file.path}`}
-                      target="_blank"
-                    >
-                      {file.filename}
-                    </a>
-                  ))}
-                  <div className="border-t pt-4">{mail.body}</div>
+                ))
+              ) : (
+                <div className="text-center text-gray-500 pt-10 bg-gray-200 h-full">
+                  Select an email to view its contents
                 </div>
-              ))
-            ) : (
-              <div className="text-center text-gray-500 pt-10 bg-gray-200 h-full">
-                Select an email to view its contents
-              </div>
-            )}
-            {/* {searchTerm != "" && selectedMails.length === 0  (
-                <div className="text-center text-gray-500 pt-10">
-                    No emails found matching your search
+              )}
+            </div>
+
+            <div className="flex-1 overflow-y-auto rounded-r-md shadow-sm">
+              {selectMail ? (
+                <div className="flex flex-col gap-2 h-full">
+                  <div className="bg-white px-3 py-2 w-full rounded-sm shadow-sm">
+                    <p className="font-medium">{selectMail.subject}</p>
+                  </div>
+                  <div className="flex-1 w-full flex flex-col bg-white rounded-sm shadow-sm">
+                    <div className="border-b-2 border-gray-300 flex justify-between items-center p-3">
+                      <div className="flex">
+                        <div className="w-10 flex-shrink-0">
+                          <span className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
+                            {selectMail.from.charAt(0)}
+                          </span>
+                        </div>
+                        <div className="px-2">
+                          <p className="text-md text-gray-600">
+                            {selectMail.from}
+                          </p>
+                          <p className="text-xs pt-1">
+                            To: You({selectMail.to})
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-5">
+                        <ArrowUturnLeftIcon className="h-5 w-5 text-pink-600 cursor-pointer" />
+                        <ArrowUturnRightIcon className="h-5 w-5 text-blue-600 cursor-pointer" />
+                        <EllipsisVerticalIcon className="h-5 w-5 cursor-pointer" />
+                      </div>
+                    </div>
+                    <div className="flex-1 p-6">{selectMail.body}</div>
+                  </div>
                 </div>
-            )} */}
+              ) : (
+                <div className="text-center text-gray-500 pt-10 bg-gray-200 h-full">
+                  Select an email to view its contents
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -261,11 +311,11 @@ const Mails = () => {
           className="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
           onClick={handleShow}
         >
-          <FaPlus className="h-6 w-6" />
+          <PlusIcon className="h-5 w-5" />
         </button>
 
         {/* Email Composition Modal */}
-        <Modal
+        {/* <Modal
           show={showModal}
           onHide={handleClose}
           size="md"
@@ -370,7 +420,7 @@ const Mails = () => {
               </div>
             </Form>
           </Modal.Body>
-        </Modal>
+        </Modal> */}
       </div>
     </div>
   );
