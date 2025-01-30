@@ -11,8 +11,10 @@ import {
   DocumentTextIcon,
   ArrowPathIcon,
   PlusIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { getNotionData, createNotionData } from "../actions/notionAction";
+
 export default function Schedule() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -35,6 +37,10 @@ export default function Schedule() {
     created_At: "",
     due_At: "",
   });
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState(null);
+
   // Sample data - Replace with actual Notion API calls
   const sampleDatabases = [
     { id: 1, name: "Student Records", lastSync: "2024-03-20" },
@@ -118,34 +124,42 @@ export default function Schedule() {
   };
 
   const handleDateSelect = (selectInfo) => {
-    const newEvent = {
-      title: "New Task",
-      created_time: "2025-01-29T20:35:00.000Z",
-      start: selectInfo.startStr,
-      end: selectInfo.endStr,
-    };
-    console.log(newEvent);
-    createNotionData(newEvent);
+    if (selectInfo.jsEvent && selectInfo.jsEvent.button === 0) {
+      const newEvent = {
+        title: "New Task",
+        created_time: new Date().toISOString(),
+        start: selectInfo.startStr,
+        end: selectInfo.endStr,
+      };
+      setCreatedEvent(newEvent);
+      setSelectedEvent(null);
+      setShowSidebar(true);
+    }
   };
 
   const handleEventClick = (clickInfo) => {
-    setSelectedEvent(events.filter((event) => event.id == clickInfo.event.id));
-    console.log(selectedEvent);
-    // confirm(
-    //        `Are you sure you want to delete the event '${events.filter((event) => event.id == clickInfo.event.id)}'`
-    //    )
-    // if (
-    //   confirm(
-    //     `Are you sure you want to delete the event '${clickInfo.event.title}'`
-    //   )
-    // ) {
-    //   clickInfo.event.remove();
-    //   setEvents(events.filter((event) => event.id !== clickInfo.event.id));
-    // }
+    if (clickInfo.jsEvent.button === 0) {
+      clickInfo.jsEvent.preventDefault();
+      const event = events.find((event) => event.id == clickInfo.event.id);
+      setSelectedEvent(event);
+      setCreatedEvent(null);
+      setShowSidebar(true);
+    }
+  };
+
+  const handleEventRightClick = (info) => {
+    // info.jsEvent.preventDefault();
+    setSelectedEventId(info.event.id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteEvent = () => {
+    setEvents(events.filter((event) => event.id !== selectedEventId));
+    setShowDeleteModal(false);
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 p-6 space-y-8">
+    <div className="flex flex-col min-h-screen bg-gray-50 p-6 space-y-8 relative">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center">
@@ -221,6 +235,32 @@ export default function Schedule() {
               </div>
             ))}
           </div>
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            headerToolbar={{
+              left: "prev,next today",
+              center: "title",
+              right: "dayGridMonth,timeGridWeek,timeGridDay",
+            }}
+            editable={true}
+            selectable={true}
+            selectMirror={true}
+            dayMaxEvents={true}
+            weekends={true}
+            events={events}
+            select={handleDateSelect}
+            eventClick={handleEventClick}
+            // eventContent={renderEventContent}
+            eventDidMount={(info) => {
+              info.el.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                handleEventRightClick(info);
+              });
+            }}
+            height="auto"
+            className="notion-calendar-content"
+          />
         </div>
       </div>
 
@@ -249,45 +289,223 @@ export default function Schedule() {
         </div>
       </div>
 
-      {/* New Calendar Section */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold">Calendar</h2>
-          <div className="flex space-x-2">
-            <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
-              Month
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
-              Week
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
-              Day
-            </button>
+      {/* Sidebar Overlay */}
+      {/* {showSidebar && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-30 transition-opacity z-40"
+          onClick={() => setShowSidebar(false)}
+        />
+      )} */}
+
+      {/* Notion-like Sidebar */}
+      {showSidebar && (
+        <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out overflow-y-auto z-50">
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold">
+                {selectedEvent ? "Edit Event" : "New Event"}
+              </h2>
+              <button
+                onClick={() => setShowSidebar(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="p-6">
+            <div className="space-y-6">
+              {selectedEvent ? (
+                // Edit Event Form
+                <>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedEvent.title}
+                      onChange={(e) =>
+                        setSelectedEvent({
+                          ...selectedEvent,
+                          title: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Created At
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={selectedEvent.created_time?.slice(0, 16) || ""}
+                      onChange={(e) =>
+                        setSelectedEvent({
+                          ...selectedEvent,
+                          created_time: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Due At
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={selectedEvent.start?.slice(0, 16) || ""}
+                      onChange={(e) =>
+                        setSelectedEvent({
+                          ...selectedEvent,
+                          start: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      State
+                    </label>
+                    <select
+                      value={selectedEvent.state || "todo"}
+                      onChange={(e) =>
+                        setSelectedEvent({
+                          ...selectedEvent,
+                          state: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded-md"
+                    >
+                      <option value="todo">To Do</option>
+                      <option value="in-progress">In Progress</option>
+                      <option value="done">Done</option>
+                    </select>
+                  </div>
+                </>
+              ) : (
+                // New Event Form
+                <>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={createdEvent.title}
+                      onChange={(e) =>
+                        setCreatedEvent({
+                          ...createdEvent,
+                          title: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Created Time
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={createdEvent.created_time?.slice(0, 16) || ""}
+                      onChange={(e) =>
+                        setCreatedEvent({
+                          ...createdEvent,
+                          created_time: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Start
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={createdEvent.start?.slice(0, 16) || ""}
+                      onChange={(e) =>
+                        setCreatedEvent({
+                          ...createdEvent,
+                          start: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      End
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={createdEvent.end?.slice(0, 16) || ""}
+                      onChange={(e) =>
+                        setCreatedEvent({
+                          ...createdEvent,
+                          end: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                </>
+              )}
+
+              <button
+                onClick={() => {
+                  if (selectedEvent) {
+                    // Update existing event
+                    setEvents(
+                      events.map((event) =>
+                        event.id === selectedEvent.id ? selectedEvent : event
+                      )
+                    );
+                  } else {
+                    // Create new event
+                    createNotionData(createdEvent);
+                  }
+                  setShowSidebar(false);
+                }}
+                className="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                {selectedEvent ? "Update Event" : "Create Event"}
+              </button>
+            </div>
           </div>
         </div>
+      )}
 
-        <div className="notion-calendar">
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay",
-            }}
-            editable={true}
-            selectable={true}
-            selectMirror={true}
-            dayMaxEvents={true}
-            weekends={true}
-            events={events}
-            select={handleDateSelect}
-            eventClick={handleEventClick}
-            height="auto"
-            className="notion-calendar-content"
-          />
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-medium mb-4">Delete Event</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this event?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteEvent}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
