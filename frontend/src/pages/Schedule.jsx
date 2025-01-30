@@ -13,7 +13,12 @@ import {
   PlusIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { getNotionData, createNotionData } from "../actions/notionAction";
+import {
+  getNotionData,
+  createNotionData,
+  updateNotionData,
+  deleteNotionData,
+} from "../actions/notionAction";
 
 export default function Schedule() {
   const navigate = useNavigate();
@@ -27,9 +32,10 @@ export default function Schedule() {
     tasks: [],
   });
   const [selectedEvent, setSelectedEvent] = useState({
+    id: "",
     title: "",
     created_At: "",
-    due_At: "",
+    end: "",
     state: "",
   });
   const [createdEvent, setCreatedEvent] = useState({
@@ -87,9 +93,9 @@ export default function Schedule() {
     setLoading(true);
     const data = await getNotionData();
     console.log(data);
-    const tasks = data.map((page, id) => {
+    const tasks = data.map((page) => {
       return {
-        id: id,
+        id: page.id,
         created_time: page.created_time,
         title: page.properties["Task name"].title[0].plain_text,
         start: page.properties.Due?.date?.start,
@@ -131,6 +137,8 @@ export default function Schedule() {
         start: selectInfo.startStr,
         end: selectInfo.endStr,
       };
+
+      console.log(newEvent);
       setCreatedEvent(newEvent);
       setSelectedEvent(null);
       setShowSidebar(true);
@@ -142,6 +150,7 @@ export default function Schedule() {
       clickInfo.jsEvent.preventDefault();
       const event = events.find((event) => event.id == clickInfo.event.id);
       setSelectedEvent(event);
+      console.log(event);
       setCreatedEvent(null);
       setShowSidebar(true);
     }
@@ -154,7 +163,8 @@ export default function Schedule() {
   };
 
   const handleDeleteEvent = () => {
-    setEvents(events.filter((event) => event.id !== selectedEventId));
+    deleteNotionData(selectedEventId);
+    // setEvents(events.filter((event) => event.id !== selectedEventId));
     setShowDeleteModal(false);
   };
 
@@ -353,7 +363,7 @@ export default function Schedule() {
                   </div>
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
-                      Due At
+                      Start At
                     </label>
                     <input
                       type="datetime-local"
@@ -362,6 +372,22 @@ export default function Schedule() {
                         setSelectedEvent({
                           ...selectedEvent,
                           start: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      End At
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={selectedEvent.end?.slice(0, 16) || ""}
+                      onChange={(e) =>
+                        setSelectedEvent({
+                          ...selectedEvent,
+                          end: e.target.value,
                         })
                       }
                       className="w-full p-2 border rounded-md"
@@ -381,9 +407,9 @@ export default function Schedule() {
                       }
                       className="w-full p-2 border rounded-md"
                     >
-                      <option value="todo">To Do</option>
-                      <option value="in-progress">In Progress</option>
-                      <option value="done">Done</option>
+                      <option value="Not started">To Do</option>
+                      <option value="In progress">In Progress</option>
+                      <option value="Done">Done</option>
                     </select>
                   </div>
                 </>
@@ -466,6 +492,7 @@ export default function Schedule() {
                         event.id === selectedEvent.id ? selectedEvent : event
                       )
                     );
+                    updateNotionData(selectedEvent);
                   } else {
                     // Create new event
                     createNotionData(createdEvent);
