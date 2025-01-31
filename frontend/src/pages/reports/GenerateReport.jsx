@@ -104,7 +104,7 @@ export default function GenerateReport() {
         name: data?.name || "",
         school: data?.school || "",
         dateOfBirth: data?.birthdate || "",
-        parent_guardians: data?.parent_guardians || "",
+        parent_guardians: data?.parent_guardians || "Mr and Mrs Joshua",
         age: calculateAge(data?.birthdate || ""),
         team: "RSP Teacher, School Psychologist",
         language: data?.reporting_language || "",

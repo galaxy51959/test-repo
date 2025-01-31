@@ -183,10 +183,9 @@
   "section": "Identifying Information",
   "__v": 0,
   "order": 1,
-  "humanPrompt": "Please create a table from the given information.\nTable has 2 columns and 6 rows. Table Style is border-collapse.\n1st Row has two fields: Students:{name}, School:{school}\n2nd Row has two fields: Birth Date:{dateOfBirth}, Parent/Guardian:{parent_guardians}\n3rd Row has two fields: Chronological Age:{ageY} years {ageM}, Multi-Disciplinary Team:{team}\n4th Row has two fields: Primary Language:{language}, Address:{address}\n5th Row has two fields: Grade:{grade}, Psychologist: Alexis E.Carter\n6th Row has two fields: Date of Report:{dateOfReport}, Assessment:{assessment}",
-  "need": [
-    "SEIS"
-  ]
+  "humanPrompt": "Please create a table from the given information.\nTable has 2 columns and 6 rows.\n1st Row has two fields: Students:{name}, School:{school}\n2nd Row has two fields: Birth Date:{dateOfBirth}, Parent/Guardian:{parent_guardians}\n3rd Row has two fields: Chronological Age:{ageY} years {ageM} months, Multi-Disciplinary Team:{team}\n4th Row has two fields: Primary Language:{language}, Address:{address}\n5th Row has two fields: Grade:{grade}, Psychologist: Alexis E.Carter\n6th Row has two fields: Date of Report:{dateOfReport}, Assessment:{assessment}",
+  "need": [],
+  "systemPrompt": ""
 },
 {
   "_id": {
@@ -205,10 +204,118 @@
     "$oid": "679bfac3bd29580eda0baed6"
   },
   "section": "Confidential Multidisciplinary Report",
-  "humanPrompt": "This is Human Prompt",
+  "humanPrompt": "Confidential Multidisciplinary Report(h3 tag, Italic Style, Center Align)\\nThis report is to be interpreted and used only by individuals properly trained and certified by state agencies and/or by parents or legal guardians of the stated child. This report is confidential and must not be released to persons who do not have a legitimate professional interest in the child.(Italic Style, Center Align)",
   "systemPrompt": "This is System Prompt",
+  "need": []
+},
+{
+  "_id": {
+    "$oid": "679cd775bd29580eda0baef6"
+  },
+  "section": "Purpose of Assessment",
+  "humanPrompt": "The purpose for {name}’s triennial review was to assess {name}’s continued eligibility for special education services. This report is a re-evaluation of {name}’s educational program, and this current assessment will help in determining whether: {name}’s continues to manifest a disability, to evaluate {name}’s present levels of educational functioning, as well as, to evaluate whether the continuation of special education services or related services are required for {name}’s educational success.\\n\\nThe objectives of the current evaluation are to: (This Sentence is SubTitle)\\nBelow are ordered lists.\\n1. Provide information on {name}’s present levels of performance, including {name}’s strengths and weaknesses.\\n2. Help determine whether {name} continues to meet the California Education Code criteria for an individual with exceptional needs,\\n3. Evaluate whether {name}’s current educational program is the least restrictive environment that can provide {name} with a free and appropriate public education.\\n4. Make recommendations to the Individualized Education Program team related to any program changes that may be appropriate based on {name}’s assessed educational needs..",
+  "need": []
+},
+{
+  "_id": {
+    "$oid": "679cd98dbd29580eda0baef7"
+  },
+  "section": "Procedures",
+  "humanPrompt": "The purpose for {name}’s triennial review was to assess {name}’s continued eligibility for special education services. This report is a re-evaluation of {name}’s educational program, and this current assessment will help in determining whether: {name}’s continues to manifest a disability, to evaluate {name}’s present levels of educational functioning, as well as, to evaluate whether the continuation of special education services or related services are required for {name}’s educational success.\\n\\nThe objectives of the current evaluation are to: (This Sentence is SubTitle)\\nBelow are ordered lists.\\n1. Provide information on {name}’s present levels of performance, including {name}’s strengths and weaknesses.\\n2. Help determine whether {name} continues to meet the California Education Code criteria for an individual with exceptional needs,\\n3. Evaluate whether {name}’s current educational program is the least restrictive environment that can provide {name} with a free and appropriate public education.\\n4. Make recommendations to the Individualized Education Program team related to any program changes that may be appropriate based on {name}’s assessed educational needs..",
+  "need": []
+},
+{
+  "_id": {
+    "$oid": "679cda19bd29580eda0baefa"
+  },
+  "section": "Validity Statement",
+  "humanPrompt": "Environmental, cultural, or economic variables would not appear to be playing a significant role in learning difficulties. These observations, combined with adequate test taking behavior, lead the Examiner to conclude that this assessment offers a valid and reliable estimate of {name}’s learning skills and abilities. This evaluation was conducted by qualified personnel. Test and assessment materials, and procedures used for the purposes of assessment and placement of individuals with exceptional needs were selected and administered as not to be racially, culturally, or sexually discriminatory. The student's primary language combined with the examiner’s awareness of {name}’s cultural and ethnic background was taken into consideration.  Nonverbal instruments were also utilized if appropriate.(above paragraph: italic style)\\",
+  "need": []
+},
+{
+  "_id": {
+    "$oid": "679cde54bd29580eda0baefb"
+  },
+  "section": "Assessment Information",
+  "humanPrompt": "First Paragraph: Test Procedures and Materials\nIn accordance with Education Code 56320, the following was considered regarding the procedures and materials used during the present evaluation to ensure compliance with state and federal regulations: This evaluation was conducted by qualified personnel.  The pupil was assessed in areas related to the suspected disability. The assessment materials were selected as not to be racially, sexually, or culturally discriminatory. They were provided and administered in the student’s dominant language and/or non-verbally, and in accordance with the instructions provided by the producer of each test. Tests have been validated for the specific areas of educational need and not merely those that are designed to provide a single general intelligence quotient. The assessment results provided accurately reflect the student’s aptitude, achievement level, and/or any other factors the test purports to measure, and not the pupil’s impaired sensory, manual, or speaking skills.\n\nSecond Paragraph: Exclusionary Factors and Validity of Test and Observational Results\nThe assessment team considers the student’s background in making eligibility and placement decisions. The potential impact of environmental, cultural/lifestyle or economic factors have been considered.\n\nThird Paragraph: (This is only for the student that language is English) Cultural and Linguistic Factors(This must follow style that Bold Style, Left Align, h4 tag, Uppercase, Underline)\nCultural and linguistic factors were considered during the selection of test materials for this evaluation. There appears to be no evidence of cultural, linguistic, or educational disadvantage. The Spanish language is the language spoken in the home. The most recent administration of English Language Proficiency Assessments for California (ELPAC) on (XX/XX/XX) which identified {name} as an English Language Learner who is performing at an overall moderately developed level (X) of acquiring the English Language. The summative ELPAC scores measures how well students are learning the English language and help with determining the supports needed for the student to acquire the English language proficiently. Students who are at a level (X) in English language performance is able to use the English language to learn new\\neducational concepts.\n\nForth Paragraph: Validity of Test Results\nAssessment materials and procedures utilized in the current evaluation were administered so as not to be racially, culturally, or sexually discriminatory. All tests have been validated for the specific purpose for which they were used (including low incidence) and administered by properly trained and credentialed personnel in accordance with test administration instructions. {name} was assessed in all areas related to {name} suspected disability.\n",
+  "need": []
+},
+{
+  "_id": {
+    "$oid": "679ce1adbd29580eda0baefc"
+  },
+  "section": "Background Information",
+  "humanPrompt": "Each Paragraph Title: (Bold, strong tag, Underline, Left Align)\nFirst Paragraph: Developmental and Health History\nWrite one six sentence paragraph summarizing {name}'s Developmental and health history rite one six sentence paragraph summarizing {name}'s Developmental and health history please make sure that you identify information that relays when name was born, if there were any difficulties during childbirth or pregnancy, gnosis that the student may have, any medical conditions that the student may have, any developmental condition that the student may have, the student weighed when they were born, when and where did they receive treatment in any other facility besides the school, place the names of the facilities and the people who have done previous evaluations of the student, relay dates and times when the student was evaluated if evaluated outside of the school setting, and the student developmental age in months when the student had completed or did not complete developmental milestones. Create a visual chart of the students developmental abilities according to their months for when they started key point developmental milestones up to age 5. Please include in the chart if it is considered a concern or not based on the each developmental milestone. Please pull information from the document attached based on the mom’s, dad, grandparent’s, or guardian’s responses that will answer the questions below:\\n- Does your child wear glasses, and if so, do they bring them to evaluation sessions?\\n- When was the last time your child had their hearing and vision checked?\\n- Does your child currently take any medication? If yes, provide the name and purpose of the medication.\\n- Has your child suffered any severe physical or mental injury? If yes, specify the date and circumstances.\n- Does your child have any current mental or physical health diagnoses (e.g., ADHD, autism, diabetes)?\n- Was your child born from a normal pregnancy gestation? If yes, how many weeks did you carry the child?\n- Were there any pregnancy complications? If yes, specify the type of complications.\n- Did the baby go home from the hospital with the mother? If not, explain why.\n- At what ages did your child achieve the following milestones: sitting independently, crawling, walking alone, first words, speaking in sentences, and toilet training?\n- What age was your child fully toilet-trained?\n\nSecond Paragraph: Home Background\nWrite one six sentence paragraph summarizing {name}'s background in the home environment. Please pull information from the document attached based on the mom's, dad, grandparent's, or guardian's responses that will answer the questions below:\n- How does your child get along with family members?\\n- Who lives in your child's home (e.g., parents, grandparents, siblings, guardians)?\n- Does your child have siblings? If yes, how many and what are their ages?\n- Does {name} lives with his biological parents, if not? Why not?\n- Are there any significant stressors in your child's life?\n\nThird Paragraph: Hearing and Vision Results\n\nHearing Results\nDate: ()\nResult: (PASS/FAIL)\nVision Results\nDate: ()\nResult: (PASS/FAIL)\nPlease fill the abovebrackets. Please create a three to four sentence paragraph on the {name}'s hearing and vision results and relay the date in which the student got their hearing completed and the results of that hearing screening and relay the dates for the vision screening and the results for the vision screening and any information necessary needed for any evaluation that was done outside of the school environment. Please provide only the month and the year on which the hearing and or screening took place. Also include if the results would interfere with testing at the current moment. . Please pull information from the document attached based on the mom’s responses that will answer the questions below: Please pull information from the document attached based on the mom’s, dad, grandparent’s, or guardian’s responses that will answer the questions below:\n- Does your child wear glasses, and if so, do they wear them consistently during class?",
   "need": [
-    "array",
-    "12312331"
+    "INTERVIEW(Parent)",
+    "INTERVIEW(Teacher)"
   ]
+},
+{
+  "_id": {
+    "$oid": "679ce504bd29580eda0baefd"
+  },
+  "section": "Academic History",
+  "humanPrompt": "Write one 5 sentence paragraph About {name}'s Academic history, Attendance history, Behavioral And social emotional history in the school setting. Please create a chart to show all current grades reports and previous grade reports, please create a chart showing any disciplinary record, if any please relay what the students academic history based on the grade report attendance and their disciplinary history is relying on how the student is able to function and acquire the curriculum in the school setting or an educational setting. Please pull information from the document attached that will answer the questions below:\n- Does the student have a disciplinary history? If so, what were the disciplinary actions, and on what dates did these actions take place? Where did these disciplinary actions occur?\n- Does the student have a history of not attending school? If not, what does their attendance history indicate?\n- What do the student’s grades reveal about their ability to complete academic work?\n- What is the history of the student’s schooling? Which schools has the student attended, and which school are they currently enrolled in?",
+  "need": [
+    "HISTORY"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679ceb51bd29580eda0baefe"
+  },
+  "section": "Interviews",
+  "humanPrompt": "Parent View (Bold, strong tag, Underline Style, Left Align)\nEach Paragraph Title: (Bold, Underline Style, Left Align)\nWrite one 5 sentence paragraph About {name}'s Academic history, Attendance history, Behavioral And social emotional history in the school setting. Please create a chart to show all current grades reports and previous grade reports, please create a chart showing any disciplinary record, if any please relay what the students academic history based on the grade report attendance and their disciplinary history is relying on how the student is able to function and acquire the curriculum in the school setting or an educational setting. Please pull information from the document attached that will answer the questions below:\n- Does the student have a disciplinary history? If so, what were the disciplinary actions, and on what dates did these actions take place? Where did these disciplinary actions occur?\n- Does the student have a history of not attending school? If not, what does their attendance history indicate?\n- What do the student’s grades reveal about their ability to complete academic work?\n- What is the history of the student’s schooling? Which schools has the student attended, and which school are they currently enrolled in?",
+  "need": [
+    "INTERVIEW(Parent)"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679cec60bd29580eda0baeff"
+  },
+  "section": "Interviews",
+  "humanPrompt": "Write one six sentence paragraph about {name}'s teacher's interview, Write one six sentence paragraph about {name}'s teacher's interview, please relay any positive characteristics that the teacher has relayed about the student. Please relay any negative characteristics that the teacher has relayed about the student. Please relay any details about the students’ difficulties\nwhen it comes to academics and when it comes to social skills and social emotional health, please relay the concerns of the teacher. Please include what the student can or cannot do academically and with communication please be specific in the areas in which the teacher identify and what in what the student can actually do or cannot do based on the information provided. please analyze the information in the document for (PARENT NAME) and relay how this information relays about . Please pull information from the document attached based on the teacher’s responses that will answer the questions below:\n- What is the student's consistency in completing assignments, and does this vary by subject?\n- How does the student follow directions when turning in assignments?\n- How would you describe the student’s participation in group or class work, and any reluctance to contribute?\n- What are the student’s observable work habits, and are there any notable inconsistencies?\n- How attentive is the student to class subject matter, and does attentiveness vary by subject?\n- How would you assess the student's motivation and performance in relation to their ability level?\n- What is the student's general behavior in class, and how often do they need redirection?\n- How does the student interact with peers, and do any issues impact their ability to meet objectives?\n- What are the student's current levels of performance in reading, including fluency and strategies?\n- What are the student’s abilities and challenges in writing, including vocabulary and organization?\n- How would you describe the student’s math skills, both computational and reasoning?\n- What are the student’s communication skills, including strengths and difficulties?\n- Do you have to repeat directions to your child? Can they follow one or two directions?\n- Are there any problems completing tasks like homework or chores? If so, how are they handled?",
+  "need": [
+    "INTERVIEW(Teacher)"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679cecafbd29580eda0baf00"
+  },
+  "section": "Interviews",
+  "humanPrompt": "Write a paragraph About {name} Student interview Write a paragraph About {name} Student interview and please provide the date on which the interview took place on. Please outline {name}'s interest, {name}'s goal for when they grow up, what type of job the student would like to have when they grow up, please relay if the student has any pets at home, what the student likes to do for fun, please analyze how the things that the student likes to do relays positive characteristics and please identify positive characteristics or characteristic strengths based on the information supplied. Please pull information from the document attached based on the student’s responses that will answer the questions below:\n-What three wishes would the student make for the world?\n-What is the student’s favorite food?\n-What are the student’s favorite hobbies?\n-How many dogs and cats does the student have?\n-What does the student say makes them angry?\n-What does the student say makes them sad?\n-What does the student say makes them happy?\n-What does the student say makes them afraid?\n-What is the student’s favorite school subject?\n-What is the student’s least favorite school subject?",
+  "need": [
+    "INTERVIEW(Self)"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679cf094bd29580eda0baf03"
+  },
+  "section": "Behavioral Observations",
+  "humanPrompt": "Classroom Observations- NOTE: you must do three separate paragraph for eah setting(Recess/Lunch, Classroom, and Evaluation Observation)\n\nWrite one six sentence paragraph about {name}’s Observations and please relay all of the dates, and collaborative minutes in which the observation took place, as well as, which setting the observations took place in. Please relay how many students were in the classroom during the observation, where the students sat at during the observation. What the students were working on or we’re engaged in when the observation was taking place, please relay all behaviors positive and or negative behaviors that was identified during the observation. Please create an analysis on if the behavior is observed or considered typical for the environment or if they were considered problematic for the environment. Relate an analysis on if the student was\nobserved exhibiting appropriate social skills or if they or if they were not exhibited appropriate social skills, as well as if they had exhibited the appropriate facial affect for the environment that they were in their behaviors in that setting beneficial to their learning or hindering their learning ability in that setting Based on the information provided.",
+  "need": [
+    "LUNCH",
+    "CLASSROOM",
+    "EVALUATION"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679cf25cbd29580eda0baf04"
+  },
+  "section": "Current Assessment Results And Interpretation",
+  "humanPrompt": "Performance levels for most tests administered will be reported according to the following scale:\n\nAnd then there is table with 4 columns, head row and five rows.\nEach field has single border and align center, table border style is collapse.\nHead Row field Style: Bold, Uppercase, Center align, gray background\n\nHead Row: Standard Score, Scaled Score, Percentile Rank, Performance Level\n1st Row: 130+, 160+, >98, Superior\n2nd Row: 116-130, 13-15, 85-97, Above Average\n3rd Row: 85-115, 7-12, 16-84, Average\n4th Row: 71-84, 4-6, 3-8, Below Average\n5th Row: 70 and below, 3 and below, <3, Significantly Below Average\n\nOne exception to this classification scheme will be the behavioral rating scales, which use different performance level descriptors.\n \nThe test results section is organized into the following areas:(This sentence is paragraph title)\nBelow are lists.\nI.\tObservations\nII.\tFunctioning: Cognitive, Socio-emotional, Communication, and Physical Development\nIII.\tSocial Emotional Functioning\nIV.\t Adaptive Behavior Functioning\nV.\tSpecialty Rating Scale Functioning\nVI.\tAcademic Functioning",
+  "need": []
+},
+{
+  "_id": {
+    "$oid": "679cf762bd29580eda0baf05"
+  },
+  "section": "Summary And Diagnostic Impressions",
+  "humanPrompt": "Write one 6 sentence paragraph About {name}'s results. please include the overall standard scores, percentile, and classification for each Overall Test area . please indicate what the standard scores mean regarding the student's educational functioning for each area based on {name}'s testing results on each test that include the information below:",
+  "need": []
 }]
