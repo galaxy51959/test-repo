@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import moment from 'moment';
 import { HotTable } from "@handsontable/react";
 import { registerAllModules } from "handsontable/registry";
 import {
@@ -23,7 +24,6 @@ registerAllModules();
 export default function Students() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const dataRef = useRef(data);
   const hotRef = useRef(null);
 
   const hyperformulaInstance = HyperFormula.buildEmpty({
@@ -118,39 +118,18 @@ export default function Students() {
 
   useEffect(() => {
     fetchStudents();
-    return () => {
-      console.log(dataRef.current);
-      const lastStudent = dataRef.current[dataRef.current.length - 1];
-      if (
-        lastStudent &&
-        Object.keys(lastStudent).findIndex(
-          (key) =>
-            lastStudent[key] === "" ||
-            lastStudent[key] === null ||
-            lastStudent[key] === undefined
-        ) > -1
-      ) {
-        console.log("DELETE");
-        deleteStudent(lastStudent._id);
-      }
-    };
   }, []);
-
-  useEffect(() => {
-    dataRef.current = data;
-  }, [data]);
 
   const fetchStudents = async () => {
     try {
       setLoading(true);
       const response = await getStudents();
-      // Transform the data to match our column structure
       const transformedData = response.students.map((student) => ({
         _id: student._id,
         firstName: student.firstName,
         lastName: student.lastName,
         gender: student.gender,
-        dateOfBirth: new Date(student.dateOfBirth),
+        dateOfBirth: student.dateOfBirth,
         grade: student.grade,
         school: student.school,
         language: student.language,
@@ -190,39 +169,6 @@ export default function Students() {
       }
     }
   };
-
-  // const addNewStudent = async () => {
-  //   console.log("Add Student:");
-  //   const newStudent = {
-  //     firstName: "",
-  //     lastName: "",
-  //     gender: "Male",
-  //     dateOfBirth: "",
-  //     grade: "",
-  //     school: "",
-  //     parentName: "",
-  //     parentPhone: "",
-  //     parentEmail: "",
-  //     teacherName: "",
-  //     teacherPhone: "",
-  //     teacherEmail: "",
-  //   };
-
-  //   setData([...data, newStudent]);
-
-  //   const response = await addStudent(newStudent);
-  //   data.push(response);
-  //   setData(data);
-
-  //   // Focus on the first cell of the new row
-  //   if (hotRef.current && hotRef.current.hotInstance) {
-  //     setTimeout(() => {
-  //       hotRef.current.hotInstance.selectCell(data.length, 0);
-  //     }, 100);
-  //   }
-  // };
-
-  console.log(data);
 
   const handleExport = () => {
     console.log(data);
