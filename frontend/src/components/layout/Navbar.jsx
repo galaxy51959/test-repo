@@ -13,19 +13,18 @@ export default function Navbar({ onMenuClick }) {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
-    // Add sign out logic here (clear tokens, etc.)
     signOut();
     navigate("/signin");
   };
 
   return (
-    <nav className="bg-slate-900 text-slate-100">
+    <nav className="bg-primary text-white">
       <div className="mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <button
               onClick={onMenuClick}
-              className="lg:hidden p-2 rounded-md hover:bg-slate-600 transition duration-300"
+              className="lg:hidden p-2 rounded-md hover:opacity-80 transition duration-300"
             >
               <Bars3Icon className="h-6 w-6" />
             </button>
@@ -38,13 +37,13 @@ export default function Navbar({ onMenuClick }) {
             <div className="hidden lg:flex space-x-4">
               <a
                 href="#"
-                className="rounded-md hover:bg-slate-600 transition duration-300 px-3 py-2"
+                className="rounded-md hover:opacity-80 transition duration-300 px-3 py-2"
               >
                 Home
               </a>
               <a
                 href="#"
-                className="rounded-md hover:bg-slate-600 transition duration-300 px-3 py-2"
+                className="rounded-md hover:opacity-80 transition duration-300 px-3 py-2"
               >
                 Settings
               </a>

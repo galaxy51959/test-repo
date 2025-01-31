@@ -11,8 +11,8 @@ export default function MenuItem({ icon: Icon, label, path }) {
         flex items-center px-4 py-3 text-sm font-medium
         ${
           isActive
-            ? "bg-slate-600 text-white"
-            : "text-slate-50 hover:bg-slate-700"
+            ? "text-gray-900 bg-gray-300"
+            : "text-gray-700 hover:bg-gray-300 hover:text-gray-900"
         }
       `}
     >

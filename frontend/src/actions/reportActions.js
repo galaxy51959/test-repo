@@ -1,5 +1,16 @@
 const SERVER_URL = `http://localhost:5000/api/reports`;
 
+export const getTemplate = async () => {
+  try {
+    const response = await fetch(`${SERVER_URL}/template`);
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Fetch Template Error: ", error);
+    throw error;
+  }
+};
+
 export const generateReport = async (formData) => {
   try {
     const response = await fetch(`${SERVER_URL}/generate`, {

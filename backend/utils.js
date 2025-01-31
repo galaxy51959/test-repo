@@ -11,7 +11,6 @@ exports.parsePdf = async (filePath) => {
 exports.parseDocx = (filePath) => {
     return new Promise((resolve, reject) => {
         docxParser.parseDocx(`./public/tests/${filePath}`, function (data) {
-            console.log('Parsed DOCX Content:', data);
             resolve(data);
         });
     });

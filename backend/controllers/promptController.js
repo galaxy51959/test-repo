@@ -1,4 +1,5 @@
 const Prompt = require('../models/Prompt');
+// const Report = require('../models/Report');
 
 // Create new Prompt
 const createPrompt = async (req, res) => {
@@ -14,8 +15,8 @@ const createPrompt = async (req, res) => {
 // Get all Prompts
 const getPrompts = async (req, res) => {
     try {
-        const prompts = await Prompt.find().sort({ order: 1 });
-        res.json(prompts.slice(1));
+        const prompts = await Prompt.find();
+        res.json(prompts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
