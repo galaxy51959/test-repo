@@ -6,10 +6,13 @@ const notion = new Client({
 const databaseId = '123d34b2ab098066a485e51f116dedfc';
 
 const createEvents = async (req, res) => {
-    console.log(req.body.start, req.body.end);
+    console.log(req.body.priority);
     try {
         if (!req.body.title || !req.body.start) {
             throw new Error("Missing required fields: 'title' or 'start'");
+        }
+        if (req.body.end == '') {
+            req.body.end = null;
         }
         // Call the Notion API to create a new page
         const response = await notion.pages.create({
@@ -38,6 +41,21 @@ const createEvents = async (req, res) => {
                         name: 'Not started',
                     },
                 },
+                Summary: {
+                    rich_text: [
+                        {
+                            text: {
+                                content: req.body.summary,
+                            },
+                        },
+                    ],
+                },
+
+                Priority: {
+                    select: {
+                        id: req.body.priority[0],
+                    },
+                },
             },
         });
         res.status(200).send({
@@ -52,6 +70,7 @@ const createEvents = async (req, res) => {
 
 const updateEvents = async (req, res) => {
     try {
+        console.log(req.body);
         // Validate the input to ensure `pageId`, `title`, or `start` are present
         if (!req.params.pageid) {
             throw new Error("Missing required field: 'pageId'");
@@ -61,7 +80,9 @@ const updateEvents = async (req, res) => {
                 "You must provide at least one field to update: 'title' or 'start'"
             );
         }
-
+        if (req.body.end == '') {
+            req.body.end = null;
+        }
         const { title, start, end, state } = req.body;
         console.log(req.body);
         const pageId = req.params.pageid;
@@ -78,6 +99,20 @@ const updateEvents = async (req, res) => {
                         },
                     },
                 ],
+            };
+            properties['Summary'] = {
+                rich_text: [
+                    {
+                        text: {
+                            content: req.body.summary,
+                        },
+                    },
+                ],
+            };
+            properties['Priority'] = {
+                select: {
+                    id: req.body.priority,
+                },
             };
         }
 

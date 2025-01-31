@@ -40,6 +40,8 @@ const getStudents = async (req, res) => {
             .skip((page - 1) * limit)
             .limit(limit);
 
+        console.log(students);
+
         const total = await Student.countDocuments(query);
 
         res.json({

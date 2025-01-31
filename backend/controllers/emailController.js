@@ -33,6 +33,7 @@ const sendEmail = async (req, res) => {
     //     res.status(500).json({ message: error.message });
     // }
     try {
+        console.log(req.body);
         const { subject, body, to, from } = req.body;
         const email = new Email({
             subject: subject,
@@ -53,7 +54,7 @@ const sendEmail = async (req, res) => {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/reports');
+        cb(null, 'public/MailsAttachments');
     },
     filename: (req, file, cb) => {
         fileContent.path = `${Date.now()}-${file.originalname}`;
