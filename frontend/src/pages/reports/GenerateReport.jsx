@@ -65,18 +65,22 @@ export default function GenerateReport() {
     try {
       setLoading(true);
       const template = await getTemplate();
-      const result = template.sections.map(section => {
+      const result = template.sections.map((section) => {
         const needs = [];
-        section.prompts.forEach(prompt => {
+        section.prompts.forEach((prompt) => {
           needs.push(...prompt.need);
-        })
+        });
         const uniqueNeeds = [...new Set(needs)];
         return {
           ...section,
           needs: uniqueNeeds,
-        }
-      })
-      setFormData(result.filter(item => item.needs.length > 0 && !item.needs.includes("SEIS")));
+        };
+      });
+      setFormData(
+        result.filter(
+          (item) => item.needs.length > 0 && !item.needs.includes("SEIS")
+        )
+      );
     } catch (error) {
       console.error("Error fetching prompts:", error);
     } finally {
@@ -285,19 +289,19 @@ export default function GenerateReport() {
 
         {/* Section 3: Generate Button */}
         <div className="flex justify-center py-8">
-          
-            {loading ? 
-              <LoadingSpinner /> :
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
             <button
               onClick={handleGenerate}
               className="w-48 h-48 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transform transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
             >
-             
-                <div className="flex flex-col items-center justify-center">
+              <div className="flex flex-col items-center justify-center">
                 <span className="text-xl font-bold mb-2">GENERATE</span>
                 <span className="text-xl opacity-75">REPORT</span>
-              </div></button>}
-        
+              </div>
+            </button>
+          )}
         </div>
       </div>
     </div>

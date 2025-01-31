@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
         console.log(file);
         files[req.body.type] = {
             mimetype: file.mimetype,
-            name: `${req.body?.type && req.body.type + '---'}${file.originalname}`
+            name: `${req.body?.type && req.body.type + '---'}${file.originalname}`,
         };
         cb(
             null,
@@ -110,7 +110,9 @@ const uploadFile = async (req, res) => {
 const getTemplate = async (req, res) => {
     try {
         // console.log('123');
-        const template = await Template.findOne({ type: 'Initial' }).populate('sections.prompts');
+        const template = await Template.findOne({ type: 'Initial' }).populate(
+            'sections.prompts'
+        );
         res.json(template);
     } catch (error) {
         res.status(500).json({ message: error.message });

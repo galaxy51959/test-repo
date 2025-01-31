@@ -90,16 +90,16 @@ export default function Prompts() {
       title: "Attachments",
       renderer: (instance, td, row, col, prop, value, cellProperties) => {
         if (!value) {
-          td.innerHTML = '';
+          td.innerHTML = "";
           return td;
         }
-        
+
         const safeValue = Array.isArray(value) ? value : [value];
-        
+
         const displayValue = safeValue
-          .filter(item => item != null && item !== '')
-          .join(', ');
-          
+          .filter((item) => item != null && item !== "")
+          .join(", ");
+
         td.innerHTML = displayValue;
         return td;
       },
@@ -124,17 +124,17 @@ export default function Prompts() {
       const result = [];
       if (template) {
         template.sections.forEach((section) => {
-          section.prompts.forEach(prompt => {
+          section.prompts.forEach((prompt) => {
             result.push({
               _id: prompt._id,
               title: section.title,
               attachments: prompt.need.join(", "),
               humanPrompt: prompt.humanPrompt,
               systemPrompt: section.systemPrompt,
-              order: section.order
-            })
-          })
-        })
+              order: section.order,
+            });
+          });
+        });
       }
       setData(result);
     } catch (error) {

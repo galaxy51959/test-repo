@@ -16,14 +16,16 @@ const model = new ChatOpenAI({
 });
 
 const generateReportPart = async (prompt, idx, studentInfo, files) => {
-    const needFiles = Object.keys(files).filter(key => prompt.need.includes(key));
+    const needFiles = Object.keys(files).filter((key) =>
+        prompt.need.includes(key)
+    );
 
-    console.log("Need Files:", needFiles);
+    console.log('Need Files:', needFiles);
 
     if (needFiles.length < prompt.need.length)
-        return { order: idx, content: '```html\n<body></body>\n```' }
+        return { order: idx, content: '```html\n<body></body>\n```' };
 
-    const fileContents = needFiles.map(need => {
+    const fileContents = needFiles.map((need) => {
         const fileContent = parseFile(files[need]);
         return { type: need.type, content: fileContent };
     });
@@ -33,9 +35,10 @@ const generateReportPart = async (prompt, idx, studentInfo, files) => {
     const chatPrompt = ChatPromptTemplate.fromMessages([
         SystemMessagePromptTemplate.fromTemplate(
             `You are a professional report writer specialized in education psychological reports.
-            ${needFiles.length === 0 ? 
-                "Please output the reuslts like html code only body content as the same as the give sentences according to the style."
-                : "Output the results like html code only body content according to the prompt."
+            ${
+                needFiles.length === 0
+                    ? 'Please output the reuslts like html code only body content as the same as the give sentences according to the style.'
+                    : 'Output the results like html code only body content according to the prompt.'
             }
             Note: Each Table must follow these Styles: border-collapse, grid, width-100%
             Each Title must follow these Styles: Bold Style, strong tag, Left Align.`
@@ -46,7 +49,7 @@ const generateReportPart = async (prompt, idx, studentInfo, files) => {
     const chain = chatPrompt.pipe(model);
 
     const res = await chain.invoke({
-        file: contents.map(content => content.content).join('\n\n'),
+        file: contents.map((content) => content.content).join('\n\n'),
         ...studentInfo,
     });
 
@@ -54,9 +57,9 @@ const generateReportPart = async (prompt, idx, studentInfo, files) => {
 
     return {
         order: idx,
-        content: res.content
-    }
-}
+        content: res.content,
+    };
+};
 
 const generateReportSection = async (section, studentInfo, files) => {
     try {
@@ -65,7 +68,7 @@ const generateReportSection = async (section, studentInfo, files) => {
         // console.log(file);
         // const needs = [...new Set(needFiles)];
 
-        const parts = section.prompts.map((prompt, idx) => 
+        const parts = section.prompts.map((prompt, idx) =>
             generateReportPart(prompt, idx, studentInfo, files)
         );
 
@@ -74,9 +77,11 @@ const generateReportSection = async (section, studentInfo, files) => {
         const chatPrompt = ChatPromptTemplate.fromMessages([
             SystemMessagePromptTemplate.fromTemplate(
                 `Given the html contents separated by '\n\n' symbol, output result like one html file(only body content) by adding contents.
-                ${section.order !== 1 ? 'At the first, there is section title. Section Title must follow these styles: Bold, h4 tag, Center Align, Border, No padding, width-100%,, Uppercase': ''}`
+                ${section.order !== 1 ? 'At the first, there is section title. Section Title must follow these styles: Bold, h4 tag, Center Align, Border, No padding, width-100%,, Uppercase' : ''}`
             ),
-            HumanMessagePromptTemplate.fromTemplate(`${section.order !== 1 ? '{sectionTitle}' : ''} \n ${generatedParts.map(part => part.content).join('\n\n')}`),
+            HumanMessagePromptTemplate.fromTemplate(
+                `${section.order !== 1 ? '{sectionTitle}' : ''} \n ${generatedParts.map((part) => part.content).join('\n\n')}`
+            ),
         ]);
 
         const chain = chatPrompt.pipe(model);
@@ -134,7 +139,9 @@ const generateTotalReport = async (sections, studentData) => {
 const generateReport = async (studentInfo, files) => {
     try {
         console.log('Starting report generation for:', studentInfo.name);
-        const template = await Template.findOne({ type: 'Initial' }).populate('sections.prompts');
+        const template = await Template.findOne({ type: 'Initial' }).populate(
+            'sections.prompts'
+        );
 
         const sectionPromises = template.sections.map((section) =>
             generateReportSection(section, studentInfo, files)
