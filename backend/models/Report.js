@@ -1,67 +1,45 @@
 const mongoose = require('mongoose');
 
-const reportSchema = new mongoose.Schema({
-  student: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Student',
-    required: true
-  },
-  type: {
-    type: String,
-    required: true,
-    enum: ['Psychoeducational', 'Triennial', 'Initial', 'Progress', 'Behavioral', 'Assessment']
-  },
-  testScores: {
-    cognitive: {
-      score: Number,
-      classification: String,
-      date: Date
+const sectionSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        enum: [
+            'Confidential Multidisciplinary Report',
+            'Identifying Information',
+            'Purpose of Assessment',
+            'Procedures',
+            'Validity Statement',
+            'Assessment Information',
+            'Background Information',
+            'Academic History',
+            'Interviews',
+            'Behavioral Observations',
+            'Current Assessment Results And Interpretation',
+            'Cognitive Functioning Skills',
+            'Auditory Processing',
+            'Visual Processing',
+            'Sensory-Motor Integration',
+            'Socio-Emotional Functioning And Adaptive Behavior Skills',
+            'Specialty Rating Scale',
+            'Academic Evaluation Results',
+            'Summary And Diagnostic Impressions',
+            'Eligibility Considerations',
+        ],
     },
-    academic: {
-      reading: Number,
-      math: Number,
-      writing: Number,
-      date: Date
-    },
-    behavioral: {
-      score: Number,
-      classification: String,
-      date: Date
-    }
-  },
-  summary: {
-    type: String,
-    // required: true
-  },
-  recommendations: [{
-    type: String
-  }],
-  status: {
-    type: String,
-    enum: ['draft', 'review', 'final'],
-    default: 'draft'
-  },
-  author: {
-    type: String,
-    required: true
-  },
-  // author: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'User',
-  //   required: true
-  // },
-  file: {
-    type: String,
-    required: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
+    systemPrompt: String,
+    prompts: [{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Prompt'
+    }],
+    order: Number,
 });
 
-module.exports = mongoose.model('Report', reportSchema);
+const templateSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['Initial', 'Re-Evaluation', 'Review', 'FBA'],
+    },
+    sections: [sectionSchema],
+});
+
+module.exports = mongoose.model('Template', templateSchema);

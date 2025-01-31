@@ -172,12 +172,17 @@ export default function Students() {
   const handleChange = async (changes, source) => {
     console.log(changes, source);
 
-    if (source === "edit" || source === "paste") {
+    if (source === "edit" || source === "CopyPaste.paste") {
       for (const [row, prop, oldValue, newValue] of changes) {
         if (oldValue !== newValue) {
           try {
-            const studentId = data[row]._id;
-            await updateStudent(studentId, { [prop]: newValue });
+            if (data[row]._id) {
+              await updateStudent(studentId, { [prop]: newValue });
+            } else {
+              const student = await addStudent({ [prop]: newValue });
+              data.splice(row, 1, student);
+              setData(data);
+            }
           } catch (error) {
             console.error("Error updating cell:", error);
           }
@@ -186,36 +191,36 @@ export default function Students() {
     }
   };
 
-  const addNewStudent = async () => {
-    console.log("Add Student:");
-    const newStudent = {
-      firstName: "",
-      lastName: "",
-      gender: "Male",
-      dateOfBirth: "",
-      grade: "",
-      school: "",
-      parentName: "",
-      parentPhone: "",
-      parentEmail: "",
-      teacherName: "",
-      teacherPhone: "",
-      teacherEmail: "",
-    };
+  // const addNewStudent = async () => {
+  //   console.log("Add Student:");
+  //   const newStudent = {
+  //     firstName: "",
+  //     lastName: "",
+  //     gender: "Male",
+  //     dateOfBirth: "",
+  //     grade: "",
+  //     school: "",
+  //     parentName: "",
+  //     parentPhone: "",
+  //     parentEmail: "",
+  //     teacherName: "",
+  //     teacherPhone: "",
+  //     teacherEmail: "",
+  //   };
 
-    setData([...data, newStudent]);
+  //   setData([...data, newStudent]);
 
-    const response = await addStudent(newStudent);
-    data.push(response);
-    setData(data);
+  //   const response = await addStudent(newStudent);
+  //   data.push(response);
+  //   setData(data);
 
-    // Focus on the first cell of the new row
-    if (hotRef.current && hotRef.current.hotInstance) {
-      setTimeout(() => {
-        hotRef.current.hotInstance.selectCell(data.length, 0);
-      }, 100);
-    }
-  };
+  //   // Focus on the first cell of the new row
+  //   if (hotRef.current && hotRef.current.hotInstance) {
+  //     setTimeout(() => {
+  //       hotRef.current.hotInstance.selectCell(data.length, 0);
+  //     }, 100);
+  //   }
+  // };
 
   console.log(data);
 
@@ -289,14 +294,6 @@ export default function Students() {
           <h1 className="px-4 text-xl font-semibold">Students</h1>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
-              <Tooltip text="Add Student" placement="top">
-                <button
-                  onClick={addNewStudent}
-                  className="px-4 py-2 bg-blue-600 text-sm text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                >
-                  <PlusIcon className="h-5 w-5 text-white" />
-                </button>
-              </Tooltip>
               <Tooltip text="Export Excel" placement="top">
                 <button
                   onClick={handleExport}
@@ -354,6 +351,7 @@ export default function Students() {
                 className="htCustomStyles"
                 settings={{
                   className: "htMiddle",
+                  currentHeaderClassName: "current-header",
                   currentRowClassName: "current-row",
                   currentColClassName: "current-col",
                   invalidCellClassName: "invalid-cell",

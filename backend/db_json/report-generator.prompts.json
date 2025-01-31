@@ -1,0 +1,214 @@
+[{
+  "_id": {
+    "$oid": "679902d26c13f71e91e124da"
+  },
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table from the {file}. Please include the standard scores, the scaled scores, all percentile, and the interpretation of if the scores is considered average (SS:85-114), below average (SS: 71-84), significantly below average (SS:55-70), and above average (SS:115-129) significantly above average (SS:130 and above). In the table, the standard scores and the scaled scores for that particular index should have their own column underneath their index. Write four five sentence paragraph and name the paragraphs and discuss phonological processing index and include the scaled scores Word Discrimination, Phonological Deletion, and the scaled score Phonological Blending for one paragraph, for auditory memory index for one paragraph and include the subscales Number Memory Forward, Word Memory, and Sentence Memory , and listening comprehension index including it’s sub scales for Processing Oral Directions, and Auditory Comprehension for one paragraph, and the overall auditory processing ability for one paragraph please include {name}’s standard scores, scaled scores, percentiles, and classifications on the test of auditory processing abilities and what they indicate in regards to his educational abilities based on the information below: Please include a narrative list at the bottom that indicate exactly how the student could use their strength in the classroom and how the student's weakness would hinder them in the classroom and identify the behaviors which the students would show that indicate a strength and or a weakness in the classroom based on the information presented.",
+  "section": "Auditory Processing",
+  "order": 6,
+  "need": [
+    "TAPS-4"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6799031b6c13f71e91e124de"
+  },
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table from the {file}. Please include the standard scores, the scaled scores, percentile, and the interpretation of if the scores is considered average (SS:85-114), below average (SS: 71-84), significantly below average (SS:55-70), and above average (SS:115-129) significantly above average (SS:130 and above). Write two five sentence paragraphs and name the paragraphs and discuss {name}‘s scaled scores for the subtest Visual discrimination, visual memory, and Spatial Relationships scaled scores, percentiles, and classification in one paragraph, Form Consistency, sequential memory, visual figure-ground, and visual closure for one paragraph, and the Overall Visual Processing abilities for one paragraph and include the standard scores, percentile, and classification, on the test of Visual processing abilities and what they indicate in regards to his educational abilities. Please change the word {name} to the student’s first name in the uploaded document above. Please include a narrative list at the bottom that indicate exactly how the student could use their strength in the classroom and how the student’s weakness would hinder them in the classroom and identify the behaviors which the students would show that indicate a strength and or a weakness in the classroom.",
+  "section": "Visual Processing",
+  "order": 7,
+  "need": [
+    "TVPS-4"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6799036d6c13f71e91e124e2"
+  },
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table from the {file}. Please include the standard scores, the scaled scores, percentile, and the interpretation of if the scores is considered average (SS:85-114), below average (SS: 71-84), significantly below average (SS:55-70), and above average (SS:115-129) significantly above average (SS:130 and above). Write two 5 sentence paragraphs about (NAME) ‘s bender gestalt second edition test results. Please relay the standard scores, percentile, and descriptor for each test. Please relay how the results will affect his educational abilities in regards to him being able to complete activities in an educational setting based on the uploaded document. Please change the word (NAME) to the student’s first name in the uploaded document above. Please include a narrative list at the bottom that indicate exactly how the student could use their strength in the classroom and how the student’s weakness would hinder them in the classroom and identify the behaviors which the students would show that indicate a strength and or a weakness in the classroom.",
+  "section": "Sensory-Motor Integration",
+  "order": 10,
+  "need": [
+    "BG-2"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679907789d4f9cfa20902d10"
+  },
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table from the {file}. Please include the standard scores, the scaled scores, percentile, and the interpretation of if the scores is considered average (SS:85-114), below average (SS: 71-84), significantly below average\n(SS:55-70), and above average (SS:115-129) significantly above average (SS:130 and above).Write four five sentence paragraph and name the paragraphs and discuss and label Fulll Scale index for one paragraph, Pictorial scale index and discuss and label for one paragraph, and Geometric Scale index and discuss and label for one paragraph, please include (NAME) &#39;s standard scores, scaled scores, percentiles, and classifications on the test of the student overall reasoning and problem solving abilities and what they indicate in regards to the student’s educational abilities based on the information below:",
+  "section": "Cognitive Functioning",
+  "order": 4,
+  "need": [
+    "CTONI-2"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679907d49d4f9cfa20902d1a"
+  },
+  "section": "Cognitive Functioning",
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table from the {file}. Please include the standard scores of each domain, standard score of the sub-domain, percentile, General developmental Index and the interpretation of each of the standard scores which are considered average (SS:85-115), below average (SS: 71-84), significantly below average (SS:55-70), and above average (SS:116-129) significantly above average (SS:130 and above). Write six five sentence paragraphs and name the paragraphs and discuss (name)'s standard scores for each domain Cognitive, Communication please include the sub-domain Receptive Language and expressive Language in the paragraph for the Communication, Social-Emotional, Physical Development please include the sub domain of gross motor and fine motor skills in the physical development paragraph, and Adaptive Behavior standard scores, percentiles, and classification in five separate paragraph, and create one separate paragraph analyzing the General Development Index and include the standard scores, percentile, and classification, on the test of abilities and what they indicate in regards to his educational abilities. Please include in the General Development Index paragraph exactly where the student fall as far as developmental age based on the overall general development index standard score. Please create an analysis on how the student is functioning on a developmental level Please change the word (name) to the student's first name in the {file}. Please include a narrative list at the bottom that indicate exactly how the student could use their strength in the classroom and how the student's weakness would hinder them in the classroom and identify the behaviors which the students would show that indicate a strength and or a weakness in the classroom.",
+  "order": 2,
+  "need": [
+    "DAY-C-2"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679908dd9d4f9cfa20902d2b"
+  },
+  "section": "Cognitive Functioning",
+  "__v": 0,
+  "humanPrompt": "For the Wide Range of Memory and Learning – Second Edition, Please create a score interpretation table from the pdf document that was uploaded.please include the standard scores, the scaled scores, percentile, and the interpretation of if the scores is considered average (SS:85-114), below average (SS: 71-84), significantly below average (SS:55-70), and above average (SS:115-129) significantly above average (SS:130 and above). Write four five sentence paragraph and name the paragraphs and discuss and label General Memory Full Scale index for one paragraph, Verbal Memory index and discuss and label for one paragraph, Visual Memory Index index and discuss and label for one paragraph, and Attention and concentration Index and discuss and label for one paragraph. In the Verbal memory paragraph, please explain the scaled scores for the subtest story memory and verbal learning. For the visual memory index prargraph, please explain the subtest desigh Learning and Picturee memory. In the Attenition and concentration paragraph please include explanation on the scaled scores for the subtest finger windows, and number letter. Please include {name}‘s standard scores, scaled scores, percentiles, and classifications on the test of the student overall memory and learning abilities and what they indicate in regards to the student’s educational abilities based on the information below:",
+  "order": 3,
+  "need": [
+    "WRAML-3"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6799093d9d4f9cfa20902d35"
+  },
+  "section": "Cognitive Functioning",
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table from the {file}. Please include the standard scores, the scaled scores, percentile, and the interpretation of if the scores is considered average (SS:85-114), below average (SS: 71-84), significantly below average (SS:55-70), and above average (SS:115-129) significantly above average (SS:130 and above). Write five six sentence paragraph and name the paragraphs and discuss and label General Conceptual Ability Full Scale index for one paragraph, Spatial Nonverbal Composite score index and discuss and label for one paragraph, Verbal Index that includes subtest: Word Definition and verbal similarities and discuss standard score, T-Scores, percentiles, and Classifications and label for one paragraph , and Non-verbal reasoning index that includes subtest: matrices and discuss discuss standard score, T-Scores, percentiles, and Classifications and label for one paragraph, please include {name}‘s standard scores, T-scores, percentiles, and classifications on the test of the student non-verbal reasoning, language abilities, and problem solving abilities and what they indicate in regards to the student’s educational abilities based on the information below",
+  "order": 5,
+  "need": [
+    "CAS-2"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679909c59d4f9cfa20902d3b"
+  },
+  "humanPrompt": "Please create a score interpretation table from the {file}. Please include the standard scores, the scaled scores, percentile, and the interpretation of if the scores is considered average (SS:85-114), below average (SS: 71-84), significantly below average (SS:55-70), and above average (SS:115-129) significantly above average (SS:130 and above). Write two 5 sentence paragraphs about {name}‘s The Beery-Buktenica Developmental Tests of Visual Motor Integration (VMI) test results. Please relay the standard scores, percentile, and descriptor for each test. Please relay how the results will affect his educational abilities in regards to the student being able to complete activities in an educational setting based on the uploaded document. Please change the word {name} to the student’s first name in the uploaded document above. Please include a narrative list at the bottom that indicate exactly how the student could use their strength in the classroom and how the student’s weakness would hinder them in the classroom and identify the behaviors which the students would show that indicate a strength and or a weakness in the classroom.",
+  "__v": 0,
+  "section": "Sensory-Motor Integration",
+  "order": 11,
+  "need": [
+    "VMI"
+  ]
+},
+{
+  "_id": {
+    "$oid": "67990a6c9d4f9cfa20902d44"
+  },
+  "section": "Socio-Emotional Functioning and Adaptive Behavior Skills",
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table from the {file}. Please include the Clinical Scales T-Score Range ,Clinically Significant 70 and above , At-Risk 60-69, Average 41-59, Low 31-40 , Very Low 30 and below . Adaptive Behavior Scale ONLY T-Score Range-Very High 70 and above, High 60-69 , Average 41-59 , At-Risk 31-40, Clinically Significant 30 and below, and include the meaning of the T-Score Classification which are T-scores on the Behavior Assessment System for Children, Third Edition that range from 60-69 are in the At-Risk range and T-scores of 70 and above are in the significant range. Any score in the significant range suggests a high level of maladjustment. Scores in the At-Risk range identify either a significant problem that may not be severe enough to require formal treatment or a potential of developing a problem that needs careful monitoring. Write five 5 sentence paragraphs explaining {name}‘s Parent BASC-3 rating scale. Write one paragraph and label it for externalizing problems Index, write one paragraph and label it for internalizing problems Index, write one paragraph and label it for behavioral symptoms index, and write one paragraph and label it for adaptive behavior skills index. Please relay that these are behaviors that must be in the home setting and that these are behaviors that are being observed by {name}‘s parent in the home setting. Write one three sentence paragraph Based on the Parent BASC-3 results, Provide an overview of what the student scores mean in regard to the student’s overall functioning in the home settings. Based on the uploaded document. Please change the word {name} to the student’s first name in the uploaded document above. Please include a narrative list at the bottom that indicate exactly how the student could use their strength in the classroom and how the student’s weakness would hinder them in the home environment and identify the behaviors which the students would show that indicate a strength and or a weakness in the home setting.",
+  "order": 12,
+  "need": [
+    "BASC-3(Parent)"
+  ]
+},
+{
+  "_id": {
+    "$oid": "67990b0b9d4f9cfa20902d55"
+  },
+  "__v": 0,
+  "section": "Socio-Emotional Functioning and Adaptive Behavior Skills",
+  "humanPrompt": "Please create a score interpretation table with both the parent’s and teacher results include into one table from the pdf document that was uploaded. Please include the Clinical Scales T-Score Range ,Clinically Significant 70 and above , At-Risk 60-69, Average 41-59, Low 31-40 , Very Low 30 and below . Adaptive Behavior Scale ONLY T-Score Range-Very High 70 and above, High 60-69 , Average 41-59 , At-Risk 31-40, Clinically Significant 30 and below, and include the meaning of the T-Score Classification which are T-scores on the Behavior Assessment System for Children, Third Edition that range from 60-69 are in the At-Risk range and T-scores of 70 and above are in the significant range. Any score in the significant range suggests a high level of maladjustment. Scores in the At-Risk range identify either a significant problem that may not be severe enough to require formal treatment or a potential of developing a problem that needs careful monitoring. Please Create an Write six 5 sentence paragraphs explaining {name}‘s Teacher BASC-3 rating scale. Write one paragraph and label it for externalizing problems Index , and label it for internalizing problems index, write one paragraph and label it for School Problems Index, and write one paragraph for and label it for behavioral symptoms index, and write one paragraph and label it for for adaptive behavior skills index. Please relay that these are behaviors that are being observed in the School setting and that these are behaviors that are being observed by {name}‘s teacher in the school setting. Write one three sentence paragraph Based on the Teachers BASC-3 results, Provide an overview of what the student’s scores mean in regard to the student’s overall functioning in the school settings. Based on the uploaded document. Please change the word {name} to the student’s first name in the uploaded document above. Please include a narrative list at the bottom that indicate exactly how the student could use their strength in the school environment and how the student’s weakness would hinder them in the classroom and identify the behaviors which the students would show that indicate a strength and or a weakness in the school environment",
+  "order": 13,
+  "need": [
+    "BASC-3(Teacher)"
+  ]
+},
+{
+  "_id": {
+    "$oid": "67990b5f9d4f9cfa20902d5d"
+  },
+  "section": "Socio-Emotional Functioning and Adaptive Behavior Skills",
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table from the {file}. Please include the Clinical Scales T-Score Range ,Clinically Significant 70 and above , At-Risk 60-69, Average 41-59, Low 31-40 , Very Low 30 and below . Adaptive Behavior Scale ONLY T-Score Range-Very High 70 and above, High 60-69 , Average 41-59 , At-Risk 31-40, Clinically Significant 30 and below, and include the meaning of the T-Score Classification which are T-scores on the Behavior Assessment System for Children, Third Edition that range from 60-69 are in the At-Risk range and T-scores of 70 and above are in the significant range. Any score in the significant range suggests a high level of maladjustment Scores in the At-Risk range identify either a significant problem that may not be severe enough to require formal treatment or a potential of developing a problem that needs careful monitoring. Write six 5 sentence paragraphs explaining {name}‘s Self Report BASC-3 rating scale. Write one paragraph and label it for School Problems Index , and label it for internalizing problems index, write one paragraph and label it for Inattention/Hyperactivity Index, and write one paragraph for and label it for Emotional symptoms index, and write one paragraph and label it for for Personal Adjustment s index. Please relay that these are behaviors that must be in the School setting and that these are behaviors that are being relayed by {name}‘s. write one three sentence paragraph Based on the {name}’s self report BASC-3 results, Provide an overview of what his scores mean in regard to his overall functioning academically, socio-emotionally, and behaviorally. Based on the uploaded document.",
+  "order": 14,
+  "need": [
+    "BASC-3(Self)"
+  ]
+},
+{
+  "_id": {
+    "$oid": "67990bd59d4f9cfa20902d65"
+  },
+  "section": "Specialty Rating Scales",
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table that includes both the parent and teacher form from the pdf’s document that was uploaded. write one five sentence paragraph on {name}’s Parent results on the Gilliam Autism Rating Scale, Third Edition (GARS-3). Write a paragraph relaying in which areas that his mother may or may not have observed her child exhibiting behaviors that are aligned with an Autism Spectrum Disorder and for which areas he was considered Unlikely which means he does not exhibit ASD 15 haracteristics, Probable meaning that there is a possibility that he may be exhibiting specific ASD 15 haracteristics and/or Likely which indicate that based on the observer has has been observed exhibiting behaviors that align with an Autism Spectrum Behaviors. The ASD 15 haracteristics that are examined by this rating scale are : Restricted/Repetitive Behaviors may include stereotyped behaviors, or fixated interests, routines, or rituals., Social Interactions: refer to social behavior such as showing little or no interest in other people, not initiating conversations with others, and showing minimal expressed pleasure with peers or others., Social Communication measures the individual’s responses to social situations and understanding of the intent of social interaction and communication.Emotional Responses measure extreme emotional responses to everyday situations.Cognitive Style measures idiosyncratic fixated interests, characteristics and cognitive abilities.The Maladaptive Speech subscale consists of items that describe deficits and idiosyncrasies in verbal communication. Based on the information where it shows that he is probable or likely to exhibit the specified characteristics that align with an ASD please relay how this can effect his abilities in the area of socio-emotional, though process, socio-emotional development, academically, and social skills and behaviors based on the information below:",
+  "order": 20,
+  "need": [
+    "GARS-3(Parent)"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679910d59d4f9cfa20902d70"
+  },
+  "section": "Specialty Rating Scales",
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table that includes both the parent and teacher form from the pdf’s document that was uploaded write one five sentence paragraph on {name}’s Teachers’ results on the Gilliam Autism Rating Scale, Third Edition (GARS-3). Write a paragraph relaying in which areas that his teacher may or may not have observed the student exhibiting behaviors that are aligned with an Autism Spectrum Disorder and for which areas he was considered Unlikely which means the student does not exhibit ASD characteristics, Probable meaning that there is a possibility that the student may be exhibiting specific ASD characteristics and/or Likely which indicate that based on the observer has been observed exhibiting behaviors that align with an Autism Spectrum Behaviors. The ASD characteristics that are examined by this rating scale are: Restricted/Repetitive Behaviors may include stereotyped behaviors, or fixated interests, routines, or rituals., Social Interactions: refer to social behavior such as showing little or no interest in other people, not initiating conversations with others, and showing minimal expressed pleasure with peers or others., Social Communication measures the individual’s responses to social situations and understanding of the intent of social interaction and communication. Emotional Responses measure extreme emotional responses to everyday situations. Cognitive Style measures idiosyncratic fixated interests, characteristics and cognitive abilities. The Maladaptive Speech subscale consists of items that describe deficits and idiosyncrasies in verbal communication. Based on the information where it shows that the student is probable or likely to exhibit the specified characteristics that align with an ASD please relay how this can affect the students abilities in the educational settings in the area of socio-emotional, thought process, socio-emotional development, academically, and social skills and behaviors based on the information below:",
+  "order": 21,
+  "need": [
+    "GARS-3(Teacher)"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6799124b9d4f9cfa20902d76"
+  },
+  "humanPrompt": "Please create a score interpretation table that includes both the parent and teacher form from the pdf’s document that was uploaded. Please put parent name here and Date when the rating scale was completed (DATE). write one five sentence paragraph on {name}’s Parent Autism Spectrum Rating Scale (ASRS). Please create a score interpretation chart from the pdf document that was uploaded. please include the student’s T-scores, percentile, and the interpretation of if the T-scores is considered t-score Classification which are T-score of 70 and Above are classified as Very Elevated Score (Many more concerns than are typically reported), 65-69 are classified as Elevated Score (More concerns than are typically reported), 60-64 are classified as Slightly Elevated Score (Somewhat more concerns than are typically reported), 40-59 are classified as Average Score (Typical levels of Concern), Less than 40 are classified as Low Score (Fewer concerns than are typically reported). Write a seven sentence paragraph relaying in which areas that the student may or may not have been observed, based on the results, the child exhibiting behaviors that are aligned with an Autism Spectrum Disorder and for which areas the student demonstrate which Autism Behavior, if any are identified or not. The ASD Characteristics that are examined by this rating scale are Social/Communication, Unusual Behaviors, Self-Regulation, Peer Socialization, Adult Socialization, Social/Emotional Reciprocity, Atypical Language, Stereotypy, Behavioral Rigidity, Sensory Sensitivity and Attention. Please relay how this affects the student in the home environment.",
+  "__v": 0,
+  "section": "Specialty Rating Scales",
+  "order": 22,
+  "need": [
+    "ASRS-3(Parent)"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679913619d4f9cfa20902da6"
+  },
+  "humanPrompt": "Please create a score interpretation table from the {file}. Please include the standard scores, the scaled scores, percentile, and the interpretation of if the scores is considered average (SS:85-114), below average (SS: 71-84), significantly below average (SS:55-70), and above average (SS:115-129) significantly above average (SS:130 and above). Write FOUR 5 sentence paragraphs about {name}‘s Wechsler Individual Achievement Test, 4th edition Standard scores for the index Total Achievement which includes the subtest Word Reading, Alphabet Writing Fluency, and Math Problem Solving standard scores, percentiles, and classification in one paragraph, For the index Oral Language which includes the subtest Listening Comprehension, Oral Expression for one paragraph, and the index Dyslexia Index which includes the subtest Word Reading, and Phonemic Proficiency for one paragraph and include the standard scores, percentile, and classification. Please change the word {name} to the student’s first name in the uploaded document above. Please include a narrative list at the bottom that indicate exactly how the student could use their strength in the classroom and how the student’s weakness would hinder them in the classroom and identify the behaviors which the students would show that indicate a strength and or a weakness in the classroom",
+  "__v": 0,
+  "section": "Academic Evaluation",
+  "order": 16,
+  "need": []
+},
+{
+  "_id": {
+    "$oid": "679a75d8e9413724ed80375b"
+  },
+  "section": "Identifying Information",
+  "__v": 0,
+  "order": 1,
+  "humanPrompt": "Please create a table from the given information.\nTable has 2 columns and 6 rows. Table Style is border-collapse.\n1st Row has two fields: Students:{name}, School:{school}\n2nd Row has two fields: Birth Date:{dateOfBirth}, Parent/Guardian:{parent_guardians}\n3rd Row has two fields: Chronological Age:{ageY} years {ageM}, Multi-Disciplinary Team:{team}\n4th Row has two fields: Primary Language:{language}, Address:{address}\n5th Row has two fields: Grade:{grade}, Psychologist: Alexis E.Carter\n6th Row has two fields: Date of Report:{dateOfReport}, Assessment:{assessment}",
+  "need": [
+    "SEIS"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679bb3490d9501456596a81c"
+  },
+  "section": "Specialty Rating Scales",
+  "__v": 0,
+  "humanPrompt": "Please create a score interpretation table that includes both the parent and teacher form from the pdf’s document that was uploaded Please put Teacher Sarah Foster and Date when the rating scale was completed 12/6/24. write one five sentence paragraph on {name}’s Teacher Autism Spectrum Rating Scale (ASRS). Please create a score interpretation table from the pdf document that was uploaded. please include the student’s T-scores, percentile, and the interpretation of if the T-scores is considered t-score Classification which are T-score of 70 and Above are classified as Very Elevated Score (Many more concerns than are typically reported), 65-69 are classified as Elevated Score (More concerns than are typically reported), 60-64 are classified as Slightly Elevated Score (Somewhat more concerns than are typically reported), 40-59 are classified as Average Score (Typical levels of Concern), Less than 40 are classified as Low Score (Fewer concerns than are typically reported). Write a seven sentence paragraph relaying in which areas that the student may or may not have been observed, based on the results, the child exhibiting behaviors that are aligned with an Autism Spectrum Disorder and for which areas the student demonstrate which Autism Behavior, if any are identified or not. The ASD Characteristics that are examined by this rating scale are Social/Communication, Unusual Behaviors, Self-Regulation, Peer Socialization, Adult Socialization, Social/Emotional Reciprocity, Atypical Language, Stereotypy, Behavioral Rigidity, Sensory Sensitivity and Attention. Please relay how this affects the student in the school or educational environment.",
+  "order": 23,
+  "need": [
+    "ASRS-3(Teacher)"
+  ]
+},
+{
+  "_id": {
+    "$oid": "679bfac3bd29580eda0baed6"
+  },
+  "section": "Confidential Multidisciplinary Report",
+  "humanPrompt": "This is Human Prompt",
+  "systemPrompt": "This is System Prompt",
+  "need": [
+    "array",
+    "12312331"
+  ]
+}]

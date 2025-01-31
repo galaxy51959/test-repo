@@ -6,14 +6,15 @@ import { useAuth } from "../../context/AuthContext";
 import {
   extractStudentInfo,
   generateReport,
+  getTemplate,
   uploadFile,
 } from "../../actions/reportActions";
 import { getPromptsBySection } from "../../actions/promptActions";
 import { calculateAge } from "../../utils";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
 
 export default function GenerateReport() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [student, setStudent] = useState({
     name: "",
     school: "",
@@ -57,14 +58,25 @@ export default function GenerateReport() {
   // });
 
   useEffect(() => {
-    fetchPrompts();
+    fetchTemplate();
   }, []);
 
-  const fetchPrompts = async () => {
+  const fetchTemplate = async () => {
     try {
       setLoading(true);
-      const response = await getPromptsBySection();
-      setFormData(response);
+      const template = await getTemplate();
+      const result = template.sections.map(section => {
+        const needs = [];
+        section.prompts.forEach(prompt => {
+          needs.push(...prompt.need);
+        })
+        const uniqueNeeds = [...new Set(needs)];
+        return {
+          ...section,
+          needs: uniqueNeeds,
+        }
+      })
+      setFormData(result.filter(item => item.needs.length > 0 && !item.needs.includes("SEIS")));
     } catch (error) {
       console.error("Error fetching prompts:", error);
     } finally {
@@ -101,9 +113,9 @@ export default function GenerateReport() {
     }
   };
 
-  const handleFileUpload = async (sectionIdx, typeIdx, type, file) => {
+  const handleFileUpload = async (sectionIdx, needIdx, type, file) => {
     const data = [...formData];
-    data[sectionIdx].types.splice(typeIdx, 1, { type: type, file: file });
+    data[sectionIdx].needs.splice(needIdx, 1, { type: type, file: file });
     setFormData(data);
 
     const newFormData = new FormData();
@@ -133,7 +145,8 @@ export default function GenerateReport() {
   };
 
   const handleGenerate = async () => {
-    await generateReport({
+    setLoading(true);
+    const result = await generateReport({
       student: {
         name: student.name,
         school: student.school,
@@ -149,7 +162,13 @@ export default function GenerateReport() {
         assessment: "Initial",
       },
     });
+
+    window.open(`http://localhost:5000/reports/${result.file}`, "_blank");
+
+    setLoading(false);
   };
+
+  console.log(formData);
 
   return (
     <div className="rounded-lg">
@@ -162,21 +181,9 @@ export default function GenerateReport() {
         {/* Section 1: SEIS File Upload and Student Info */}
         <div className="flex gap-6 mb-4">
           <div className="flex-1 bg-white shadow-md">
-            {/* <div className="flex items-center mb-2"> */}
             <h2 className="px-6 pt-3 pb-2 text-lg font-medium border-b-4 border-gray-500">
               SEIS Information
             </h2>
-            {/* <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors">
-                <ArrowUpTrayIcon className="h-5 w-5" />
-                Upload SEIS File
-                <input
-                  type="file"
-                  onChange={handleSeisFileUpload}
-                  className="hidden"
-                  accept=".pdf,.doc,.docx"
-                />
-              </label> */}
-            {/* </div> */}
 
             <div className="flex px-2">
               <div className="flex px-3 items-center">
@@ -240,15 +247,15 @@ export default function GenerateReport() {
             formData.map((section, sectionIdx) => (
               <div className="bg-white shadow-md" key={section._id}>
                 <h2 className="px-6 pb-2 pt-3 text-lg font-medium">
-                  {section._id}
+                  {section.title}
                 </h2>
                 <div className="flex flex-wrap gap-3 p-3">
-                  {section.types.map((type, typeIdx) => (
-                    <div key={type} className="relative group">
+                  {section.needs.map((need, needIdx) => (
+                    <div key={needIdx} className="relative group">
                       <label className="flex flex-col items-center justify-center relative h-40 w-40 border-2 border-dashed border-gray-300 rounded-xl p-2 cursor-pointer group-hover:border-blue-500 transition-colors bg-gray-50 group-hover:bg-blue-50">
                         <ArrowUpTrayIcon className="h-8 w-8 text-gray-400 group-hover:text-blue-500 mb-2" />
                         <span className="absolute top-2 left-3 text-sm font-medium text-gray-700 group-hover:text-blue-600">
-                          {typeof type === "object" ? type.type : type}
+                          {need.type || need}
                         </span>
                         <input
                           type="file"
@@ -257,15 +264,15 @@ export default function GenerateReport() {
                           onChange={(e) =>
                             handleFileUpload(
                               sectionIdx,
-                              typeIdx,
-                              type.type || type,
+                              needIdx,
+                              need.type || need,
                               e.target.files[0]
                             )
                           }
                         />
-                        {typeof type === "object" && (
+                        {need.type && (
                           <span className="absolute bottom-2 left-3 text-sm font-medium line-clamp-1 text-gray-700 group-hover:text-blue-600">
-                            {type.file.name}
+                            {need.file.name}
                           </span>
                         )}
                       </label>
@@ -278,15 +285,19 @@ export default function GenerateReport() {
 
         {/* Section 3: Generate Button */}
         <div className="flex justify-center py-8">
-          <button
-            onClick={handleGenerate}
-            className="w-48 h-48 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transform transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
-          >
-            <div className="flex flex-col items-center justify-center">
-              <span className="text-xl font-bold mb-2">GENERATE</span>
-              <span className="text-xl opacity-75">REPORT</span>
-            </div>
-          </button>
+          
+            {loading ? 
+              <LoadingSpinner /> :
+            <button
+              onClick={handleGenerate}
+              className="w-48 h-48 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transform transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+             
+                <div className="flex flex-col items-center justify-center">
+                <span className="text-xl font-bold mb-2">GENERATE</span>
+                <span className="text-xl opacity-75">REPORT</span>
+              </div></button>}
+        
         </div>
       </div>
     </div>
