@@ -33,6 +33,7 @@ const sendEmail = async (req, res) => {
     //     res.status(500).json({ message: error.message });
     // }
     try {
+        console.log(req.body);
         const { subject, body, to, from } = req.body;
         const email = new Email({
             subject: subject,
@@ -72,6 +73,7 @@ const receiveEmail = async (req, res) => {
 
 const receiveEmailBySocket = async (req, res) => {
     try {
+        console.log(req.body);
         const { subject, body, to, from } = req.body;
         const email = new Email({
             subject: subject,

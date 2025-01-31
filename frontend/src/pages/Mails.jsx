@@ -17,10 +17,6 @@ import {
   sendEmails,
   getEmails,
 } from "../actions/emailActions";
-// import { Modal, Button, Form, Container } from "react-bootstrap";
-// import { FaPlus, FaPaperPlane, FaPaperclip } from "react-icons/fa";
-// import ReactQuill from "react-quill";
-// import "react-quill/dist/quill.snow.css";
 
 const Mails = () => {
   const [selectedMail, setSelectedMail] = useState(null);
@@ -29,13 +25,7 @@ const Mails = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedMails, setSelectedMails] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sendEmailData, setSendEmailData] = useState({
-    from: "",
-    to: "",
-    subject: "",
-    message: "",
-    attachment: null,
-  });
+  const [sendEmailData, setSendEmailData] = useState();
 
   const emailAccounts = [
     {
@@ -80,6 +70,8 @@ const Mails = () => {
 
   const handleMailClick = async (folder, account) => {
     setSelectedMail(account);
+    console.log(account);
+    console.log(account);
     const result = await getEmailsByAccount(account.email, folder);
     setSelectedMails(result);
     setSearchTerm("");
@@ -96,6 +88,7 @@ const Mails = () => {
     if (selectedMail != null) {
       setSelectMail();
       setSendEmailData({ ...sendEmailData, from: selectedMail.email });
+      console.log(sendEmailData);
     } else {
       setSendEmailData({
         ...sendEmailData,
@@ -131,14 +124,27 @@ const Mails = () => {
     if (sendEmailData.attachment) {
       formData.append("attachment", sendEmailData.attachment);
     }
+    let n8nLink;
+    console.log(formData);
+    if (sendEmailData.from == "alexis.cartetr@provider.presence.com") {
+      n8nLink =
+        "https://aec.app.n8n.cloud/webhook/2f137679-6041-4c14-ba16-305ff69e0fba";
+    }
+    if (sendEmailData.from == "acarter@dlinorthcounty.org") {
+      n8nLink =
+        "https://aec.app.n8n.cloud/webhook/6ae5f86d-2cc4-4e7a-bc85-5c287e84c4e6";
+      console.log("yesdfsfss");
+    }
+
     try {
       // Send the email with attachment
-      const n8nLink =
-        "https://aec.app.n8n.cloud/webhook-test/2f137679-6041-4c14-ba16-305ff69e0fba";
+      //  https://aec.app.n8n.cloud/webhook/2f137679-6041-4c14-ba16-305ff69e0fba
+      // https://aec.app.n8n.cloud/webhook/6ae5f86d-2cc4-4e7a-bc85-5c287e84c4e6
       const response = await sendEmails(n8nLink, formData);
       if (!response.error) {
         handleClose();
         alert("send Email successfully"); // Show success message
+        setSendEmailData({});
       }
     } catch (error) {
       console.error("Failed to send email:", error);
@@ -256,7 +262,7 @@ const Mails = () => {
                         {mail.from}
                       </h2>
                       <p className="text-sm text-gray-600 mb-2">
-                        {mail.Subject || "No Subject"}
+                        {mail.subject || "No Subject"}
                       </p>
                       <p className="text-sm text-gray-600 line-clamp-1">
                         {mail.body}
@@ -277,11 +283,14 @@ const Mails = () => {
                   <div className="flex bg-white justify-between px-3 py-2">
                     <button
                       className="bg-blue-600 rounded hover:bg-blue-700 text-white py-1 px-4 flex gap-2 items-center"
-                      onClick={handleNewMail}
+                      onClick={handleSubmit}
                     >
                       <PaperAirplaneIcon className="h-5 w-5" />
                       Send Mail
                     </button>
+                    <p className="text-md text-gray-600">
+                      {sendEmailData.from}
+                    </p>
                     <button className="rounded p-1 flex items-center cursor-pointer hover:bg-gray-100">
                       <TrashIcon className="h-5 w-5" />
                     </button>
@@ -349,36 +358,57 @@ const Mails = () => {
                   </div>
                 </div>
               ) : selectMail ? (
-                <div className="flex flex-col gap-2 h-full">
-                  <div className="bg-white px-3 py-2 w-full rounded-sm shadow-sm">
-                    <p className="font-medium">{selectMail.subject}</p>
-                  </div>
-                  <div className="flex-1 w-full flex flex-col bg-white rounded-sm shadow-sm">
-                    <div className="border-b-2 border-gray-300 flex justify-between items-center p-3">
-                      <div className="flex">
-                        <div className="w-10 flex-shrink-0">
-                          <span className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
-                            {selectMail.from.charAt(0)}
-                          </span>
-                        </div>
-                        <div className="px-2">
-                          <p className="text-md text-gray-600">
-                            {selectMail.from}
-                          </p>
-                          <p className="text-xs pt-1">
-                            To: You({selectMail.to})
-                          </p>
-                        </div>
+                selectedMails
+                  .filter(
+                    (item) =>
+                      item.subject == selectMail.subject &&
+                      item.body == selectMail.body &&
+                      item.from == item.from
+                  )
+                  .map((mail) => (
+                    <div className="flex flex-col gap-2 h-full">
+                      <div className="bg-white px-3 py-2 w-full rounded-sm shadow-sm">
+                        <p className="font-medium">{mail.subject}</p>
                       </div>
-                      <div className="flex gap-5">
-                        <ArrowUturnLeftIcon className="h-5 w-5 text-pink-600 cursor-pointer" />
-                        <ArrowUturnRightIcon className="h-5 w-5 text-blue-600 cursor-pointer" />
-                        <EllipsisVerticalIcon className="h-5 w-5 cursor-pointer" />
+                      <div className="flex-1 w-full flex flex-col bg-white rounded-sm shadow-sm">
+                        <div className="border-b-2 border-gray-300 flex justify-between items-center p-3">
+                          <div className="flex">
+                            <div className="w-10 flex-shrink-0">
+                              <span className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                {selectMail.from.charAt(0)}
+                              </span>
+                            </div>
+                            <div className="px-2">
+                              <p className="text-md text-gray-600">
+                                {selectMail.from}
+                              </p>
+                              <p className="text-xs pt-1">
+                                To: ({selectMail.to})
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-5">
+                            <ArrowUturnLeftIcon className="h-5 w-5 text-pink-600 cursor-pointer" />
+                            <ArrowUturnRightIcon className="h-5 w-5 text-blue-600 cursor-pointer" />
+                            <EllipsisVerticalIcon className="h-5 w-5 cursor-pointer" />
+                          </div>
+                        </div>
+                        {mail.attachments[0].path && (
+                          <div className="border-b-2 border-gray-300 flex justify-between items-center p-3">
+                            <a
+                              target={"_blank"}
+                              href={`http://172.86.110.178:5000/reports/${mail.attachments[0].path}`}
+                              className="text-blue-600"
+                            >
+                              {mail.attachments[0].filename}
+                            </a>
+                          </div>
+                        )}
+
+                        <div className="flex-1 p-6">{mail.body}</div>
                       </div>
                     </div>
-                    <div className="flex-1 p-6">{selectMail.body}</div>
-                  </div>
-                </div>
+                  ))
               ) : (
                 <div className="text-center text-gray-500 pt-10 bg-gray-200 h-full">
                   Select an email to view its contents
