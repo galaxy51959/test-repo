@@ -19,6 +19,8 @@ import Mails from "./pages/Mails";
 import SignIn from "./pages/SignIn";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
+import Message from "./pages/Message";
+import { Toaster } from 'react-hot-toast'; 
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -70,7 +72,7 @@ function App() {
 
               {/* Schedule */}
               <Route path="/schedule" element={<Schedule />} />
-
+              <Route path="/messages" element={<Message />} />
               {/* Teachers */}
               {/* <Route path="/teachers" element={<Teachers />} /> */}
             </Route>
