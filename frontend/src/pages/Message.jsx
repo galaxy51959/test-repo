@@ -1,7 +1,7 @@
 import { useState } from "react";
 import eyeplumService from "../services/eyeplumService";
 import { toast } from "react-hot-toast";
-
+import { sendSMS, makeCall  } from "../actions/MessageAction";
 const Message = () => {
   const [messageType, setMessageType] = useState("sms"); // "sms" or "call"
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -14,11 +14,11 @@ const Message = () => {
 
     try {
       if (messageType === "sms") {
-        await eyeplumService.sendSMS(phoneNumber, message);
+        await sendSMS(phoneNumber, message);
         toast.success("SMS sent successfully!");
         setMessage("");
       } else {
-        await eyeplumService.makeCall(phoneNumber);
+        await makeCall(phoneNumber);
         toast.success("Call initiated successfully!");
       }
       setPhoneNumber("");

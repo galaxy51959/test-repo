@@ -17,6 +17,7 @@ import {
   sendEmails,
   getEmails,
 } from "../actions/emailActions";
+import { toast } from 'react-hot-toast';
 
 const Mails = () => {
   const [selectedMail, setSelectedMail] = useState(null);
@@ -70,8 +71,6 @@ const Mails = () => {
 
   const handleMailClick = async (folder, account) => {
     setSelectedMail(account);
-    console.log(account);
-    console.log(account);
     const result = await getEmailsByAccount(account.email, folder);
     setSelectedMails(result);
     setSearchTerm("");
@@ -125,29 +124,22 @@ const Mails = () => {
       formData.append("attachment", sendEmailData.attachment);
     }
     let n8nLink;
-    console.log(formData);
-    if (sendEmailData.from == "alexis.cartetr@provider.presence.com") {
-      n8nLink =
-        "https://aec.app.n8n.cloud/webhook/2f137679-6041-4c14-ba16-305ff69e0fba";
+    if (sendEmailData.from == import.meta.env.USER_MAIL1) {
+      n8nLink = import.meta.env.N8N_WEBHOOK_URL1;
     }
-    if (sendEmailData.from == "acarter@dlinorthcounty.org") {
-      n8nLink =
-        "https://aec.app.n8n.cloud/webhook/6ae5f86d-2cc4-4e7a-bc85-5c287e84c4e6";
-      console.log("yesdfsfss");
+    if (sendEmailData.from == import.meta.env.USER_MAIL2) {
+      n8nLink = import.meta.env.N8N_WEBHOOK_URL2;
     }
-
     try {
-      // Send the email with attachment
-      //  https://aec.app.n8n.cloud/webhook/2f137679-6041-4c14-ba16-305ff69e0fba
-      // https://aec.app.n8n.cloud/webhook/6ae5f86d-2cc4-4e7a-bc85-5c287e84c4e6
       const response = await sendEmails(n8nLink, formData);
       if (!response.error) {
         handleClose();
-        alert("send Email successfully"); // Show success message
+        toast.success("Email sent successfully");
         setSendEmailData({});
       }
     } catch (error) {
       console.error("Failed to send email:", error);
+      toast.error("Failed to send email. Please try again later.");
     }
   };
 
@@ -397,7 +389,7 @@ const Mails = () => {
                           <div className="border-b-2 border-gray-300 flex justify-between items-center p-3">
                             <a
                               target={"_blank"}
-                              href={`http://172.86.110.178:5000/reports/${mail.attachments[0].path}`}
+                              href={`${import.meta.PUBLIC_URL}/attachments/${mail.attachments[0].path}`}
                               className="text-blue-600"
                             >
                               {mail.attachments[0].filename}
@@ -417,122 +409,6 @@ const Mails = () => {
             </div>
           </div>
         </div>
-
-        {/* New Mail Button */}
-        {/* <button
-          className="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-          onClick={handleShow}
-        >
-          <PlusIcon className="h-5 w-5" />
-        </button> */}
-
-        {/* Email Composition Modal */}
-        {/* <Modal
-          show={showModal}
-          onHide={handleClose}
-          size="md"
-          aria-labelledby="email-compose-modal"
-          centered
-          style={{ zIndex: 1050 }}
-        >
-          <Modal.Header closeButton className="bg-gray-50">
-            <Modal.Title id="email-compose-modal">New Message</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="p-4">
-            <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3">
-                <Form.Label>From:</Form.Label>
-                <Form.Control
-                  type="email"
-                  name="from"
-                  value={sendEmailData.from}
-                  onChange={handleChange}
-                  disabled
-                  className="bg-gray-50"
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>To:</Form.Label>
-                <Form.Control
-                  type="email"
-                  name="to"
-                  value={sendEmailData.to}
-                  onChange={handleChange}
-                  placeholder="recipient@example.com"
-                  required
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Subject:</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="subject"
-                  value={sendEmailData.subject}
-                  onChange={handleChange}
-                  placeholder="Enter subject"
-                  required
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Message:</Form.Label>
-                <ReactQuill
-                  theme="snow"
-                  value={sendEmailData.message}
-                  onChange={(content) => {
-                    setSendEmailData((prev) => ({
-                      ...prev,
-                      message: content,
-                    }));
-                  }}
-                  style={{ height: "200px", marginBottom: "50px" }}
-                  modules={{
-                    toolbar: [
-                      ["bold", "italic", "underline"],
-                      [{ list: "ordered" }, { list: "bullet" }],
-                      ["link"],
-                      ["clean"],
-                    ],
-                  }}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label className="cursor-pointer">
-                  <div className="flex items-center gap-2 text-gray-600 hover:text-gray-800">
-                    <FaPaperclip />
-                    <span>Attach File</span>
-                  </div>
-                  <Form.Control
-                    type="file"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                </Form.Label>
-                {sendEmailData.attachment && (
-                  <div className="mt-2 text-sm text-gray-600">
-                    Attached: {sendEmailData.attachment.name}
-                  </div>
-                )}
-              </Form.Group>
-
-              <div className="d-flex justify-content-end gap-2 mt-4">
-                <Button variant="secondary" onClick={handleClose}>
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="d-flex align-items-center gap-2"
-                >
-                  <FaPaperPlane /> Send
-                </Button>
-              </div>
-            </Form>
-          </Modal.Body>
-        </Modal> */}
       </div>
     </div>
   );

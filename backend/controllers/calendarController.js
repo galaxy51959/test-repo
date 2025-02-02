@@ -1,9 +1,9 @@
 const Calendar = require('../models/Calendar');
 const { Client } = require('@notionhq/client');
 const notion = new Client({
-    auth: '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',
+    auth: 'process.env.NOTION_TOKEN',
 });
-const databaseId = '123d34b2ab098066a485e51f116dedfc';
+
 
 const createEvents = async (req, res) => {
     console.log(req.body.priority);
@@ -16,7 +16,7 @@ const createEvents = async (req, res) => {
         }
         // Call the Notion API to create a new page
         const response = await notion.pages.create({
-            parent: { database_id: databaseId },
+            parent: { database_id: process.env.NOTION_DATABASE_ID},
             created_time: req.body.created_time,
             properties: {
                 // Task Name (title)

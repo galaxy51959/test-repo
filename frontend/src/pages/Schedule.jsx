@@ -119,7 +119,6 @@ export default function Schedule() {
       clickInfo.jsEvent.preventDefault();
       const event = events.find((event) => event.id == clickInfo.event.id);
       setSelectedEvent(event);
-      console.log(event);
       setCreatedEvent(null);
       setShowSidebar(true);
     }
@@ -482,7 +481,6 @@ export default function Schedule() {
                       value={createdEvent.priority}
                       onChange={(e) => {
                         console.log(e.target.value);
-                        // console.log({ ...selectedEvent, priority: Array.from(e.target.selectedOptions, option => option.value) });
                         setCreatedEvent({
                           ...createdEvent,
                           priority: Array.from(
@@ -547,12 +545,10 @@ export default function Schedule() {
                   if (selectedEvent) {
                     // Update existing event
                     const response = await updateNotionData(selectedEvent);
-                    alert(response.message);
                     fetchNotionData();
                   } else {
-                    // Create new event
+                   // Create new event
                     const response = createNotionData(createdEvent);
-                    alert(response.message);
                     fetchNotionData();
                   }
                   setShowSidebar(false);

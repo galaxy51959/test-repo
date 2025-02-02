@@ -16,7 +16,7 @@ const calendarRoutes = require('./routes/calendarRoutes');
 // const calendarRoutes = require('./routes/calendarRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 // const callRoutes = require('./routes/callRoutes');
-
+const callRoutes  = require('./routes/callsRoutes');
 // Middleware
 const errorHandler = require('./middleware/error');
 
@@ -34,16 +34,16 @@ app.use('/api/auth', authRoutes);
 app.use('/api/prompts', promptRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/students', studentRoutes);
-// app.use('/api/calls', callRoutes);
+app.use('/api/calls', callRoutes);
 
 // Error Handler
 app.use(errorHandler);
 
 // Database connection
-mongoose
-    .connect(process.env.MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch((err) => console.error('MongoDB connection error:', err));
+// mongoose
+//     .connect(process.env.MONGODB_URI)
+//     .then(() => console.log('Connected to MongoDB'))
+//     .catch((err) => console.error('MongoDB connection error:', err));
 
 const server = http.createServer(app);
 
