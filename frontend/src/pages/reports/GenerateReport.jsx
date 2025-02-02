@@ -167,8 +167,8 @@ export default function GenerateReport() {
       },
     });
 
-    window.open(`http://localhost:5000/reports/${result.file}`, "_blank");
-
+    const handle = window.open(`http://172.86.110.178:5000/reports/${result.file}`, "_blank");
+    console.log(handle);
     setLoading(false);
   };
 
