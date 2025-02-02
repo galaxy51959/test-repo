@@ -75,6 +75,7 @@ const receiveEmailBySocket = async (req, res) => {
     try {
         console.log(req.body);
         const { subject, body, to, from } = req.body;
+        console.log(req.body);
         const email = new Email({
             subject: subject,
             body: body,
