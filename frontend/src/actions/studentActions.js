@@ -1,4 +1,4 @@
-const SERVER_URL = `http://localhost:5000/api/students`;
+const SERVER_URL = `http://172.86.110.178:5000/api/students`;
 
 export const getStudents = async () => {
   try {

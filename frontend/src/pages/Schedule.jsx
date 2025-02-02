@@ -31,22 +31,12 @@ export default function Schedule() {
     },
     tasks: [],
   });
-  const [selectedEvent, setSelectedEvent] = useState({
-    id: "",
-    title: "",
-    created_At: "",
-    end: "",
-    state: "",
-  });
-  const [createdEvent, setCreatedEvent] = useState({
-    title: "",
-    created_At: "",
-    due_At: "",
-  });
+  const [selectedEvent, setSelectedEvent] = useState({});
+  const [createdEvent, setCreatedEvent] = useState({});
   const [showSidebar, setShowSidebar] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null);
-
+  const [events, setEvents] = useState([]);
   // Sample data - Replace with actual Notion API calls
   const sampleDatabases = [
     { id: 1, name: "Student Records", lastSync: "2024-03-20" },
@@ -64,26 +54,7 @@ export default function Schedule() {
     { id: 2, title: "Parent Meeting", date: "2024-03-26", time: "2:30 PM" },
     { id: 3, title: "Report Review", date: "2024-03-27", time: "11:00 AM" },
   ];
-
   // Sample calendar events
-  const [events, setEvents] = useState([
-    {
-      id: "1",
-      title: "Student Assessment",
-      start: "2025-03-25",
-      end: "2025-03-25",
-      backgroundColor: "#3B82F6",
-      borderColor: "#2563EB",
-    },
-    {
-      id: "2",
-      title: "Parent Meeting",
-      start: "2025-03-26",
-      end: "2025-03-26",
-      backgroundColor: "#10B981",
-      borderColor: "#059669",
-    },
-  ]);
 
   useEffect(() => {
     fetchNotionData();
@@ -101,15 +72,16 @@ export default function Schedule() {
         start: page.properties.Due?.date?.start,
         end: page.properties.Due?.date?.end,
         state: page.properties.Status.status.name,
-        backgroundColor: page.properties?.Priority?.select?.color,
+        backgroundColor: "#3B82F6",
         borderColor: "#2563EB",
+        summary: page.properties.Summary?.rich_text[0]?.plain_text,
+        priority: page.properties.Priority?.select?.id,
         // Add other properties as needed
       };
     });
     console.log(tasks);
     setEvents(tasks);
     try {
-      // Simulate API call
       setTimeout(() => {
         setNotionData({
           databases: sampleDatabases,
@@ -126,7 +98,6 @@ export default function Schedule() {
       setLoading(false);
     }
   };
-
   const handleDateSelect = (selectInfo) => {
     if (selectInfo.jsEvent && selectInfo.jsEvent.button === 0) {
       const newEvent = {
@@ -134,7 +105,9 @@ export default function Schedule() {
         created_time: new Date().toISOString(),
         start: selectInfo.startStr,
         end: selectInfo.endStr,
+        priority: "priority_low",
       };
+      console.log(newEvent);
       setCreatedEvent(newEvent);
       setSelectedEvent(null);
       setShowSidebar(true);
@@ -146,6 +119,7 @@ export default function Schedule() {
       clickInfo.jsEvent.preventDefault();
       const event = events.find((event) => event.id == clickInfo.event.id);
       setSelectedEvent(event);
+      console.log(event);
       setCreatedEvent(null);
       setShowSidebar(true);
     }
@@ -282,7 +256,7 @@ export default function Schedule() {
           <div className="p-4 bg-blue-50 rounded-lg">
             <div className="text-blue-600 font-medium">Calendar Events</div>
             <div className="text-2xl font-bold text-blue-700">
-              {notionData.calendar.events.length}
+              {events.length}
             </div>
           </div>
           <div className="p-4 bg-purple-50 rounded-lg">
@@ -293,15 +267,6 @@ export default function Schedule() {
           </div>
         </div>
       </div>
-
-      {/* Sidebar Overlay */}
-      {/* {showSidebar && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-30 transition-opacity z-40"
-          onClick={() => setShowSidebar(false)}
-        />
-      )} */}
-
       {/* Notion-like Sidebar */}
       {showSidebar && (
         <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out overflow-y-auto z-50">
@@ -356,6 +321,53 @@ export default function Schedule() {
                       className="w-full p-2 border rounded-md"
                     />
                   </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Summary
+                    </label>
+                    <textarea
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      rows="4"
+                      value={selectedEvent.summary}
+                      onChange={(e) =>
+                        setSelectedEvent({
+                          ...createdEvent,
+                          summary: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Priority
+                    </label>
+                    <select
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      value={selectedEvent.priority}
+                      onChange={(e) =>
+                        setSelectedEvent({
+                          ...selectedEvent,
+                          priority: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="priority_low" className="text-red-500">
+                        low
+                      </option>
+                      <option
+                        value="priority_medium"
+                        className="text-green-500"
+                      >
+                        middle
+                      </option>
+                      <option value="priority_high" className="text-blue-500">
+                        high
+                      </option>
+                    </select>
+                  </div>
+
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
                       Start At
@@ -434,15 +446,67 @@ export default function Schedule() {
                     <input
                       type="datetime-local"
                       value={createdEvent.created_time?.slice(0, 16) || ""}
-                      onChange={(e) =>
-                        setCreatedEvent({
-                          ...createdEvent,
-                          created_time: e.target.value,
-                        })
-                      }
+                      // onChange={(e) =>
+                      //   setCreatedEvent({
+                      //     ...createdEvent,
+                      //     created_time: e.target.value,
+                      //   })
+                      // }
                       className="w-full p-2 border rounded-md"
                     />
                   </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Summary
+                    </label>
+                    <textarea
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      rows="4"
+                      value={createdEvent.summary}
+                      onChange={(e) =>
+                        setCreatedEvent({
+                          ...createdEvent,
+                          summary: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Priority
+                    </label>
+                    <select
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      value={createdEvent.priority}
+                      onChange={(e) => {
+                        console.log(e.target.value);
+                        // console.log({ ...selectedEvent, priority: Array.from(e.target.selectedOptions, option => option.value) });
+                        setCreatedEvent({
+                          ...createdEvent,
+                          priority: Array.from(
+                            e.target.selectedOptions,
+                            (option) => option.value
+                          ),
+                        });
+                      }}
+                    >
+                      <option value="priority_low" className="text-red-500">
+                        low
+                      </option>
+                      <option
+                        value="priority_medium"
+                        className="text-green-500"
+                      >
+                        middle
+                      </option>
+                      <option value="priority_high" className="text-blue-500">
+                        high
+                      </option>
+                    </select>
+                  </div>
+
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
                       Start

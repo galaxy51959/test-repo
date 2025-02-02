@@ -20,10 +20,10 @@ const generateAndSavePDF = async (htmlContent, fileName) => {
             format: 'A4',
             printBackground: true,
             margin: {
-                top: '50px',
-                right: '40px',
-                bottom: '50px',
-                left: '40px',
+                top: '80px',
+                right: '80px',
+                bottom: '80px',
+                left: '80px',
             },
         });
 

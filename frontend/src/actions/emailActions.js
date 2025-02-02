@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:5000/api/emails";
+const SERVER_URL = "http://172.86.110.178:5000/api/emails";
 
 export const sendEmails = async (n8nlink, mailData) => {
   try {
@@ -6,6 +6,7 @@ export const sendEmails = async (n8nlink, mailData) => {
       method: "POST",
       body: mailData,
     });
+    console.log(response);
     if (response.ok) {
       console.log(mailData);
       const response = await fetch(`${SERVER_URL}/sendEmail`, {

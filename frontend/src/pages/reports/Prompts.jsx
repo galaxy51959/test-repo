@@ -12,6 +12,7 @@ import {
   updatePrompt,
   createPrompt,
 } from "../../actions/promptActions";
+import { getTemplate } from "../../actions/reportActions";
 
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import HyperFormula from "hyperformula";
@@ -20,8 +21,7 @@ registerAllModules();
 
 export default function Prompts() {
   const [loading, setLoading] = useState(true);
-  const [prompts, setPrompts] = useState([]);
-  const promptsRef = useRef(prompts);
+  const [data, setData] = useState([]);
   const hotRef = useRef(null);
 
   const hyperformulaInstance = HyperFormula.buildEmpty({
@@ -41,70 +41,102 @@ export default function Prompts() {
   };
 
   const columns = [
-    { data: "section", title: "Section" },
+    { data: "title", title: "Section Title" },
+    // {
+    //   data: "attachments",
+    //   title: "Attachments",
+    //   // type: "autocomplete",
+    //   // source: [
+    //   //   "No File",
+    //   //   "SEIS",
+    //   //   "INTERVIEW(Parent)",
+    //   //   "INTERVIEW(Teacher)",
+    //   //   "Essential Observation",
+    //   //   "Classroom Observation",
+    //   //   "DAY-C-2",
+    //   //   "WRAML-3",
+    //   //   "CTONI-2",
+    //   //   "WJV",
+    //   //   "CAS-2",
+    //   //   "TAPS-4",
+    //   //   "TVPS-4",
+    //   //   "MVPT-4",
+    //   //   "BVPT-6",
+    //   //   "BG-2",
+    //   //   "VMI",
+    //   //   "BASC-3(Parent)",
+    //   //   "BASC-3(Teacher)",
+    //   //   "BASC-3(Self)",
+    //   //   "Vineland-3",
+    //   //   "FAR",
+    //   //   "KTEA-3",
+    //   //   "WRAT-5",
+    //   //   "WISC-V",
+    //   //   "GARS-3(Parent)",
+    //   //   "GARS-3(Teacher)",
+    //   //   "ASRS-3(Parent)",
+    //   //   "ASRS-3(Teacher)",
+    //   //   "SUMMARY",
+    //   //   "ELLIGIBILITY",
+    //   // ],
+    //   renderer: (instance, td, row, col, prop, value, cellProperties) => {
+    //     const safeValue = Array.isArray(value) ? value : [];
+    //     td.innerHTML = safeValue.length > 0 ? safeValue.join(', ') : "";
+    //     return td;
+    //   },
+    // },
     {
-      data: "type",
-      title: "Type",
-      type: "dropdown",
-      source: [
-        "SEIS",
-        "DAY-C-2",
-        "WRAML-3",
-        "CTONI-2",
-        "WJV",
-        "CAS-2",
-        "TAPS-4",
-        "TVPS-4",
-        "MVPT-4",
-        "BVPT-6",
-        "BG-2",
-        "VMI",
-        "BASC-3(Parent)",
-        "BASC-3(Teacher)",
-        "BASC-3(Self)",
-        "Vineland-3",
-        "FAR",
-        "KTEA-3",
-        "WRAT-5",
-        "GARS-3(Parent)",
-        "GARS-3(Teacher)",
-        "ASRS-3",
-      ],
+      data: "attachments",
+      title: "Attachments",
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        if (!value) {
+          td.innerHTML = "";
+          return td;
+        }
+
+        const safeValue = Array.isArray(value) ? value : [value];
+
+        const displayValue = safeValue
+          .filter((item) => item != null && item !== "")
+          .join(", ");
+
+        td.innerHTML = displayValue;
+        return td;
+      },
     },
     { data: "humanPrompt", title: "Prompt", renderer: promptRenderer },
-    // { data: "systemPrompt", title: "System Prompt" },
+    { data: "systemPrompt", title: "System Prompt" },
     { data: "order", title: "Order" },
   ];
 
   useEffect(() => {
-    fetchPrompts();
-    // return () => {
-    //   console.log(dataRef.current);
-    //   const lastStudent = dataRef.current[dataRef.current.length - 1];
-    //   if (
-    //     lastStudent &&
-    //     Object.keys(lastStudent).findIndex(
-    //       (key) =>
-    //         lastStudent[key] === "" ||
-    //         lastStudent[key] === null ||
-    //         lastStudent[key] === undefined
-    //     ) > -1
-    //   ) {
-    //     console.log("DELETE");
-    //     deleteStudent(lastStudent._id);
-    //   }
-    // };
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    promptsRef.current = prompts;
-  }, [prompts]);
+  // useEffect(() => {
+  //   promptsRef.current = prompts;
+  // }, [prompts]);
 
-  const fetchPrompts = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await getPrompts();
-      setPrompts(response);
+      const template = await getTemplate();
+      const result = [];
+      if (template) {
+        template.sections.forEach((section) => {
+          section.prompts.forEach((prompt) => {
+            result.push({
+              _id: prompt._id,
+              title: section.title,
+              attachments: prompt.need.join(", "),
+              humanPrompt: prompt.humanPrompt,
+              systemPrompt: section.systemPrompt,
+              order: section.order,
+            });
+          });
+        });
+      }
+      setData(result);
     } catch (error) {
       console.error("Error fetching prompts:", error);
     } finally {
@@ -119,8 +151,8 @@ export default function Prompts() {
       for (const [row, prop, oldValue, newValue] of changes) {
         if (oldValue !== newValue) {
           try {
-            if (prompts[row]._id) {
-              await updatePrompt(prompts[row]._id, { [prop]: newValue });
+            if (data[row]._id) {
+              await updatePrompt(data[row]._id, { [prop]: newValue });
             } else {
               const data = await createPrompt({ [prop]: newValue });
               prompts.splice(row, 1, data);
@@ -162,8 +194,6 @@ export default function Prompts() {
     setPrompts(prompts);
   };
 
-  console.log(prompts);
-
   return (
     <div className="rounded-lg">
       <div className="p-4">
@@ -181,10 +211,10 @@ export default function Prompts() {
               <HotTable
                 formulas={{
                   engine: hyperformulaInstance,
-                  sheetName: "Prompts",
+                  sheetName: "Prompts - Initial",
                 }}
                 ref={hotRef}
-                data={prompts}
+                data={data}
                 columns={columns}
                 colHeaders={true}
                 rowHeaders={true}

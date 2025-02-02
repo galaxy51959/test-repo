@@ -72,7 +72,6 @@ function App() {
 
               {/* Schedule */}
               <Route path="/schedule" element={<Schedule />} />
-
               <Route path="/messages" element={<Message />} />
               {/* Teachers */}
               {/* <Route path="/teachers" element={<Teachers />} /> */}
