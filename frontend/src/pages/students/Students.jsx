@@ -44,6 +44,7 @@ export default function Students() {
       title: "Date of Birth",
       type: "date",
       dateFormat: "DD/MM/YYYY",
+      currentFormat: true
     },
     { data: "grade", title: "Grade", type: "numeric" },
     { data: "school", title: "School" },
@@ -86,10 +87,16 @@ export default function Students() {
         "Other",
       ],
     },
-    { data: "parentName", title: "Parent Name" },
-    { data: "parentPhone", title: "Parent Phone" },
+    { 
+      data: "parent.name", 
+      title: "Parent Name"
+    },
+    { 
+      data: "parent.phone", 
+      title: "Parent Phone"
+    },
     {
-      data: "parentEmail",
+      data: "parent.email",
       title: "Parent Email",
       type: "text",
       validator: function (value, callback) {
@@ -100,10 +107,10 @@ export default function Students() {
         }
       },
     },
-    { data: "teacherName", title: "Teacher Name" },
-    { data: "teacherPhone", title: "Teacher Phone" },
+    { data: "teacher.name", title: "Teacher Name" },
+    { data: "teacher.phone", title: "Teacher Phone" },
     {
-      data: "teacherEmail",
+      data: "teacher.email",
       title: "Teacher Email",
       type: "text",
       validator: function (value, callback) {
@@ -133,12 +140,8 @@ export default function Students() {
         grade: student.grade,
         school: student.school,
         language: student.language,
-        parentName: student.parent ? student.parent.name : "",
-        parentPhone: student.parent ? student.parent.phone : "",
-        parentEmail: student.parent ? student.parent.email : "",
-        teacherName: student.teacher ? student.teacher.name : "",
-        teacherPhone: student.teacher ? student.teacher.phone : "",
-        teacherEmail: student.teacher ? student.teacher.email : "",
+        parent: student.parent,
+        teacher: student.teacher,
       }));
       setData(transformedData);
     } catch (error) {
@@ -156,7 +159,7 @@ export default function Students() {
         if (oldValue !== newValue) {
           try {
             if (data[row]._id) {
-              await updateStudent(studentId, { [prop]: newValue });
+              await updateStudent(data[row]._id, { [prop]: newValue });
             } else {
               const student = await addStudent({ [prop]: newValue });
               data.splice(row, 1, student);

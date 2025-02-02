@@ -1,8 +1,6 @@
-const SERVER_URL = `http://localhost:5000/api/students`;
-
 export const getStudents = async () => {
   try {
-    const response = await fetch(`${SERVER_URL}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/students`);
     const result = await response.json();
 
     return result;
@@ -32,7 +30,7 @@ export const addStudent = async (studentData) => {
         email: studentData.teacherEmail,
       },
     };
-    const response = await fetch(`${SERVER_URL}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/students`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -63,7 +61,7 @@ export const addStudent = async (studentData) => {
 
 export const updateStudent = async (studentId, studentData) => {
   try {
-    await fetch(`${SERVER_URL}/${studentId}`, {
+    await fetch(`${import.meta.env.VITE_APP_API_URL}/students/${studentId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -77,7 +75,7 @@ export const updateStudent = async (studentId, studentData) => {
 
 export const deleteStudent = async (studentId) => {
   try {
-    await fetch(`${SERVER_URL}/${studentId}`, {
+    await fetch(`${import.meta.env.VITE_APP_API_URL}/students/${studentId}`, {
       method: "DELETE",
     });
   } catch (error) {
@@ -87,7 +85,7 @@ export const deleteStudent = async (studentId) => {
 
 export const assignLink = async (studentId, linkInfo) => {
   try {
-    const response = await fetch(`${SERVER_URL}/${studentId}/assign`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/students/${studentId}/assign`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

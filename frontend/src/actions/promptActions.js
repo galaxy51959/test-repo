@@ -1,8 +1,6 @@
-const SERVER_URL = "http://localhost:5000/api/prompts";
-
 export const getPrompts = async () => {
   try {
-    const response = await fetch(`${SERVER_URL}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/prompts`);
     const result = await response.json();
 
     return result;
@@ -13,7 +11,7 @@ export const getPrompts = async () => {
 
 export const getPromptsBySection = async () => {
   try {
-    const response = await fetch(`${SERVER_URL}/section`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/prompts/section`);
     const result = await response.json();
 
     return result;
@@ -24,7 +22,7 @@ export const getPromptsBySection = async () => {
 
 export const createPrompt = async (promptData) => {
   try {
-    const response = await fetch(`${SERVER_URL}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/prompts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,7 +38,7 @@ export const createPrompt = async (promptData) => {
 
 export const updatePrompt = async (promptId, promptData) => {
   try {
-    await fetch(`${SERVER_URL}/${promptId}`, {
+    await fetch(`${import.meta.env.VITE_APP_API_URL}/prompts/${promptId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

@@ -1,8 +1,6 @@
-const SERVER_URL = `http://localhost:5000/api/reports`;
-
 export const getTemplate = async () => {
   try {
-    const response = await fetch(`${SERVER_URL}/template`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/reports/template`);
     const result = await response.json();
     return result;
   } catch (error) {
@@ -13,7 +11,7 @@ export const getTemplate = async () => {
 
 export const generateReport = async (formData) => {
   try {
-    const response = await fetch(`${SERVER_URL}/generate`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/reports/generate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,7 +29,7 @@ export const generateReport = async (formData) => {
 
 export const uploadFile = async (formData) => {
   try {
-    await fetch(`${SERVER_URL}/upload`, {
+    await fetch(`${import.meta.env.VITE_APP_API_URL}/reports/upload`, {
       method: "POST",
       body: formData,
     });
@@ -42,7 +40,7 @@ export const uploadFile = async (formData) => {
 
 export const getReports = async () => {
   try {
-    const response = await fetch(`${SERVER_URL}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/reports`);
     const result = await response.json();
     console.log("Fetching Reports: ", result);
     return result;
@@ -53,7 +51,7 @@ export const getReports = async () => {
 
 export const extractStudentInfo = async (formData) => {
   try {
-    // const response = await fetch(`${SERVER_URL}/upload`, {
+    // const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/reports/upload`, {
     //   method: "POST",
     //   body: formData,
     // });

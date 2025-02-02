@@ -1,5 +1,3 @@
-const SERVER_URL = "http://172.86.110.178:5000/api/emails";
-
 export const sendEmails = async (n8nlink, mailData) => {
   try {
     const response = await fetch(n8nlink, {
@@ -9,7 +7,7 @@ export const sendEmails = async (n8nlink, mailData) => {
     console.log(response);
     if (response.ok) {
       console.log(mailData);
-      const response = await fetch(`${SERVER_URL}/sendEmail`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/emails/sendEmail`, {
         method: "POST",
         body: mailData,
       });
@@ -25,7 +23,7 @@ export const sendEmails = async (n8nlink, mailData) => {
 export const receiveEmails = async (data) => {
   try {
     console.log(data);
-    const result = await fetch(`${SERVER_URL}/receiveEmail`, {
+    const result = await fetch(`${import.meta.env.VITE_APP_API_URL}/emails/receiveEmail`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -41,7 +39,7 @@ export const receiveEmails = async (data) => {
 
 export const getEmailsByAccount = async (account, folder) => {
   try {
-    const response = await fetch(`${SERVER_URL}/${account}/${folder}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/emails/${account}/${folder}`);
     const result = await response.json();
     return result;
   } catch (error) {
@@ -52,7 +50,7 @@ export const getEmailsByAccount = async (account, folder) => {
 export const getEmails = async (searchTerm) => {
   try {
     console.log(searchTerm);
-    const response = await fetch(`${SERVER_URL}/?search=${searchTerm}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/emails/?search=${searchTerm}`);
     const result = await response.json();
     console.log(result);
     return result;

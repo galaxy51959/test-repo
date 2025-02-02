@@ -1,8 +1,6 @@
-const SERVER_URL = "http://172.86.110.178:5000/api/calendar";
-
 export const getNotionData = async () => {
   try {
-    const response = await fetch(`${SERVER_URL}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/calendar`);
     const data = await response.json();
     return data;
   } catch (error) {
@@ -12,7 +10,7 @@ export const getNotionData = async () => {
 
 export const createNotionData = async (Data) => {
   try {
-    const response = await fetch(`${SERVER_URL}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/calendar`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -28,7 +26,7 @@ export const createNotionData = async (Data) => {
 
 export const updateNotionData = async (Data) => {
   try {
-    const response = await fetch(`${SERVER_URL}/${Data.id}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/calendar/${Data.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -46,7 +44,7 @@ export const updateNotionData = async (Data) => {
 export const deleteNotionData = async (id) => {
   try {
     console.log(id);
-    const response = await fetch(`${SERVER_URL}/${id}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/calendar/${id}`);
     const result = await response.json();
     return result;
   } catch (error) {
