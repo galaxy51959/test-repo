@@ -1,7 +1,7 @@
 const Calendar = require('../models/Calendar');
 const { Client } = require('@notionhq/client');
 const notion = new Client({
-    auth: 'process.env.NOTION_TOKEN',
+    auth: process.env.NOTION_TOKEN,
 });
 
 
@@ -168,10 +168,15 @@ const deleteEvents = async (req, res) => {
 const getEvents = async (req, res) => {
     console.log('gettting');
     try {
-        const response = await notion.databases.query({
-            database_id: databaseId,
+        const response_tasks = await notion.databases.query({
+            database_id: process.env.NOTION_DATABASE_TASKS_ID,
         });
-        res.json(response.results);
+
+        const response_meetings = await notion.databases.query({
+            database_id: process.env.NOTION_DATABASE_METTING_ID,
+        });
+        const response = {tasks: response_tasks.results, meetings: response_meetings.results};
+        res.json(response);
         //return events;
     } catch (error) {
         console.log('ERROR', error);

@@ -64,23 +64,41 @@ export default function Schedule() {
     setLoading(true);
     const data = await getNotionData();
     console.log(data);
-    const tasks = data.map((page) => {
+    const tasks = data.tasks.map((page) => {
       return {
+        key: "tasks",
         id: page.id,
         created_time: page.created_time,
-        title: page.properties["Task name"].title[0].plain_text,
+        title: page.properties["Task name"]?.title[0]?.plain_text,
         start: page.properties.Due?.date?.start,
         end: page.properties.Due?.date?.end,
         state: page.properties.Status.status.name,
-        backgroundColor: "#3B82F6",
+        backgroundColor: "#3B92B6",
         borderColor: "#2563EB",
         summary: page.properties.Summary?.rich_text[0]?.plain_text,
         priority: page.properties.Priority?.select?.id,
         // Add other properties as needed
       };
     });
-    console.log(tasks);
-    setEvents(tasks);
+
+    const meetings =  data.meetings.map((page) => {
+      return {
+        key: "meetings",
+        id: page.id,
+        created_time: page.created_time,
+        title: page.properties["Name"]?.title[0]?.plain_text,
+        start: page.properties['Event time']?.date?.start,
+        end:page.properties['Event time']?.date?.end,
+        Type: page.properties?.Type?.select?.name,
+        url: page.url,
+        backgroundColor: "#3BB2F6",
+        borderColor: "#2B83EB",
+        // Add other properties as needed
+      };
+    });
+    const newArray = tasks.concat(meetings);
+    setEvents(newArray);
+    console.log(newArray);
     try {
       setTimeout(() => {
         setNotionData({
@@ -284,142 +302,249 @@ export default function Schedule() {
           </div>
 
           <div className="p-6">
-            <div className="space-y-6">
-              {selectedEvent ? (
-                // Edit Event Form
-                <>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Title
-                    </label>
-                    <input
-                      type="text"
-                      value={selectedEvent.title}
-                      onChange={(e) =>
-                        setSelectedEvent({
-                          ...selectedEvent,
-                          title: e.target.value,
-                        })
-                      }
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Created At
-                    </label>
-                    <input
-                      type="datetime-local"
-                      value={selectedEvent.created_time?.slice(0, 16) || ""}
-                      onChange={(e) =>
-                        setSelectedEvent({
-                          ...selectedEvent,
-                          created_time: e.target.value,
-                        })
-                      }
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Summary
-                    </label>
-                    <textarea
-                      className="w-full p-2 border border-gray-300 rounded-lg"
-                      rows="4"
-                      value={selectedEvent.summary}
-                      onChange={(e) =>
-                        setSelectedEvent({
-                          ...createdEvent,
-                          summary: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Priority
-                    </label>
-                    <select
-                      className="w-full p-2 border border-gray-300 rounded-lg"
-                      value={selectedEvent.priority}
-                      onChange={(e) =>
-                        setSelectedEvent({
-                          ...selectedEvent,
-                          priority: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="priority_low" className="text-red-500">
-                        low
-                      </option>
-                      <option
-                        value="priority_medium"
-                        className="text-green-500"
+            <div className="space-y-6"></div>
+              {selectedEvent ? selectedEvent.key == "tasks" ? (
+                  // Edit Event Form
+                  <>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Title
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedEvent.title}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            title: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Created At
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={selectedEvent.created_time?.slice(0, 16) || ""}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            created_time: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+  
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Summary
+                      </label>
+                      <textarea
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                        rows="4"
+                        value={selectedEvent.summary}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...createdEvent,
+                            summary: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+  
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Priority
+                      </label>
+                      <select
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                        value={selectedEvent.priority}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            priority: e.target.value,
+                          })
+                        }
                       >
-                        middle
-                      </option>
-                      <option value="priority_high" className="text-blue-500">
-                        high
-                      </option>
-                    </select>
-                  </div>
+                        <option value="priority_low" className="text-red-500">
+                          low
+                        </option>
+                        <option
+                          value="priority_medium"
+                          className="text-green-500"
+                        >
+                          middle
+                        </option>
+                        <option value="priority_high" className="text-blue-500">
+                          high
+                        </option>
+                      </select>
+                    </div>
+  
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Start At
+                      </label>
+                      <input
+                        type="datetime"
+                        value={selectedEvent.start?.slice(0, 16) || ""}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            start: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        End At
+                      </label>
+                      <input
+                        type="datetime"
+                        value={selectedEvent.end?.slice(0, 16) || ""}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            end: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        State
+                      </label>
+                      <select
+                        value={selectedEvent.state || "todo"}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            state: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded-md"
+                      >
+                        <option value="Not started">To Do</option>
+                        <option value="In progress">In Progress</option>
+                        <option value="Done">Done</option>
+                      </select>
+                    </div>
+                  </>
+            
+              ): (
+               
+                  // Edit Event Form meeting
+                  <>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Title
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedEvent.title}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            title: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Created At
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={selectedEvent.created_time?.slice(0, 16) || ""}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            created_time: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Type
+                      </label>
 
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Start At
-                    </label>
-                    <input
-                      type="datetime"
-                      value={selectedEvent.start?.slice(0, 16) || ""}
-                      onChange={(e) =>
-                        setSelectedEvent({
-                          ...selectedEvent,
-                          start: e.target.value,
-                        })
-                      }
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      End At
-                    </label>
-                    <input
-                      type="datetime"
-                      value={selectedEvent.end?.slice(0, 16) || ""}
-                      onChange={(e) =>
-                        setSelectedEvent({
-                          ...selectedEvent,
-                          end: e.target.value,
-                        })
-                      }
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      State
-                    </label>
-                    <select
-                      value={selectedEvent.state || "todo"}
-                      onChange={(e) =>
-                        setSelectedEvent({
-                          ...selectedEvent,
-                          state: e.target.value,
-                        })
-                      }
-                      className="w-full p-2 border rounded-md"
-                    >
-                      <option value="Not started">To Do</option>
-                      <option value="In progress">In Progress</option>
-                      <option value="Done">Done</option>
-                    </select>
-                  </div>
-                </>
-              ) : (
+                      <select
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                        value={selectedEvent.type}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            priority: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="priority_low" className="text-red-500">
+                         Stand Up
+                        </option>
+                        
+                        <option value="priority_medium" className="text-green-500">
+                          BrainStorm
+                        </option>
+                        
+                        <option value="priority_high" className="text-blue-500">
+                        Team weekly
+                        </option>
+                        
+                        <option value="priority_high" className="text-blue-500">
+                        Training
+                        </option>
+
+                      </select>
+                    </div>
+  
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Start At
+                      </label>
+                      <input
+                        type="datetime"
+                        value={selectedEvent.start?.slice(0, 16) || ""}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            start: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        End At
+                      </label>
+
+                      <input
+                        type="datetime"
+                        value={selectedEvent.end?.slice(0, 16) || ""}
+                        onChange={(e) =>
+                          setSelectedEvent({
+                            ...selectedEvent,
+                            end: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                  </>
+                
+              ) :  selectedEvent.key == "tasks" ?  
+                (
                 // New Event Form
                 <>
                   <div className="space-y-2">
@@ -538,6 +663,110 @@ export default function Schedule() {
                     />
                   </div>
                 </>
+              ) : (
+                <>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    value={createdEvent.title}
+                    onChange={(e) =>
+                      setCreatedEvent({
+                        ...createdEvent,
+                        title: e.target.value,
+                      })
+                    }
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Created Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={createdEvent.created_time?.slice(0, 16) || ""}
+                    // onChange={(e) =>
+                    //   setCreatedEvent({
+                    //     ...createdEvent,
+                    //     created_time: e.target.value,
+                    //   })
+                    // }
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Type
+                  </label>
+                  <select
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    value={createdEvent.type}
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                      setCreatedEvent({
+                        ...createdEvent,
+                        priority: Array.from(
+                          e.target.selectedOptions,
+                          (option) => option.value
+                        ),
+                      });
+                    }}
+                  >
+                    <option value="priority_low" className="text-red-500">
+                         Stand Up
+                        </option>
+                        
+                        <option value="priority_medium" className="text-green-500">
+                          BrainStorm
+                        </option>
+                        
+                        <option value="priority_high" className="text-blue-500">
+                        Team weekly
+                        </option>
+                        
+                        <option value="priority_high" className="text-blue-500">
+                        Training
+                        </option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Start
+                  </label>
+                  <input
+                    type="datetime"
+                    value={createdEvent.start?.slice(0, 16) || ""}
+                    onChange={(e) =>
+                      setCreatedEvent({
+                        ...createdEvent,
+                        start: e.target.value,
+                      })
+                    }
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    End
+                  </label>
+                  <input
+                    type="datetime"
+                    value={createdEvent.end?.slice(0, 16) || ""}
+                    onChange={(e) =>
+                      setCreatedEvent({
+                        ...createdEvent,
+                        end: e.target.value,
+                      })
+                    }
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+              </>
               )}
 
               <button
@@ -559,7 +788,7 @@ export default function Schedule() {
               </button>
             </div>
           </div>
-        </div>
+    
       )}
 
       {/* Delete Confirmation Modal */}
