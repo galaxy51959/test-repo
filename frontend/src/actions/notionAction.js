@@ -1,10 +1,11 @@
 export const getNotionData = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/calendar`);
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/calendar`
+    );
     const result = await response.json();
     console.log(result);
     return result;
-
   } catch (error) {
     console.log(error);
   }
@@ -12,13 +13,16 @@ export const getNotionData = async () => {
 
 export const createNotionData = async (Data) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/calendar`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(Data),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/calendar`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Data),
+      }
+    );
     const result = await response.json();
     console.log(result.data);
     return result.data;
@@ -29,13 +33,16 @@ export const createNotionData = async (Data) => {
 
 export const updateNotionData = async (Data) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/calendar/${Data.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(Data),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/calendar/${Data.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Data),
+      }
+    );
     const result = await response.json();
     console.log(result.data);
     return result.data;
@@ -47,7 +54,9 @@ export const updateNotionData = async (Data) => {
 export const deleteNotionData = async (id) => {
   try {
     console.log(id);
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/calendar/${id}`);
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/calendar/${id}`
+    );
     const result = await response.json();
     return result.data;
   } catch (error) {

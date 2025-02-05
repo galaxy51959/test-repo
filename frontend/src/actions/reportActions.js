@@ -1,6 +1,8 @@
 export const getTemplate = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/reports/template`);
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/reports/template`
+    );
     const result = await response.json();
     return result;
   } catch (error) {
@@ -11,13 +13,16 @@ export const getTemplate = async () => {
 
 export const generateReport = async (formData) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/reports/generate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/reports/generate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    );
     const result = await response.json();
     console.log("Generate Result: ", result);
     return result;

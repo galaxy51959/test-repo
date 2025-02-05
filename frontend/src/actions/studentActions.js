@@ -1,6 +1,8 @@
 export const getStudents = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/students`);
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/students`
+    );
     const result = await response.json();
 
     return result;
@@ -30,13 +32,16 @@ export const addStudent = async (studentData) => {
         email: studentData.teacherEmail,
       },
     };
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/students`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(student),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/students`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(student),
+      }
+    );
     const result = await response.json();
     return {
       _id: result._id,
@@ -85,13 +90,16 @@ export const deleteStudent = async (studentId) => {
 
 export const assignLink = async (studentId, linkInfo) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/students/${studentId}/assign`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(linkInfo),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/students/${studentId}/assign`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(linkInfo),
+      }
+    );
     const result = await response.json();
 
     return result;

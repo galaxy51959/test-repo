@@ -5,14 +5,14 @@ const eyeplumService = {
   sendSMS: async (phoneNumber, message) => {
     try {
       const response = await fetch(`${EYEPLUM_CONFIG.BASE_URL}/v2/messages`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${EYEPLUM_CONFIG.API_KEY}`,
-          'X-Secret-Key': EYEPLUM_CONFIG.SECRET_KEY,
-          'Accept': 'application/json'
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${EYEPLUM_CONFIG.API_KEY}`,
+          "X-Secret-Key": EYEPLUM_CONFIG.SECRET_KEY,
+          Accept: "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({
           to: phoneNumber,
           text: message,
@@ -22,13 +22,13 @@ const eyeplumService = {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to send SMS');
+        throw new Error(errorData.message || "Failed to send SMS");
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      throw new Error('Failed to send SMS: ' + error.message);
+      throw new Error("Failed to send SMS: " + error.message);
     }
   },
 
@@ -36,14 +36,14 @@ const eyeplumService = {
   makeCall: async (phoneNumber) => {
     try {
       const response = await fetch(`${EYEPLUM_CONFIG.BASE_URL}/v2/calls`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${EYEPLUM_CONFIG.API_KEY}`,
-          'X-Secret-Key': EYEPLUM_CONFIG.SECRET_KEY,
-          'Accept': 'application/json'
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${EYEPLUM_CONFIG.API_KEY}`,
+          "X-Secret-Key": EYEPLUM_CONFIG.SECRET_KEY,
+          Accept: "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({
           to: phoneNumber,
           from: EYEPLUM_CONFIG.CALLER_ID,
@@ -52,15 +52,15 @@ const eyeplumService = {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to initiate call');
+        throw new Error(errorData.message || "Failed to initiate call");
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      throw new Error('Failed to initiate call: ' + error.message);
+      throw new Error("Failed to initiate call: " + error.message);
     }
-  }
+  },
 };
 
 export default eyeplumService;

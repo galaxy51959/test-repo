@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import moment from 'moment';
+import moment from "moment";
 import { HotTable } from "@handsontable/react";
 import { registerAllModules } from "handsontable/registry";
 import {
@@ -50,7 +50,7 @@ export default function Students() {
         } else {
           td.innerHTML = "";
         }
-      }
+      },
     },
     { data: "grade", title: "Grade", type: "numeric" },
     { data: "school", title: "School" },
@@ -93,13 +93,13 @@ export default function Students() {
         "Other",
       ],
     },
-    { 
-      data: "parent.name", 
-      title: "Parent Name"
+    {
+      data: "parent.name",
+      title: "Parent Name",
     },
-    { 
-      data: "parent.phone", 
-      title: "Parent Phone"
+    {
+      data: "parent.phone",
+      title: "Parent Phone",
     },
     {
       data: "parent.email",

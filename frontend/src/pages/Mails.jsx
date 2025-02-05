@@ -17,7 +17,7 @@ import {
   sendEmails,
   getEmails,
 } from "../actions/emailActions";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 
 const Mails = () => {
   const [selectedMail, setSelectedMail] = useState(null);

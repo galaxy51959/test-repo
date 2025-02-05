@@ -11,7 +11,9 @@ export const getPrompts = async () => {
 
 export const getPromptsBySection = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/prompts/section`);
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/prompts/section`
+    );
     const result = await response.json();
 
     return result;
@@ -22,13 +24,16 @@ export const getPromptsBySection = async () => {
 
 export const createPrompt = async (promptData) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/prompts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(promptData),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/prompts`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(promptData),
+      }
+    );
     const result = await response.json();
     return result;
   } catch (error) {
