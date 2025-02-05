@@ -1,37 +1,9 @@
 const Email = require('../models/Email');
-// const GmailService = require('../services/gmailService');
 const socket = require('../socket');
 const multer = require('multer');
 
 let fileContent = {};
 const sendEmail = async (req, res) => {
-    // try {
-    //     const { to, subject, body, attachments, scheduledFor } = req.body;
-
-    //     const email = new Email({
-    //         to,
-    //         subject,
-    //         body,
-    //         from: req.user.email,
-    //         attachments,
-    //         scheduledFor,
-    //         status: scheduledFor ? 'scheduled' : 'sent',
-    //     });
-
-    //     if (!scheduledFor) {
-    //         await GmailService.sendEmail({
-    //             to,
-    //             subject,
-    //             body,
-    //             attachments,
-    //         });
-    //     }
-
-    //     await email.save();
-    //     res.status(201).json(email);
-    // } catch (error) {
-    //     res.status(500).json({ message: error.message });
-    // }
     try {
         console.log(req.body);
         const { subject, body, to, from } = req.body;
