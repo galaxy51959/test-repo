@@ -13,10 +13,7 @@ const emailRoutes = require('./routes/emailRoutes');
 const authRoutes = require('./routes/auth');
 const promptRoutes = require('./routes/promptRoutes');
 const calendarRoutes = require('./routes/calendarRoutes');
-// const calendarRoutes = require('./routes/calendarRoutes');
 const studentRoutes = require('./routes/studentRoutes');
-// const callRoutes = require('./routes/callRoutes');
-const callRoutes  = require('./routes/callsRoutes');
 // Middleware
 const errorHandler = require('./middleware/error');
 
@@ -34,7 +31,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/prompts', promptRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/students', studentRoutes);
-app.use('/api/calls', callRoutes);
 
 // Error Handler
 app.use(errorHandler);

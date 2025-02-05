@@ -14,12 +14,10 @@ import {
 } from "./pages/students";
 import { Reports, GenerateReport, Prompt } from "./pages/reports";
 import Schedule from "./pages/Schedule";
-// import Teachers from "./pages/Teachers";
 import Mails from "./pages/Mails";
 import SignIn from "./pages/SignIn";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
-import Message from "./pages/Message";
 import { Toaster } from 'react-hot-toast';
 
 function ProtectedRoute({ children }) {
@@ -72,9 +70,7 @@ function App() {
 
               {/* Schedule */}
               <Route path="/schedule" element={<Schedule />} />
-              <Route path="/messages" element={<Message />} />
-              {/* Teachers */}
-              {/* <Route path="/teachers" element={<Teachers />} /> */}
+
             </Route>
           </Routes>
         </Router>
