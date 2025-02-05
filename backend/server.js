@@ -40,14 +40,14 @@ app.use('/api/calls', callRoutes);
 app.use(errorHandler);
 
 // Database connection
-// mongoose
-//     .connect(process.env.MONGODB_URI)
-//     .then(() => console.log('Connected to MongoDB'))
-//     .catch((err) => console.error('MongoDB connection error:', err));
+mongoose
+    .connect(process.env.MONGODB_URI)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.error('MongoDB connection error:', err));
 
 const server = http.createServer(app);
 
 // Initialize socket.io
 socket.init(server);
 
-server.listen(process.env.PORT || 5000);
+server.listen(process.env.PORT || 8000);
