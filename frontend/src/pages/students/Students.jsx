@@ -43,8 +43,14 @@ export default function Students() {
       data: "dateOfBirth",
       title: "Date of Birth",
       type: "date",
-      dateFormat: "DD/MM/YYYY",
-      currentFormat: true
+      renderer: function (instance, td, row, col, prop, value, cellProperties) {
+        if (value) {
+          const date = moment(value).format("DD/MM/YYYY");
+          td.innerHTML = date;
+        } else {
+          td.innerHTML = "";
+        }
+      }
     },
     { data: "grade", title: "Grade", type: "numeric" },
     { data: "school", title: "School" },

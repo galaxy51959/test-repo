@@ -31,7 +31,7 @@ function ProtectedRoute({ children }) {
     return <div>Loading...</div>;
   }
 
-  return !isAuthenticated ? children : <Navigate to="/signin" replace />;
+  return isAuthenticated ? children : <Navigate to="/signin" replace />;
 }
 
 function App() {
