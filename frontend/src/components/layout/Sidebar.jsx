@@ -32,7 +32,6 @@ const menuItems = [
   },
   { icon: EnvelopeIcon, label: "Mail", path: "/mails" },
   { icon: CalendarIcon, label: "Schedule", path: "/schedule" },
-  { icon: ChatBubbleLeftIcon, label: "Messages", path: "/messages" },
   { icon: Cog6ToothIcon, label: "Settings", path: "/settings" },
 ];
 

@@ -6,7 +6,6 @@ export const sendEmails = async (n8nlink, mailData) => {
     });
     console.log(response);
     if (response.ok) {
-      console.log(mailData);
       const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/emails/sendEmail`, {
         method: "POST",
         body: mailData,
