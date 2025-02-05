@@ -58,8 +58,8 @@ export default function Schedule() {
           start: page.properties.Due?.date?.start,
           end: page.properties.Due?.date?.end,
           state: page.properties.Status.status.name,
-          backgroundColor: "#3B92B6",
-          borderColor: "#2563EB",
+          backgroundColor: "#62d743bd",
+          borderColor: "#62d743bd",
           summary: page.properties.Summary?.rich_text[0]?.plain_text,
           priority: page.properties.Priority?.select?.id,
           // Add other properties as needed
@@ -76,8 +76,8 @@ export default function Schedule() {
           end:page.properties['Event time']?.date?.end,
           Type: page.properties?.Type?.select?.name,
           url: page.url,
-          backgroundColor: "#3BB2F6",
-          borderColor: "#2B83EB",
+          backgroundColor: "#d74343bd",
+          borderColor: "#d74343bd",
           // Add other properties as needed
         };
       });
@@ -166,7 +166,7 @@ export default function Schedule() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 p-6 space-y-8 relative">
+    <div className="flex flex-col min-h-screen bg-gray-50  p-6 space-y-8 relative">
       {loading ?  <LoadingSpinner/> : (
            <div>
            {/* Header */}
@@ -218,6 +218,16 @@ export default function Schedule() {
                    </div>
                  ))}
                </div>
+                <div className="flex items-center space-x-4 mb-4">
+                <div className="flex items-center">
+                 <div className="w-4 h-4 rounded-full mr-2" style={{ backgroundColor: "#d74343bd" }}></div>
+                <span className="text-sm">Meetings</span>
+              </div>
+              <div className="flex items-center">
+              <div className="w-4 h-4 rounded-full mr-2" style={{ backgroundColor: '#62d743bd' }}></div>
+              <span className="text-sm">Tasks</span>
+            </div>
+          </div>
                <FullCalendar
                  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                  initialView="dayGridMonth"
