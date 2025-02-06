@@ -31,7 +31,7 @@ const Mails = () => {
   const emailAccounts = [
     {
       id: 1,
-      email: "Alexis.Carter@ssg-community.com",
+      email: import.meta.env.VITE_USER_MAIL_3,
       folders: {
         inbox: [],
         drafts: [],
@@ -41,7 +41,7 @@ const Mails = () => {
     },
     {
       id: 2,
-      email: "alexis.cartetr@provider.presence.com",
+      email: import.meta.env.VITE_USER_MAIL_1,
       folders: {
         inbox: [],
         drafts: [],
@@ -51,7 +51,7 @@ const Mails = () => {
     },
     {
       id: 3,
-      email: "acarter@dlinorthcounty.org",
+      email: import.meta.env.VITE_USER_MAIL_2,
       folders: {
         inbox: [],
         drafts: [],
@@ -91,7 +91,7 @@ const Mails = () => {
     } else {
       setSendEmailData({
         ...sendEmailData,
-        from: "alexis.cartetr@provider.presence.com",
+        from: import.meta.env.VITE_USER_MAIL_1,
       });
     }
     // setShowModal(true);
@@ -124,12 +124,13 @@ const Mails = () => {
       formData.append("attachment", sendEmailData.attachment);
     }
     let n8nLink;
-    if (sendEmailData.from == import.meta.env.USER_MAIL1) {
-      n8nLink = import.meta.env.N8N_WEBHOOK_URL1;
+    if (sendEmailData.from == import.meta.env.VITE_USER_MAIL1) {
+      n8nLink = import.meta.env.VITE_N8N_WEBHOOK_URL1;
     }
-    if (sendEmailData.from == import.meta.env.USER_MAIL2) {
-      n8nLink = import.meta.env.N8N_WEBHOOK_URL2;
+    if (sendEmailData.from == import.meta.env.VITE_USER_MAIL2) {
+      n8nLink = import.meta.env.VITE_N8N_WEBHOOK_URL2;
     }
+    console.log(import.meta.env.VITE_N8N_WEBHOOK_URL1);
     try {
       const response = await sendEmails(n8nLink, formData);
       if (!response.error) {
