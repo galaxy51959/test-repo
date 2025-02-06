@@ -15,7 +15,7 @@ export const SocketProvider = ({ children }) => {
 
     if (user) {
       // Initialize socket connection
-      const newSocket = io(import.meta.env.PUBLIC_URL);
+      const newSocket = io(`${import.meta.env.VITE_PUBLIC_URL}`);
 
       // Join user's room for notifications
       newSocket.emit("joinRoom", user.id);
