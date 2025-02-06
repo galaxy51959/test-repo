@@ -15,7 +15,7 @@ export const SocketProvider = ({ children }) => {
 
     if (user) {
       // Initialize socket connection
-      const newSocket = io("http://172.86.110.178:6000");
+      const newSocket = io(`${import.meta.env.VITE_PUBLIC_URL}`);
 
       // Join user's room for notifications
       newSocket.emit("joinRoom", user.id);

@@ -85,10 +85,13 @@ const Mails = () => {
 
   const handleNewMail = () => {
     if (selectedMail != null) {
+      console.log(selectedMail);
       setSelectMail();
+      setSendEmailData({});
       setSendEmailData({ ...sendEmailData, from: selectedMail.email });
       console.log(sendEmailData);
     } else {
+      setSendEmailData({});
       setSendEmailData({
         ...sendEmailData,
         from: import.meta.env.VITE_USER_MAIL_1,
@@ -107,10 +110,11 @@ const Mails = () => {
 
   const handleFileChange = (e) => {
     const attachment = e.target.files[0];
-    setSendEmailData((prev) => ({
-      ...prev,
-      attachment: attachment,
-    }));
+    setSendEmailData({...sendEmailData, attachment: attachment,});
+    // setSendEmailData((prev) => ({
+    //   ...prev,
+    //   attachment: attachment,
+    // }));
   };
 
   const handleSubmit = async (e) => {
@@ -123,20 +127,20 @@ const Mails = () => {
     if (sendEmailData.attachment) {
       formData.append("attachment", sendEmailData.attachment);
     }
+    console.log(sendEmailData.from);
     let n8nLink;
-    if (sendEmailData.from == import.meta.env.VITE_USER_MAIL1) {
+    if (sendEmailData.from == import.meta.env.VITE_USER_MAIL_1) {
       n8nLink = import.meta.env.VITE_N8N_WEBHOOK_URL1;
     }
-    if (sendEmailData.from == import.meta.env.VITE_USER_MAIL2) {
+    if (sendEmailData.from == import.meta.env.VITE_USER_MAIL_2) {
       n8nLink = import.meta.env.VITE_N8N_WEBHOOK_URL2;
     }
-    console.log(import.meta.env.VITE_N8N_WEBHOOK_URL1);
     try {
       const response = await sendEmails(n8nLink, formData);
       if (!response.error) {
         handleClose();
         toast.success("Email sent successfully");
-        setSendEmailData({});
+        setSendEmailData();
       }
     } catch (error) {
       console.error("Failed to send email:", error);
@@ -390,7 +394,7 @@ const Mails = () => {
                           <div className="border-b-2 border-gray-300 flex justify-between items-center p-3">
                             <a
                               target={"_blank"}
-                              href={`${import.meta.PUBLIC_URL}/attachments/${mail.attachments[0].path}`}
+                              href={`${import.meta.env.VITE_PUBLIC_URL}/attachments/${mail.attachments[0].path}`}
                               className="text-blue-600"
                             >
                               {mail.attachments[0].filename}
