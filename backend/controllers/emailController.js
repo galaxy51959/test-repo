@@ -72,9 +72,11 @@ const getEmailbyAccount = async (req, res) => {
         if (folder === 'sent') {
             const emails = await Email.aggregate([
                 {
-                    $match: { from: account },
+                    $match: { from: account } },{
+                     $sort: {createdAt: -1}
                 },
             ]);
+            console.log
             res.json(emails);
         }
     } catch (error) {
