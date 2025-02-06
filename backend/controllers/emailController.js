@@ -65,6 +65,7 @@ const getEmailbyAccount = async (req, res) => {
             const emails = await Email.aggregate([
                 {
                     $match: { to: account },
+                    $sort: {createdAt: -1}
                 },
             ]);
             res.json(emails);
