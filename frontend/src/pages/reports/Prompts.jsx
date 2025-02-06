@@ -126,14 +126,14 @@ export default function Prompts() {
         template.sections.forEach((section) => {
           section.prompts.forEach((prompt) => {
             result.push({
-              _id: prompt._id,
+              sectionId: section._id,
+              promptId: prompt._id,
               title: section.title,
               attachments: prompt.need.join(", "),
               humanPrompt: prompt.humanPrompt,
               systemPrompt: section.systemPrompt,
               order: section.order,
             });
-            a;
           });
         });
       }
@@ -152,13 +152,14 @@ export default function Prompts() {
       for (const [row, prop, oldValue, newValue] of changes) {
         if (oldValue !== newValue) {
           try {
-            if (data[row]._id) {
-              await updatePrompt(data[row]._id, { [prop]: newValue });
-            } else {
-              const data = await createPrompt({ [prop]: newValue });
-              prompts.splice(row, 1, data);
-              setPrompts(prompts);
-            }
+            console.log(data[row])
+            // if (data[row]._id) {
+            //   await updatePrompt(data[row]._id, { [prop]: newValue });
+            // } else {
+            //   const data = await createPrompt({ [prop]: newValue });
+            //   prompts.splice(row, 1, data);
+            //   setPrompts(prompts);
+            // }
           } catch (error) {
             console.error("Error updating cell:", error);
           }

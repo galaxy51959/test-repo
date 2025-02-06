@@ -46,4 +46,6 @@ const server = http.createServer(app);
 // Initialize socket.io
 socket.init(server);
 
-server.listen(process.env.PORT || 8000);
+server.listen(process.env.PORT || 8000, () => {
+    console.log('Server Running at:', server.address().port);
+});
