@@ -225,12 +225,7 @@ export default function Students() {
     );
     console.log(temp);
     return temp;
-    //  const temp = data.filter(item=> item.firstName.search(searchTerm) > -1 || item.lastName.search(searchTerm) > -1 ||
-    // item.gender.search(searchTerm) > -1 || item.dateOfbirth.search(searchTerm) > -1 ||  item.parentName.search(searchTerm) > -1 ||
-    // item.parentPhone.search(searchTerm) > -1 || item.parentEmail.search(searchTerm) > -1 || item.school.search(searchTerm) > -1 || item.teacherEmail.search(searchTerm) > -1 ||
-    // item.teacherName.search(searchTerm) > -1 || item.teacherPhone.search(searchTerm) > -1);
-    // return temp;
-  };
+  }
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (file) {
