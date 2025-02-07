@@ -6,7 +6,7 @@ import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   PlusIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 // import "handsontable/dist/handsontable.full.min.css";
 import {
@@ -208,19 +208,29 @@ export default function Students() {
     // Save to file
     XLSX.writeFile(wb, "students.xlsx");
   };
-  const findData  = (searchTerm) =>{
-    const temp = data.filter(item=> item.firstName.search(searchTerm) > -1 || item.lastName.search(searchTerm) > -1 || 
-    item.gender.search(searchTerm) > -1 || item.dateOfBirth.search(searchTerm) > -1 || item.school.search(searchTerm) > -1 || 
-    item.parent.name.search(searchTerm) > -1 || item.parent.phone.search(searchTerm) > -1 || item.parent.email.search(searchTerm) > -1 ||  
-    item.teacher.name.search(searchTerm) > -1 || item.teacher.phone.search(searchTerm) > -1 || item.teacher.phone.search(searchTerm) > -1 );
+  const findData = (searchTerm) => {
+    const temp = data.filter(
+      (item) =>
+        item.firstName.search(searchTerm) > -1 ||
+        item.lastName.search(searchTerm) > -1 ||
+        item.gender.search(searchTerm) > -1 ||
+        item.dateOfBirth.search(searchTerm) > -1 ||
+        item.school.search(searchTerm) > -1 ||
+        item.parent.name.search(searchTerm) > -1 ||
+        item.parent.phone.search(searchTerm) > -1 ||
+        item.parent.email.search(searchTerm) > -1 ||
+        item.teacher.name.search(searchTerm) > -1 ||
+        item.teacher.phone.search(searchTerm) > -1 ||
+        item.teacher.phone.search(searchTerm) > -1
+    );
     console.log(temp);
     return temp;
     //  const temp = data.filter(item=> item.firstName.search(searchTerm) > -1 || item.lastName.search(searchTerm) > -1 ||
-    // item.gender.search(searchTerm) > -1 || item.dateOfbirth.search(searchTerm) > -1 ||  item.parentName.search(searchTerm) > -1 || 
-    // item.parentPhone.search(searchTerm) > -1 || item.parentEmail.search(searchTerm) > -1 || item.school.search(searchTerm) > -1 || item.teacherEmail.search(searchTerm) > -1 || 
+    // item.gender.search(searchTerm) > -1 || item.dateOfbirth.search(searchTerm) > -1 ||  item.parentName.search(searchTerm) > -1 ||
+    // item.parentPhone.search(searchTerm) > -1 || item.parentEmail.search(searchTerm) > -1 || item.school.search(searchTerm) > -1 || item.teacherEmail.search(searchTerm) > -1 ||
     // item.teacherName.search(searchTerm) > -1 || item.teacherPhone.search(searchTerm) > -1);
     // return temp;
-  }
+  };
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -262,7 +272,7 @@ export default function Students() {
           <h1 className="px-4 text-xl font-semibold">Students</h1>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
-            <div className="relative w-full">
+              <div className="relative w-full">
                 <input
                   type="text"
                   placeholder="Search students..."
