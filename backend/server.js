@@ -9,6 +9,7 @@ dotenv.config();
 
 // Routes
 const reportRoutes = require('./routes/reportRoutes');
+const templateRoutes = require('./routes/templateRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const authRoutes = require('./routes/auth');
 const promptRoutes = require('./routes/promptRoutes');
@@ -26,6 +27,7 @@ app.use(express.static('public'));
 
 // Routes
 app.use('/api/reports', reportRoutes);
+app.use('/api/templates', templateRoutes);
 app.use('/api/emails', emailRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/prompts', promptRoutes);

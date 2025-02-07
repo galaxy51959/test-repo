@@ -1,5 +1,5 @@
 const multer = require('multer');
-const Template = require('../models/Report');
+const Template = require('../models/Template');
 const reportGenerationService = require('../services/reportGenerationService');
 const accessOutSideService = require('../services/accessOutSideService');
 const files = {};
@@ -24,36 +24,17 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-// const upload = multer({ dest: 'public/tests' });
-
-// Create new report
-// const createReport = async (req, res) => {
-//     try {
-//         const { studentId, type, testScores, summary } = req.body;
-//         const report = new Template({
-//             student: studentId,
-//             type,
-//             testScores,
-//             summary,
-//             author: req.user.id,
-//         });
-//         await report.save();
-//         res.status(201).json(report);
-//     } catch (error) {
-//         res.status(400).json({ message: error.message });
-//     }
-// };
 
 // Generate report using OpenAI
 const generateReport = async (req, res) => {
     try {
-        const { student } = req.body;
+        const { type } = req.body;
         // return res.json({ content: studentInfo });
 
         console.log(files);
 
         const generatedContent = await reportGenerationService.generateReport(
-            student,
+            type,
             files
         );
 
@@ -97,11 +78,7 @@ const uploadFile = async (req, res) => {
     try {
         const file = req.file;
         const { type } = req.body;
-        if (type === 'SEIS') {
-            const seisFile = files.find((f) => f.type === 'SEIS');
-            const result = await extractSEIS(seisFile);
-            res.json(JSON.parse(result));
-        } else res.json({ type });
+        res.json({ file: files[type] });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -144,6 +121,41 @@ const getTemplate = async (req, res) => {
 //         res.status(500).json({ message: error.message });
 //     }
 // };
+
+// Update Template
+const updateTemplate = async (req, res) => {
+    try {
+        const template = await Template.aggregate([
+            {
+                $match: {
+                    'sections.prompts._id': req.params.id,
+                },
+            },
+            {
+                $unwind: '$sections',
+            },
+            {
+                $unwind: '$sections.prompts',
+            },
+            {
+                $match: {
+                    'sections.prompts._id': req.params.id,
+                },
+            },
+        ]);
+
+        console.log(template);
+
+        if (!template) {
+            return res.status(404).json({ message: 'Template Not Found' });
+        }
+        Object.assign(template, req.body);
+        await template.save();
+        res.status(200).json(template);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
 // // Update report
 // const updateReport = async (req, res) => {

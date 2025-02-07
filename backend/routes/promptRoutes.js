@@ -16,7 +16,7 @@ router.post('/', createPrompt);
 router.get('/', getPrompts);
 router.get('/section', getPromptsBySection);
 router.get('/:id', getPromptById);
-router.patch('/:id', updatePrompt);
+router.patch('/:promptId/:sectionId', updatePrompt);
 router.delete('/:id', deletePrompt);
 
 module.exports = router;

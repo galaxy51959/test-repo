@@ -110,7 +110,7 @@ const Mails = () => {
 
   const handleFileChange = (e) => {
     const attachment = e.target.files[0];
-    setSendEmailData({...sendEmailData, attachment: attachment,});
+    setSendEmailData({ ...sendEmailData, attachment: attachment });
     // setSendEmailData((prev) => ({
     //   ...prev,
     //   attachment: attachment,
