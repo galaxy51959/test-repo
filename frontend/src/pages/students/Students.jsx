@@ -6,6 +6,7 @@ import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   PlusIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 // import "handsontable/dist/handsontable.full.min.css";
 import {
@@ -18,12 +19,12 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import Tooltip from "../../components/ui/Tooltip";
 import * as XLSX from "xlsx";
 import HyperFormula from "hyperformula";
-
 registerAllModules();
 
 export default function Students() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const hotRef = useRef(null);
 
   const hyperformulaInstance = HyperFormula.buildEmpty({
@@ -207,7 +208,29 @@ export default function Students() {
     // Save to file
     XLSX.writeFile(wb, "students.xlsx");
   };
-
+  const findData = (searchTerm) => {
+    const temp = data.filter(
+      (item) =>
+        item.firstName.search(searchTerm) > -1 ||
+        item.lastName.search(searchTerm) > -1 ||
+        item.gender.search(searchTerm) > -1 ||
+        item.dateOfBirth.search(searchTerm) > -1 ||
+        item.school.search(searchTerm) > -1 ||
+        item.parent.name.search(searchTerm) > -1 ||
+        item.parent.phone.search(searchTerm) > -1 ||
+        item.parent.email.search(searchTerm) > -1 ||
+        item.teacher.name.search(searchTerm) > -1 ||
+        item.teacher.phone.search(searchTerm) > -1 ||
+        item.teacher.phone.search(searchTerm) > -1
+    );
+    console.log(temp);
+    return temp;
+    //  const temp = data.filter(item=> item.firstName.search(searchTerm) > -1 || item.lastName.search(searchTerm) > -1 ||
+    // item.gender.search(searchTerm) > -1 || item.dateOfbirth.search(searchTerm) > -1 ||  item.parentName.search(searchTerm) > -1 ||
+    // item.parentPhone.search(searchTerm) > -1 || item.parentEmail.search(searchTerm) > -1 || item.school.search(searchTerm) > -1 || item.teacherEmail.search(searchTerm) > -1 ||
+    // item.teacherName.search(searchTerm) > -1 || item.teacherPhone.search(searchTerm) > -1);
+    // return temp;
+  };
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -249,6 +272,18 @@ export default function Students() {
           <h1 className="px-4 text-xl font-semibold">Students</h1>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  placeholder="Search students..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                  }}
+                  className="w-full pl-10 pr-4 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              </div>
               <Tooltip text="Export Excel" placement="top">
                 <button
                   onClick={handleExport}
@@ -287,7 +322,7 @@ export default function Students() {
                   sheetName: "Students",
                 }}
                 ref={hotRef}
-                data={data}
+                data={findData(searchTerm)}
                 columns={columns}
                 colHeaders={true}
                 rowHeaders={true}

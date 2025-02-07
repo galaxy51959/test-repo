@@ -41,15 +41,18 @@ export const createPrompt = async (promptData) => {
   }
 };
 
-export const updatePrompt = async (promptId, promptData) => {
+export const updatePrompt = async (idObj, promptData) => {
   try {
-    await fetch(`${import.meta.env.VITE_APP_API_URL}/prompts/${promptId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(promptData),
-    });
+    await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/prompts/${idObj.promptId}/${idObj.sectionId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(promptData),
+      }
+    );
   } catch (error) {
     console.error("Error updating Students:", error);
   }
