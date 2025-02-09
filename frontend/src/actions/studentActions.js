@@ -4,7 +4,7 @@ export const getStudents = async () => {
       `${import.meta.env.VITE_APP_API_URL}/students`
     );
     const result = await response.json();
-
+    console.log(result);
     return result;
   } catch (error) {
     console.error("Error fetching Students:", error);

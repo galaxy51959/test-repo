@@ -98,7 +98,7 @@ export default function GenerateReport() {
     const result = await generateReport({ type: "Initial" });
 
     const handle = window.open(
-      `http://localhost:5000/reports/${result.file}`,
+      `${import.meta.env.VITE_PUBLIC_URL}/reports/${result.file}`,
       "_blank"
     );
     setLoading(false);

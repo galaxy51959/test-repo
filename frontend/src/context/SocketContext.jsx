@@ -36,7 +36,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("Message", (data) => {
-        receiveEmails(data);
+      //  receiveEmails(data);
         alert(data.from);
       });
       setSocket(newSocket);

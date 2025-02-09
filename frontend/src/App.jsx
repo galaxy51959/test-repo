@@ -14,6 +14,7 @@ import {
 } from "./pages/students";
 import { Reports, GenerateReport, Prompt } from "./pages/reports";
 import Schedule from "./pages/Schedule";
+import Upload from './pages/Upload';
 import Mails from "./pages/Mails";
 import SignIn from "./pages/SignIn";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -67,9 +68,11 @@ function App() {
               <Route path="/reports" element={<Reports />} />
               <Route path="/reports/:id" element={<GenerateReport />} />
               <Route path="/reports/prompts" element={<Prompt />} />
-
+              <Route path="/reports/prompts" element={<Prompt />} />
+              <Route path ="/upload" element = {<Upload/>} />
               {/* Schedule */}
               <Route path="/schedule" element={<Schedule />} />
+             
             </Route>
           </Routes>
         </Router>
