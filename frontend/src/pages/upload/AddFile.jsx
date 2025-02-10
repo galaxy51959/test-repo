@@ -129,7 +129,7 @@ export default function GenerateReport() {
                             handleFileUpload(attachment, e.target.files[0])
                           }
                         />
-                        {fileObj[attachment] && (
+                        {fileObj && fileObj[attachment] && (
                           <span className="absolute bottom-2 left-3 text-sm font-medium line-clamp-1 text-gray-700 group-hover:text-blue-600">
                             {fileObj[attachment].name}
                           </span>

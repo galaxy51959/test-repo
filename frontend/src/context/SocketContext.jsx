@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import { receiveEmails } from "../actions/emailActions";
+import { toast } from "react-hot-toast";
+
 const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
@@ -37,7 +39,7 @@ export const SocketProvider = ({ children }) => {
 
       newSocket.on("Message", (data) => {
       //  receiveEmails(data);
-        alert(data.from);
+        toast.info("send from" + data.from);
       });
       setSocket(newSocket);
 

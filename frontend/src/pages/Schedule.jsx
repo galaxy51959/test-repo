@@ -420,7 +420,7 @@ export default function Schedule() {
                         </label>
                         <input
                           type="datetime"
-                          value={selectedEvent.start?.slice(0, 16) || ""}
+                          value={selectedEvent?.start?.slice(0, 16) || ""}
                           onChange={(e) =>
                             setSelectedEvent({
                               ...selectedEvent,
