@@ -165,7 +165,7 @@ export default function Students() {
       for (const [row, prop, oldValue, newValue] of changes) {
         if (oldValue !== newValue) {
           try {
-            if (data[row]._id) {
+            if (data[row]?._id) {
               await updateStudent(data[row]._id, { [prop]: newValue });
             } else {
               const student = await addStudent({ [prop]: newValue });
