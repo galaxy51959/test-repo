@@ -108,7 +108,7 @@ export default function GenerateReport() {
         {/* Section 2: Assessment Protocol Uploads */}
         <div className="grid grid-cols-2 gap-6">
           {formData &&
-            formData.map((section, sectionIdx) => (
+            formData.slice(0, formData.length-3).map((section, sectionIdx) => (
               <div className="bg-white shadow-md" key={section._id}>
                 <h2 className="px-6 pb-2 pt-3 text-lg font-medium">
                   {section.title}
