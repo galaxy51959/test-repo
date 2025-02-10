@@ -4,7 +4,9 @@ import {
   PencilIcon, 
   TrashIcon, 
   ArrowUpTrayIcon,
-  DocumentPlusIcon
+  DocumentPlusIcon,
+  DocumentIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
@@ -239,7 +241,8 @@ const Uploads = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Birthday</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Upload</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Report</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File</th>
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th> */}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -261,9 +264,12 @@ const Uploads = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {student.report != "" ? (
+                    <div>
                     <span className="px-2 py-1 text-sm text-green-800 bg-green-100 rounded-full">
                       Generated
                     </span>
+                
+                  </div>
                   ) : (
                     <button
                       onClick={() => navigate(`/reports/${student._id}`)}
@@ -273,25 +279,19 @@ const Uploads = () => {
                     </button>
                   )}
                 </td>
+
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => {
-                        setSelectedStudent(student);
-                        setFormData(student);
-                        setShowEditModal(true);
-                      }}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      <PencilIcon className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteStudent(student._id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <TrashIcon className="h-5 w-5" />
-                    </button>
-                  </div>
+                  {student.report != ""? (
+                        <div className="flex space-x-3">
+                          <a  target={"_blank"}  href = {`${import.meta.env.VITE_PUBLIC_URL}/reports/${student.report}`}>
+                          <DocumentIcon className="h-5 w-5"/>
+                          </a>
+                       </div>
+                  ): (
+                      <div/>
+                  )
+                  }
+                
                 </td>
               </tr>
             ))}
