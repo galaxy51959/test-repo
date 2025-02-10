@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import moment from "moment";
 import {
   generateReport,
@@ -9,6 +9,7 @@ import { getTemplate, getStudentById } from "../../actions/studentActions";
 
 export default function GenerateReport() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [student, setStudent] = useState({
     assessment: "Initial",
   });
@@ -51,10 +52,11 @@ export default function GenerateReport() {
     const result = await generateReport({ type: "Initial" }, id);
 
     window.open(
-      `http://localhost:5000/reports/${result.file}`,
+      `http://172.86.110.178:5000/reports/${result.file}`,
       "_blank"
     );
     setLoading(false);
+    navigate('/upload');
   };
 
   return (

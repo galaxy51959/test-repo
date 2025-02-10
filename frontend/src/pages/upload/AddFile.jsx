@@ -4,6 +4,8 @@ import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 import {
   getTemplate,
   uploadFile,
+  updateStudent,
+  getStudentById
 } from "../../actions/studentActions";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 
@@ -16,6 +18,7 @@ export default function GenerateReport() {
   const [formData, setFormData] = useState([]);
   const [fileObj, setFileObj] = useState({});
   const [loading, setLoading] = useState(false);
+  const [studentInfo, setStudentInfo] = useState({});
 
   useEffect(() => {
     fetchTemplate();
@@ -38,6 +41,10 @@ export default function GenerateReport() {
       });
 
       setFormData(result.filter((item) => item.attachments.length > 0));
+
+      const result_Std = await getStudentById(id);
+      setStudentInfo(result_Std);
+      setFileObj(result_Std.uploads);
     } catch (error) {
       console.error("Error fetching prompts:", error);
     } finally {
@@ -57,6 +64,7 @@ export default function GenerateReport() {
 
   const handleComplete = async () => {
     // setLoading(true);
+    updateStudent(id, {report: ""});
     navigate('/upload');
     // setLoading(false);
   };

@@ -10,48 +10,6 @@ import { toast } from 'react-hot-toast';
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { getStudents } from '../../actions/studentActions';
 // Add this mock data after the imports and before the component
-const MOCK_STUDENTS = [
-  {
-    _id: '1',
-    name: 'John Smith',
-    school: 'Lincoln High School',
-    grade: '10th',
-    birthday: '2008-05-15',
-    reportStatus: 'generated'
-  },
-  {
-    _id: '2',
-    name: 'Emma Johnson',
-    school: 'Washington Middle School',
-    grade: '8th',
-    birthday: '2010-03-22',
-    reportStatus: 'pending'
-  },
-  {
-    _id: '3',
-    name: 'Michael Brown',
-    school: 'Roosevelt Elementary',
-    grade: '5th',
-    birthday: '2013-11-08',
-    reportStatus: 'generated'
-  },
-  {
-    _id: '4',
-    name: 'Sarah Davis',
-    school: 'Jefferson High School',
-    grade: '11th',
-    birthday: '2007-09-30',
-    reportStatus: 'pending'
-  },
-  {
-    _id: '5',
-    name: 'David Wilson',
-    school: 'Lincoln High School',
-    grade: '9th',
-    birthday: '2009-07-14',
-    reportStatus: 'generated'
-  }
-];
 
 const Uploads = () => {
   const navigate = useNavigate();
@@ -84,6 +42,7 @@ const Uploads = () => {
         birthday: student.dateOfBirth,
         school: student.lastName,
         grade: student.grade,
+        report: student.report
       }      
       ));
       // Use mock data instead of API call
@@ -301,7 +260,7 @@ const Uploads = () => {
                   </button>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {student.reportStatus === 'generated' ? (
+                  {student.report != "" ? (
                     <span className="px-2 py-1 text-sm text-green-800 bg-green-100 rounded-full">
                       Generated
                     </span>
