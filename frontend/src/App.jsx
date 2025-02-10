@@ -70,7 +70,7 @@ function App() {
               <Route path="/reports/:id" element={<GenerateReport />} />
               <Route path="/reports/prompts" element={<Prompt />} />
               <Route path ="/upload" element = {<Upload/>} />
-              <Route path = "/addfile/:id" element = {<AddFile/>}/>
+              <Route path="/addfile/:id" element = {<AddFile/>}/>
               {/* Schedule */}
               <Route path="/schedule" element={<Schedule />} />
              

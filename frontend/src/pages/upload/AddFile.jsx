@@ -1,21 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import moment from "moment";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
-import { useAuth } from "../../context/AuthContext";
 import {
   getTemplate,
   uploadFile,
 } from "../../actions/studentActions";
-
-import { calculateAge } from "../../utils";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 
 export default function GenerateReport() {
   const navigate = useNavigate()
   const { id } = useParams();
-  console.log(id);
-  const { user } = useAuth();
   const [student, setStudent] = useState({
     assessment: "Initial",
   });
@@ -51,21 +45,6 @@ export default function GenerateReport() {
     }
   };
 
-  // const handleSeisFileUpload = async (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     setSeisFile(file);
-
-  //     // Here you would add logic to extract student info from SEIS file
-  //     const formData = new FormData();
-  //     formData.append("type", "SEIS");
-  //     formData.append("file", file);
-  //     const data = await extractStudentInfo(formData);
-
-  //     // For now, we'll simulate some dat
-  //   }
-  // };
-
   const handleFileUpload = async (type, file) => {
     const newFormData = new FormData();
     newFormData.append("type", type);
@@ -75,23 +54,6 @@ export default function GenerateReport() {
     setFileObj(tempFileObj);
     await uploadFile(newFormData, id);
   };
-
-  // const getValue = (key, value) => {
-  //   switch (key) {
-  //     // case 'parent_guardians':
-  //     // return value.map((parent) => parent.email).join(', ');
-  //     case "dateOfBirth":
-  //       return moment(value).format("MM/DD/YYYY");
-  //     case "evaluation_date":
-  //       return moment(value).format("MM/DD/YYYY");
-  //     case "report_date":
-  //       return moment(value).format("MM/DD/YYYY");
-  //     case "age":
-  //       return `${value.years} years ${value.months} months`;
-  //     default:
-  //       return value || "N/A";
-  //   }
-  // };
 
   const handleComplete = async () => {
     // setLoading(true);

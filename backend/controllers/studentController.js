@@ -82,18 +82,17 @@ const uploadFile = async (req, res) =>{
         console.log(uploads);
         const student = await Student.findByIdAndUpdate(
             { _id: req.params.id },
-            { $set: {
-                uploads: uploads      
-            } 
-            },
+            { $set: { uploads: uploads } },
             { new: true, runValidators: true }
         );
 
         if (!student) {
             return res.status(404).json({ message: 'Student Not Found' });
         }
-    } catch( error ) {
+        res.json({ file: files[req.body.type] });
+    } catch (error) {
         console.log(error);
+        res.status(500).json({ message: 'An error occurred while uploading the file.' });
     }
 }
 

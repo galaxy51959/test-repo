@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import moment from "moment";
-import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 import {
   generateReport,
   uploadFile,
@@ -10,9 +9,7 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { getTemplate, getStudentById } from "../../actions/studentActions";
 
 export default function GenerateReport() {
-  const { user } = useAuth();
-  const {id} = useParams();
-  console.log(id);
+  const { id } = useParams();
   const [student, setStudent] = useState({
     assessment: "Initial",
   });
@@ -139,7 +136,7 @@ export default function GenerateReport() {
                 <div className="flex flex-wrap gap-3 p-3">
                   {section.attachments.map((attachment, attachmentIdx) => (
                      <div
-                     key={section.title}
+                     key={attachmentIdx}
                      className="flex justify-between items-center p-4 rounded-lg bg-gray-50 border"
                    >
                      <span className="font-medium text-gray-700">{attachment}:</span>

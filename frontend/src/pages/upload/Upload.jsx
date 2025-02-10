@@ -171,7 +171,7 @@ const Uploads = () => {
   };
 
   const handleUpload = (studentId) => {
-    navigate(`/reports/${studentId}`);
+    navigate(`/addfile/${studentId}`);
   };
 
   const resetForm = () => {
@@ -307,7 +307,7 @@ const Uploads = () => {
                     </span>
                   ) : (
                     <button
-                      onClick={() => handleUpload(student._id)}
+                      onClick={() => navigate(`/reports/${student._id}`)}
                       className="px-2 py-1 text-sm text-blue-800 bg-blue-100 rounded-full hover:bg-blue-200"
                     >
                       Generate
