@@ -14,8 +14,10 @@ import {
 } from "./pages/students";
 import { Reports, GenerateReport, Prompt } from "./pages/reports";
 import Schedule from "./pages/Schedule";
+import Upload from './pages/upload/Upload';
 import Mails from "./pages/Mails";
 import SignIn from "./pages/SignIn";
+import AddFile from './pages/upload/AddFile';
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
 import { Toaster } from "react-hot-toast";
@@ -67,9 +69,11 @@ function App() {
               <Route path="/reports" element={<Reports />} />
               <Route path="/reports/:id" element={<GenerateReport />} />
               <Route path="/reports/prompts" element={<Prompt />} />
-
+              <Route path ="/upload" element = {<Upload/>} />
+              <Route path = "/addfile/:id" element = {<AddFile/>}/>
               {/* Schedule */}
               <Route path="/schedule" element={<Schedule />} />
+             
             </Route>
           </Routes>
         </Router>

@@ -15,7 +15,7 @@ export const SocketProvider = ({ children }) => {
 
     if (user) {
       // Initialize socket connection
-      const newSocket = io(`${import.meta.env.VITE_APP_SOCKET_URL}`);
+      const newSocket = io(`${import.meta.env.VITE_PUBLIC_URL}`);
 
       // Join user's room for notifications
       newSocket.emit("joinRoom", user.id);
@@ -36,7 +36,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("Message", (data) => {
-        receiveEmails(data);
+      //  receiveEmails(data);
         alert(data.from);
       });
       setSocket(newSocket);

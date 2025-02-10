@@ -31,10 +31,18 @@ const studentSchema = new mongoose.Schema({
 		email: String,
 		phone: String
 	},
-	assessments: [assessmentSchema],
+	// assessments: [assessmentSchema],
 	createdAt: {
 		type: Date,
 		default: Date.now
+	},
+	uploads: {
+		type: Object,
+		default: {}
+	},
+	report: {
+		type: String,
+		default: ""		
 	},
 	updatedAt: {
 		type: Date,

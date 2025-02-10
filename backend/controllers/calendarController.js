@@ -13,6 +13,9 @@ const createEvents = async (req, res) => {
         if (req.body.end == '') {
             req.body.end = null;
         }
+        if(!req.body.summary) {
+            req.body.summary = '';
+        }
         // Call the Notion API to create a new page
         if (req.body.key == 'task') {
             const response = await notion.pages.create({
@@ -53,10 +56,14 @@ const createEvents = async (req, res) => {
 
                     Priority: {
                         select: {
-                            id: req.body.priority[0],
+                            id: req.body.priority,
                         },
                     },
                 },
+            });
+            res.status(200).send({
+                message: 'Task created successfully',
+                data: response,
             });
         }
         if (req.body.key == 'meet') {

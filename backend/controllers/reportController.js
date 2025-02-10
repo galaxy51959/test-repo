@@ -5,7 +5,7 @@ const accessOutSideService = require('../services/accessOutSideService');
 let files = {};
 const MHSbotService = require('../services/MHSbot');
 const extractSEIS = require('../services/extractSEISService');
-
+const Student = require('../models/Student');
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'public/tests');
@@ -27,6 +27,7 @@ const upload = multer({ storage: storage });
 
 // Generate report using OpenAI
 const generateReport = async (req, res) => {
+    console.log(req.params.id);
     try {
         const { type } = req.body;
         // return res.json({ content: studentInfo });
@@ -150,7 +151,15 @@ const generateReport = async (req, res) => {
         // }
 
         console.log('Generate Success!!!');
-
+        // const find = await Student.findOne({ _id: req.params.id });
+        
+        const student = await Student.findByIdAndUpdate(
+              { _id: req.params.id },
+              { $set: {
+                report: generatedContent.fileName } 
+              },
+              { new: true, runValidators: true }
+            );
         res.json({ file: generatedContent.fileName });
     } catch (error) {
         res.status(500).json({ message: error.message });

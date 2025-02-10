@@ -2,6 +2,7 @@ node_modules
 public
 # db_json
 dist
+config
 
 .env
 package-lock.json

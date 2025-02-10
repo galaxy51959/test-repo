@@ -5,6 +5,7 @@
 		"format": "prettier --write ."
 	},
 	"dependencies": {
+		"@google-cloud/storage": "^7.15.0",
 		"@ironsoftware/ironpdf": "^2024.12.9",
 		"@ironsoftware/ironpdf-engine-windows-x64": "^2024.12.9",
 		"@langchain/openai": "^0.4.2",

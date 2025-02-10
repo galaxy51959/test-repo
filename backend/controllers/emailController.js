@@ -54,6 +54,7 @@ const receiveEmailBySocket = async (req, res) => {
 
         await email.save();
         socket.io.emit('Message', req.body);
+        fileContent = {};
     } catch (error) {}
 };
 
