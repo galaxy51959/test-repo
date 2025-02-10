@@ -3,7 +3,7 @@ const Student = require('../models/Student');
 const files = {};
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/attachments');
+        cb(null, 'public/tests');
     },
     filename: (req, file, cb) => {
         console.log(file);
