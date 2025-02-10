@@ -4,7 +4,6 @@ const {
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 } = require('@langchain/core/prompts');
-const fs = require('fs');
 const Template = require('../models/Template');
 const { generateAndSavePDF } = require('./pdfGenerationService');
 const { parseFile } = require('../utils');
