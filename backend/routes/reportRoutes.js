@@ -15,7 +15,7 @@ const {
 // router.use(auth); // Apply authentication to all routes
 
 // router.post('/', createReport);
-router.post('/generate', generateReport);
+router.post('/:id/generate', generateReport);
 router.post('/upload', uploadFile);
 // router.get('/', getReports);
 // router.get('/:id', getReportById);

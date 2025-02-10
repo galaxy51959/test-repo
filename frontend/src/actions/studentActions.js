@@ -64,6 +64,17 @@ export const addStudent = async (studentData) => {
   }
 };
 
+export const getStudentById = async(studentID) =>{
+  try{
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/students/${studentID}`,
+    );
+    const result = await response.json();
+    return result;
+  } catch(error) {
+    console.log(error);
+  }
+}
 export const updateStudent = async (studentId, studentData) => {
   try {
     await fetch(`${import.meta.env.VITE_APP_API_URL}/students/${studentId}`, {
@@ -105,5 +116,30 @@ export const assignLink = async (studentId, linkInfo) => {
     return result;
   } catch (error) {
     console.error("Error Creating Students:", error);
+  }
+};
+
+export const uploadFile = async (formData, id) => {
+  console.log(id);
+  try {
+    await fetch(`${import.meta.env.VITE_APP_API_URL}/students/${id}/upload`, {
+      method: "POST",
+      body: formData,
+    });
+  } catch (error) {
+    console.error("Error File Upload: ", error);
+  }
+};
+
+export const getTemplate = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/reports/template`
+    );
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Fetch Template Error: ", error);
+    throw error;
   }
 };

@@ -1,5 +1,24 @@
+const multer = require('multer');
 const Student = require('../models/Student');
+const files = {};
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/attachments');
+    },
+    filename: (req, file, cb) => {
+        console.log(file);
+        files[req.body.type] = {
+            mimetype: file.mimetype,
+            name: `${req.body?.type && req.body.type + '---'}${file.originalname}`,
+        };
+        cb(
+            null,
+            `${req.body?.type && req.body.type + '---'}${file.originalname}`
+        );
+    },
+});
 
+const upload = multer({ storage: storage });
 const createStudent = async (req, res) => {
     try {
         const studentExists = await Student.findOne(req.body);
@@ -54,16 +73,37 @@ const getStudents = async (req, res) => {
     }
 };
 
+const uploadFile = async (req, res) =>{
+    try {
+        const {uploads} = await Student.findById(req.params.id);
+        console.log(req.body.type);
+        console.log(files[req.body.type]);
+        uploads[req.body.type] = files[req.body.type];
+        console.log(uploads);
+        const student = await Student.findByIdAndUpdate(
+            { _id: req.params.id },
+            { $set: {
+                uploads: uploads      
+            } 
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student Not Found' });
+        }
+    } catch( error ) {
+        console.log(error);
+    }
+}
+
 const getStudentById = async (req, res) => {
     try {
-        const student = await Student.findById(req.params.id).populate(
-            'assessments'
-        );
+        const student = await Student.findById(req.params.id);
 
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });
         }
-
         res.json(student);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -154,4 +194,5 @@ module.exports = {
     updateStudent,
     deleteStudent,
     assignStudent,
+    uploadwithFile: [upload.single('file'), uploadFile],
 };

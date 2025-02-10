@@ -4,25 +4,25 @@ import moment from "moment";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../../context/AuthContext";
 import {
-  extractStudentInfo,
-  generateReport,
+  getTemplate,
   uploadFile,
-} from "../../actions/reportActions";
-import { getTemplate, getStudentById } from "../../actions/studentActions";
+} from "../../actions/studentActions";
+
 import { calculateAge } from "../../utils";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 
 export default function GenerateReport() {
-  const { user } = useAuth();
-  const {id} = useParams();
+  const navigate = useNavigate()
+  const { id } = useParams();
   console.log(id);
+  const { user } = useAuth();
   const [student, setStudent] = useState({
     assessment: "Initial",
   });
   const [formData, setFormData] = useState([]);
   const [fileObj, setFileObj] = useState({});
   const [loading, setLoading] = useState(false);
-  const [studentInfo, setStudentInfo] = useState({});
+
   useEffect(() => {
     fetchTemplate();
   }, []);
@@ -44,9 +44,6 @@ export default function GenerateReport() {
       });
 
       setFormData(result.filter((item) => item.attachments.length > 0));
-      const result_Std = await getStudentById(id);
-      setStudentInfo(result_Std);
-      console.log(result_Std);
     } catch (error) {
       console.error("Error fetching prompts:", error);
     } finally {
@@ -73,12 +70,10 @@ export default function GenerateReport() {
     const newFormData = new FormData();
     newFormData.append("type", type);
     newFormData.append("file", file);
-
     const tempFileObj = { ...fileObj };
     tempFileObj[type] = file;
     setFileObj(tempFileObj);
-
-    await uploadFile(newFormData);
+    await uploadFile(newFormData, id);
   };
 
   // const getValue = (key, value) => {
@@ -98,16 +93,10 @@ export default function GenerateReport() {
   //   }
   // };
 
-  const handleGenerate = async () => {
-    setLoading(true);
-    console.log(id);
-    const result = await generateReport({ type: "Initial" }, id);
-
-    const handle = window.open(
-      `${import.meta.env.VITE_PUBLIC_URL}/reports/${result.file}`,
-      "_blank"
-    );
-    setLoading(false);
+  const handleComplete = async () => {
+    // setLoading(true);
+    navigate('/upload');
+    // setLoading(false);
   };
 
   console.log(fileObj);
@@ -125,22 +114,7 @@ export default function GenerateReport() {
           <h2 className="px-6 pt-3 pb-2 text-lg font-medium">
             Basic Information
           </h2>
-          
           <ul className="flex gap-4 p-4">
-            <li>Name: {studentInfo.firstName + studentInfo.lastName}</li>
-          </ul>
-
-          <ul className="flex gap-4 p-4">
-            <li>School: {studentInfo.school}</li>
-          </ul>
-          <ul className="flex gap-4 p-4">
-            <li>Grade: {studentInfo.grade}</li>
-          </ul>
-          <ul className="flex gap-4 p-4">
-            <li>Birthday: {moment(studentInfo.dateOfBirth).format("MM/DD/YYYY")}</li>
-          </ul>
-          <ul className="flex gap-4 p-4">
-        
             {["Initial", "Re-Evaluation", "Record Review", "FBA"].map(
               (option) => (
                 <li key={option} className="flex items-center px-2">
@@ -164,53 +138,34 @@ export default function GenerateReport() {
         {/* Section 2: Assessment Protocol Uploads */}
         <div className="grid grid-cols-2 gap-6">
           {formData &&
-            formData.slice(0, formData.length-3).map((section, sectionIdx) => (
+            formData.map((section, sectionIdx) => (
               <div className="bg-white shadow-md" key={section._id}>
                 <h2 className="px-6 pb-2 pt-3 text-lg font-medium">
                   {section.title}
                 </h2>
                 <div className="flex flex-wrap gap-3 p-3">
                   {section.attachments.map((attachment, attachmentIdx) => (
-                     <div
-                     key={section.title}
-                     className="flex justify-between items-center p-4 rounded-lg bg-gray-50 border"
-                   >
-                     <span className="font-medium text-gray-700">{attachment}:</span>
-                     {studentInfo.uploads && Object.keys(studentInfo.uploads).map((key)=>{
-                      // console.log(key);
-                      if(key == attachment)
-                        return <span className="text-sm text-gray-600">{studentInfo.uploads[key].name.substring(studentInfo.uploads[key].name.indexOf("---")+3)}</span>
-                     })}
-                     {/* <span className="text-sm text-gray-600">"parent.docx"</span> */}
-                   </div>
-                    // <div key={attachmentIdx} className="relative group">
-                    //   <label className="flex flex-col items-center justify-center relative h-40 w-40 border-2 border-dashed border-gray-300 rounded-xl p-2 cursor-pointer group-hover:border-blue-500 transition-colors bg-gray-50 group-hover:bg-blue-50">
-                    //     {/* <ArrowUpTrayIcon className="h-8 w-8 text-gray-400 group-hover:text-blue-500 mb-2" /> */}
-                    //     <span className="absolute top-2 left-3 text-sm font-medium text-gray-700 group-hover:text-blue-600">
-                    //       {attachment}
-                    //     </span>
-                    //     <div
-                    //     key={report.type}
-                    //      className="flex justify-between items-center p-4 rounded-lg bg-gray-50 border"
-                    //      >
-                    //    <span className="font-medium text-gray-700">{report.type}</span>
-                    //    <span className="text-sm text-gray-600">{report.filename}</span>
-                    //   </div>
-                    //     {/* <input
-                    //       type="file"
-                    //       className="hidden"
-                    //       accept=".pdf,.doc,.docx"
-                    //       onChange={(e) =>
-                    //         handleFileUpload(attachment, e.target.files[0])
-                    //       }
-                    //     /> */}
-                    //     {/* {fileObj[attachment] && (
-                    //       <span className="absolute bottom-2 left-3 text-sm font-medium line-clamp-1 text-gray-700 group-hover:text-blue-600">
-                    //         {fileObj[attachment].name}
-                    //       </span>
-                    //     )} */}
-                    //   </label>
-                    // </div>
+                    <div key={attachmentIdx} className="relative group">
+                      <label className="flex flex-col items-center justify-center relative h-40 w-40 border-2 border-dashed border-gray-300 rounded-xl p-2 cursor-pointer group-hover:border-blue-500 transition-colors bg-gray-50 group-hover:bg-blue-50">
+                        <ArrowUpTrayIcon className="h-8 w-8 text-gray-400 group-hover:text-blue-500 mb-2" />
+                        <span className="absolute top-2 left-3 text-sm font-medium text-gray-700 group-hover:text-blue-600">
+                          {attachment}
+                        </span>
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) =>
+                            handleFileUpload(attachment, e.target.files[0])
+                          }
+                        />
+                        {fileObj[attachment] && (
+                          <span className="absolute bottom-2 left-3 text-sm font-medium line-clamp-1 text-gray-700 group-hover:text-blue-600">
+                            {fileObj[attachment].name}
+                          </span>
+                        )}
+                      </label>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -223,12 +178,12 @@ export default function GenerateReport() {
             <LoadingSpinner />
           ) : (
             <button
-              onClick={handleGenerate}
+              onClick={handleComplete}
               className="w-48 h-48 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transform transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
             >
               <div className="flex flex-col items-center justify-center">
-                <span className="text-xl font-bold mb-2">GENERATE</span>
-                <span className="text-xl opacity-75">REPORT</span>
+                <span className="text-xl font-bold mb-2">UPLOAD</span>
+                <span className="text-xl opacity-75">FILES</span>
               </div>
             </button>
           )}

@@ -36,8 +36,14 @@ const studentSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	},
-	uploads: Object,
-	report: String,
+	uploads: {
+		type: Object,
+		default: {}
+	},
+	report: {
+		type: String,
+		default: ""		
+	},
 	updatedAt: {
 		type: Date,
 		default: Date.now
