@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import moment from "moment";
 import {
   generateReport,
-  uploadFile,
 } from "../../actions/reportActions";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { getTemplate, getStudentById } from "../../actions/studentActions";
@@ -14,7 +13,6 @@ export default function GenerateReport() {
     assessment: "Initial",
   });
   const [formData, setFormData] = useState([]);
-  const [fileObj, setFileObj] = useState({});
   const [loading, setLoading] = useState(false);
   const [studentInfo, setStudentInfo] = useState({});
   useEffect(() => {
@@ -48,33 +46,16 @@ export default function GenerateReport() {
     }
   };
 
-  const handleFileUpload = async (type, file) => {
-    const newFormData = new FormData();
-    newFormData.append("type", type);
-    newFormData.append("file", file);
-
-    const tempFileObj = { ...fileObj };
-    tempFileObj[type] = file;
-    console.log(tempFileObj);
-    setFileObj(tempFileObj);
-
-    await uploadFile(newFormData);
-  };
-
   const handleGenerate = async () => {
     setLoading(true);
-    console.log(id);
     const result = await generateReport({ type: "Initial" }, id);
 
     window.open(
       `http://localhost:5000/reports/${result.file}`,
       "_blank"
     );
-    setFileObj({});
     setLoading(false);
   };
-
-  console.log(fileObj);
 
   return (
     <div className="rounded-lg">
@@ -126,59 +107,53 @@ export default function GenerateReport() {
         </div>
 
         {/* Section 2: Assessment Protocol Uploads */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6 divide-y-2">
           {formData &&
-            formData.slice(0, formData.length-3).map((section, sectionIdx) => (
-              <div className="bg-white shadow-md" key={section._id}>
-                <h2 className="px-6 pb-2 pt-3 text-lg font-medium">
+            formData.slice(0, formData.length-3).map((section) => (
+              <div className="flex" key={section._id}>
+                <h2 className="px-6 pt-6 text-md font-medium flex items-center justify-center w-96">
                   {section.title}
                 </h2>
-                <div className="flex flex-wrap gap-3 p-3">
+                <div className="flex flex-col gap-3 p-3 flex-3">
                   {section.attachments.map((attachment, attachmentIdx) => (
-                     <div
-                     key={attachmentIdx}
-                     className="flex justify-between items-center p-4 rounded-lg bg-gray-50 border"
-                   >
-                     <span className="font-medium text-gray-700">{attachment}:</span>
-                     {studentInfo.uploads && Object.keys(studentInfo.uploads).map((key)=>{
-                      // console.log(key);
-                      if(key == attachment)
-                        return <span className="text-sm text-gray-600">{studentInfo.uploads[key].name.substring(studentInfo.uploads[key].name.indexOf("---")+3)}</span>
-                     })}
-                     {/* <span className="text-sm text-gray-600">"parent.docx"</span> */}
-                   </div>
-                    // <div key={attachmentIdx} className="relative group">
-                    //   <label className="flex flex-col items-center justify-center relative h-40 w-40 border-2 border-dashed border-gray-300 rounded-xl p-2 cursor-pointer group-hover:border-blue-500 transition-colors bg-gray-50 group-hover:bg-blue-50">
-                    //     {/* <ArrowUpTrayIcon className="h-8 w-8 text-gray-400 group-hover:text-blue-500 mb-2" /> */}
-                    //     <span className="absolute top-2 left-3 text-sm font-medium text-gray-700 group-hover:text-blue-600">
-                    //       {attachment}
-                    //     </span>
-                    //     <div
-                    //     key={report.type}
-                    //      className="flex justify-between items-center p-4 rounded-lg bg-gray-50 border"
-                    //      >
-                    //    <span className="font-medium text-gray-700">{report.type}</span>
-                    //    <span className="text-sm text-gray-600">{report.filename}</span>
-                    //   </div>
-                    //     {/* <input
-                    //       type="file"
-                    //       className="hidden"
-                    //       accept=".pdf,.doc,.docx"
-                    //       onChange={(e) =>
-                    //         handleFileUpload(attachment, e.target.files[0])
-                    //       }
-                    //     /> */}
-                    //     {/* {fileObj[attachment] && (
-                    //       <span className="absolute bottom-2 left-3 text-sm font-medium line-clamp-1 text-gray-700 group-hover:text-blue-600">
-                    //         {fileObj[attachment].name}
-                    //       </span>
-                    //     )} */}
-                    //   </label>
-                    // </div>
+                    studentInfo.uploads && Object.keys(studentInfo.uploads).filter(key => key === attachment).map((key) =>
+                      <div
+                        key={section.title + attachmentIdx}
+                        className="flex justify-between items-center p-4 rounded-lg"
+                      >
+                        <span className="font-medium text-gray-700 pr-2">{attachment}:</span>
+                        <span className="text-sm text-gray-600" key={key}>{studentInfo.uploads[key].name.substring(studentInfo.uploads[key].name.indexOf("---") + 3)}</span>
+                      </div>  
+                    )
                   ))}
                 </div>
               </div>
             ))}
+            <div className="flex pt-6" key="Summary and Diagnostic Impression">
+              <h2 className="px-6 text-md font-medium flex items-center justify-center w-96">
+                  Eligibility Category
+              </h2>
+              <select 
+                className="w-1/2 p-2 border rounded-lg focus:outline-none bg-inherit"
+                name="eligibility"
+                id="eligibility"
+                onChange={e => setEligibility(e.target.value)}
+              >
+                <option value="Autism Spectrum Disorder(ASD)">Autism Spectrum Disorder(ASD)</option>
+                <option value="Specific Learning Disability(SLD)">Specific Learning Disability(SLD)</option>
+                <option value="Other Health Impairment(OHI)">Other Health Impairment(OHI)</option>
+                <option value="Emotional Disturbance(ED)">Emotional Disturbance(ED)</option>
+                <option value="Intellectual Disability(ID)">Intellectual Disability(ID)</option>
+                <option value="Deafness">Deafness</option>
+                <option value="Hearing Impairment">Hearing Impairment</option>
+                <option value="Visual Impairment(VI), Including Blindness">Visual Impairment(VI), Including Blindness</option>
+                <option value="Orthopedic Impairment(OI)">Orthopedic Impairment(OI)</option>
+                <option value="Traumatic Brain Injury(TBI)">Traumatic Brain Injury(TBI)</option>
+                <option value="Deaf-Blindness">Deaf-Blindness</option>
+                <option value="Multiple Disabilities">Multiple Disabilities</option>
+                <option value="Speech or Language Impairment(SLI)">Speech or Language Impairment(SLI)</option>
+              </select>
+            </div>
         </div>
 
         {/* Section 3: Generate Button */}

@@ -10,13 +10,11 @@ const {
     // updateReport,
     // deleteReport,
     // accessReport,
-    uploadFile,
 } = require('../controllers/reportController');
 // router.use(auth); // Apply authentication to all routes
 
 // router.post('/', createReport);
 router.post('/:id/generate', generateReport);
-router.post('/upload', uploadFile);
 // router.get('/', getReports);
 // router.get('/:id', getReportById);
 router.get('/template', getTemplate);
