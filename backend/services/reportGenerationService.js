@@ -20,8 +20,6 @@ const generateReportPart = async (prompt, idx, files, sectionTitle, eligibility)
         prompt.attachments.includes(key)
     );
 
-    console.log(idx);
-
     if (needAttachments.length < prompt.attachments.length && sectionTitle !== 'Summary and Diagnostic Impression' && sectionTitle !== 'Eligibility Considerations')
         return { content: '' };
 
@@ -46,6 +44,8 @@ const generateReportPart = async (prompt, idx, files, sectionTitle, eligibility)
     const chain = chatPrompt.pipe(model);
 
     const res = await chain.invoke();
+
+    console.log(idx);
 
     return {
         order: idx,
@@ -130,13 +130,12 @@ const generateTotalReport = async (sections) => {
     }
 };
 
-const generateReport = async (type, files) => {
+const generateReport = async ({ type, eligibility }, files) => {
     try {
         console.log('Starting report generation for:');
         const template = await Template.findOne({ type });
-        const eligibility = "Autism Spectrum Disorder(ASD)";
 
-        const sectionPromises = template.sections.slice(19, 21).map((section) =>
+        const sectionPromises = template.sections.map((section) =>
             generateReportSection(section, files, eligibility)
         );
 

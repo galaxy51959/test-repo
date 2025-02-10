@@ -13,6 +13,7 @@ export default function GenerateReport() {
   const [student, setStudent] = useState({
     assessment: "Initial",
   });
+  const [eligibility, setEligibility] = useState("Autism Spectrum Disorder(ASD)");
   const [formData, setFormData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [studentInfo, setStudentInfo] = useState({});
@@ -49,10 +50,10 @@ export default function GenerateReport() {
 
   const handleGenerate = async () => {
     setLoading(true);
-    const result = await generateReport({ type: "Initial" }, id);
+    const result = await generateReport({ type: "Initial", eligibility }, id);
 
     window.open(
-      `http://172.86.110.178:5000/reports/${result.file}`,
+      `${VITE_PUBLIC_URL}/reports/${result.file}`,
       "_blank"
     );
     setLoading(false);

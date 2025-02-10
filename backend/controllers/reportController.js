@@ -9,51 +9,22 @@ const extractSEIS = require('../services/extractSEISService');
 const generateReport = async (req, res) => {
     try {
         const { id } = req.params;
-        const { type } = req.body;
+        const { type, eligibility } = req.body;
         // return res.json({ content: studentInfo });
 
 		const { uploads } = await Student.findById(id);
 
-		console.log(uploads);
-
 
         const generatedContent = await reportGenerationService.generateReport(
-            type,
+            { type, eligibility },
             uploads
         );
 
         console.log(generatedContent);
 
-        // const templateType = "Psychoeducational";
-
-        // Save or Update Report
-        // const findReport = await Report.findOne({
-        //   student: studentId,
-        //   type: templateType
-        // })
-
-        // if (!findReport) {
-        //   const report = new Report({
-        //     student: studentId,
-        //     type: templateType,
-        //     testScores,
-        //     summary,
-        //     author: 'Alexis E. Carter',
-        //     file: generatedContent.fileName,
-        //   });
-
-        //   await report.save();
-        // } else {
-        //   await Report.updateOne(
-        //     { student: studentId, type: templateType },
-        //     { $set: { testScores, summary, author: 'Alexis E. Carter', file: generatedContent.fileName }}
-        //   );
-        // }
-
         console.log('Generate Success!!!');
-        // const find = await Student.findOne({ _id: req.params.id });
         
-        const student = await Student.findByIdAndUpdate(
+        await Student.findByIdAndUpdate(
               { _id: req.params.id },
               { $set: {
                 report: generatedContent.fileName } 
