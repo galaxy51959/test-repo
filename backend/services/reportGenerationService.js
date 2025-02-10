@@ -15,16 +15,14 @@ const model = new ChatOpenAI({
     temperature: 0.5,
 });
 
-const generateReportPart = async (prompt, idx, files) => {
-    // console.log(prompt);
-
+const generateReportPart = async (prompt, idx, files, sectionTitle, eligibility) => {
     const needAttachments = Object.keys(files).filter((key) =>
         prompt.attachments.includes(key)
     );
 
-    // console.log('Need Attachments:', needAttachments);
+    console.log(idx);
 
-    if (needAttachments.length < prompt.attachments.length)
+    if (needAttachments.length < prompt.attachments.length && sectionTitle !== 'Summary and Diagnostic Impression' && sectionTitle !== 'Eligibility Considerations')
         return { content: '' };
 
     const fileContents = await Promise.all(
@@ -38,7 +36,9 @@ const generateReportPart = async (prompt, idx, files) => {
 
     const chatPrompt = ChatPromptTemplate.fromMessages([
         SystemMessagePromptTemplate.fromTemplate(
-            `${file ? `Uploaded File: ${file} \n\n` : ''} ${prompt.systemPrompt}`
+            `${file ? `Uploaded File: ${file} \n\n` : ''}
+            ${sectionTitle === 'Summary and Diagnostic Impression' || sectionTitle == 'Eligibility Considerations' ? `Eligibility Category: ${eligibility} \n\n` : ''}
+            ${prompt.systemPrompt}`
         ),
         HumanMessagePromptTemplate.fromTemplate(prompt.humanPrompt),
     ]);
@@ -56,17 +56,17 @@ const generateReportPart = async (prompt, idx, files) => {
     };
 };
 
-const generateReportSection = async (section, files) => {
+const generateReportSection = async (section, files, eligibility) => {
     try {
         const plainSection = section.toObject ? section.toObject() : section;
 
         const parts = plainSection.prompts.map((prompt, idx) =>
-            generateReportPart(prompt, idx, files)
+            generateReportPart(prompt, idx, files, plainSection.title, eligibility)
         );
 
         const generatedParts = await Promise.all(parts);
 
-        const sectionTitle = `<h4 style="text-align: center; border:1px solid black; text-transform: uppercase">${plainSection.title}</h4>`;
+        const sectionTitle = `<h4 style="text-align: center; border:1px solid black; text-transform: uppercase; background-color:#9ca3af">${plainSection.title}</h4>`;
 
         const isEmpty = generatedParts.every((part) => part.content === '');
 
@@ -79,25 +79,22 @@ const generateReportSection = async (section, files) => {
             res = generatedParts.reduce(
                 (acc, part) => {
                     acc.content += part.content;
+                    acc.content += '<br />';
                     return acc;
                 },
                 { content: sectionTitle }
             );
-
-            console.log(res);
-
             return res;
         }
 
         res = generatedParts.reduce(
             (acc, part) => {
                 acc.content += part.content;
+                acc.content += '<br />'
                 return acc;
             },
             { content: '' }
         );
-
-        console.log(res);
 
         return res;
     } catch (error) {
@@ -107,15 +104,15 @@ const generateReportSection = async (section, files) => {
 };
 
 const generateTotalReport = async (sections) => {
-    let htmlContent = '';
+    // let htmlContent = '';
 
     // Process sections in parallel
-    const processedSections = sections.reduce((acc, section) => {
-        acc.push(section.content);
+    const htmlContent = sections.reduce((acc, section) => {
+        acc += section.content;
         return acc;
-    }, []);
+    }, '');
 
-    htmlContent = processedSections.join('<br />');
+    console.log('Total Content: ', htmlContent);
 
     try {
         const pdf = await generateAndSavePDF(
@@ -137,16 +134,13 @@ const generateReport = async (type, files) => {
     try {
         console.log('Starting report generation for:');
         const template = await Template.findOne({ type });
+        const eligibility = "Autism Spectrum Disorder(ASD)";
 
-        const sectionPromises = template.sections.map((section) =>
-            generateReportSection(section, files)
+        const sectionPromises = template.sections.slice(19, 21).map((section) =>
+            generateReportSection(section, files, eligibility)
         );
 
         const generatedSections = await Promise.all(sectionPromises);
-
-        // const generatedSections = sectionPromises;
-
-        console.log(generatedSections);
 
         // Sort sections by order
         const filteredSection = generatedSections.filter(
