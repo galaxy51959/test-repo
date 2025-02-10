@@ -42,6 +42,7 @@ const Uploads = () => {
         birthday: student.dateOfBirth,
         school: student.lastName,
         grade: student.grade,
+        report: student.report
       }      
       ));
       // Use mock data instead of API call
@@ -259,16 +260,16 @@ const Uploads = () => {
                   </button>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {student.report === '' ? (
+                  {student.report != "" ? (
                     <span className="px-2 py-1 text-sm text-green-800 bg-green-100 rounded-full">
-                      Generate
+                      Generated
                     </span>
                   ) : (
                     <button
                       onClick={() => navigate(`/reports/${student._id}`)}
                       className="px-2 py-1 text-sm text-blue-800 bg-blue-100 rounded-full hover:bg-blue-200"
                     >
-                      Generated
+                      Generate
                     </button>
                   )}
                 </td>
