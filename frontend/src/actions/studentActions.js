@@ -77,13 +77,16 @@ export const getStudentById = async(studentID) =>{
 }
 export const updateStudent = async (studentId, studentData) => {
   try {
-    await fetch(`${import.meta.env.VITE_APP_API_URL}/students/${studentId}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/students/${studentId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(studentData),
     });
+
+    const result = await response.json();
+    return result;
   } catch (error) {
     console.error("Error updating Students:", error);
   }

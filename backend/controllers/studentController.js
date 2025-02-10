@@ -21,6 +21,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 const createStudent = async (req, res) => {
     try {
+
+        console.log(req.body);
+
         const studentExists = await Student.findOne(req.body);
         if (studentExists) {
             return res
