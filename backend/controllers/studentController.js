@@ -62,8 +62,6 @@ const getStudents = async (req, res) => {
             .skip((page - 1) * limit)
             .limit(limit);
 
-        console.log(students);
-
         const total = await Student.countDocuments(query);
 
         res.json({
@@ -78,11 +76,8 @@ const getStudents = async (req, res) => {
 
 const uploadFile = async (req, res) =>{
     try {
-        const {uploads} = await Student.findById(req.params.id);
-        console.log(req.body.type);
-        console.log(files[req.body.type]);
+        const { uploads } = await Student.findById(req.params.id);
         uploads[req.body.type] = files[req.body.type];
-        console.log(uploads);
         const student = await Student.findByIdAndUpdate(
             { _id: req.params.id },
             { $set: { uploads: uploads } },

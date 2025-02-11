@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const http = require('http');
 const socket = require('./socket');
+// const { Upload } = require('@aws-sdk/lib-storage');
+// const s3Client = require('./config/aws-config');
+// const { fromNodeStream } = require('@aws-sdk/stream-transform-node');
 
 dotenv.config();
 
@@ -33,6 +36,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/prompts', promptRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/students', studentRoutes);
+
+// app.use('/api/upload', async (req, res) => {
+    // const { file } = req;
+// })
 
 // Error Handler
 app.use(errorHandler);

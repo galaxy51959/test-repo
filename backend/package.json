@@ -5,6 +5,8 @@
 		"format": "prettier --write ."
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.744.0",
+		"@aws-sdk/lib-storage": "^3.744.0",
 		"@google-cloud/storage": "^7.15.0",
 		"@ironsoftware/ironpdf": "^2024.12.9",
 		"@ironsoftware/ironpdf-engine-windows-x64": "^2024.12.9",
