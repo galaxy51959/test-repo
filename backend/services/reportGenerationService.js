@@ -4,8 +4,7 @@ const {
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 } = require('@langchain/core/prompts');
-const fs = require('fs');
-const Template = require('../models/Report');
+const Template = require('../models/Template');
 const { generateAndSavePDF } = require('./pdfGenerationService');
 const { parseFile } = require('../utils');
 
@@ -15,115 +14,109 @@ const model = new ChatOpenAI({
     temperature: 0.5,
 });
 
-const generateReportPart = async (prompt, idx, studentInfo, files) => {
-    const needFiles = Object.keys(files).filter((key) =>
-        prompt.need.includes(key)
+const generateReportPart = async (prompt, idx, files, sectionTitle, eligibility) => {
+    const needAttachments = Object.keys(files).filter((key) =>
+        prompt.attachments.includes(key)
     );
 
-    console.log('Need Files:', needFiles);
+    if (needAttachments.length < prompt.attachments.length && sectionTitle !== 'Summary and Diagnostic Impression' && sectionTitle !== 'Eligibility Considerations')
+        return { content: '' };
 
-    if (needFiles.length < prompt.need.length)
-        return { order: idx, content: '```html\n<body></body>\n```' };
+    const fileContents = await Promise.all(
+        needAttachments.map(async (attachment) => {
+            const fileContent = await parseFile(files[attachment]);
+            return { type: attachment, content: fileContent };
+        })
+    );
 
-    const fileContents = needFiles.map((need) => {
-        const fileContent = parseFile(files[need]);
-        return { type: need.type, content: fileContent };
-    });
-
-    const contents = await Promise.all(fileContents);
+    const file = fileContents.map((content) => content.content).join('\n\n');
 
     const chatPrompt = ChatPromptTemplate.fromMessages([
         SystemMessagePromptTemplate.fromTemplate(
-            `You are a professional report writer specialized in education psychological reports.
-            ${
-                needFiles.length === 0
-                    ? 'Please output the reuslts like html code only body content as the same as the give sentences according to the style.'
-                    : 'Output the results like html code only body content according to the prompt.'
-            }
-            Note: Each Table must follow these Styles: border-collapse, grid, width-100%
-            Each Title must follow these Styles: Bold Style, strong tag, Left Align.`
+            `${file ? `Uploaded File: ${file} \n\n` : ''}
+            ${sectionTitle === 'Summary and Diagnostic Impression' || sectionTitle == 'Eligibility Considerations' ? `Eligibility Category: ${eligibility} \n\n` : ''}
+            ${prompt.systemPrompt}`
         ),
         HumanMessagePromptTemplate.fromTemplate(prompt.humanPrompt),
     ]);
 
     const chain = chatPrompt.pipe(model);
 
-    const res = await chain.invoke({
-        file: contents.map((content) => content.content).join('\n\n'),
-        ...studentInfo,
-    });
+    const res = await chain.invoke();
 
-    console.log(res.content);
+    console.log(idx);
 
     return {
         order: idx,
-        content: res.content,
+        content: res.content.substring(
+            res.content.indexOf('<'),
+            res.content.lastIndexOf('>') + 1
+        ),
     };
 };
 
-const generateReportSection = async (section, studentInfo, files) => {
+const generateReportSection = async (section, files, eligibility) => {
     try {
-        // const prompt = constructSectionPrompt(section, studentInfo);
+        const plainSection = section.toObject ? section.toObject() : section;
 
-        // console.log(file);
-        // const needs = [...new Set(needFiles)];
-
-        const parts = section.prompts.map((prompt, idx) =>
-            generateReportPart(prompt, idx, studentInfo, files)
+        const parts = plainSection.prompts.map((prompt, idx) =>
+            generateReportPart(prompt, idx, files, plainSection.title, eligibility)
         );
 
         const generatedParts = await Promise.all(parts);
 
-        const chatPrompt = ChatPromptTemplate.fromMessages([
-            SystemMessagePromptTemplate.fromTemplate(
-                `Given the html contents separated by '\n\n' symbol, output result like one html file(only body content) by adding contents.
-                ${section.order !== 1 ? 'At the first, there is section title. Section Title must follow these styles: Bold, h4 tag, Center Align, Border, No padding, width-100%,, Uppercase' : ''}`
-            ),
-            HumanMessagePromptTemplate.fromTemplate(
-                `${section.order !== 1 ? '{sectionTitle}' : ''} \n ${generatedParts.map((part) => part.content).join('\n\n')}`
-            ),
-        ]);
+        const sectionTitle = `<h4 style="text-align: center; border:1px solid black; text-transform: uppercase; background-color:#9ca3af">${plainSection.title}</h4>`;
 
-        const chain = chatPrompt.pipe(model);
+        const isEmpty = generatedParts.every((part) => part.content === '');
 
-        const res = await chain.invoke({
-            sectionTitle: section.title,
-            ...studentInfo,
-        });
+        if (isEmpty && !plainSection.required) {
+            return;
+        }
 
-        console.log(section.order, section.title);
+        let res;
+        if (!isTitleExcepted(plainSection.title)) {
+            res = generatedParts.reduce(
+                (acc, part) => {
+                    acc.content += part.content;
+                    acc.content += '<br />';
+                    return acc;
+                },
+                { content: sectionTitle }
+            );
+            return res;
+        }
 
-        return {
-            order: section.order,
-            content: res.content,
-        };
+        res = generatedParts.reduce(
+            (acc, part) => {
+                acc.content += part.content;
+                acc.content += '<br />'
+                return acc;
+            },
+            { content: '' }
+        );
+
+        return res;
     } catch (error) {
         console.error('Error generating report section:', error);
         throw error;
     }
 };
 
-const generateTotalReport = async (sections, studentData) => {
-    let htmlContent = '';
+const generateTotalReport = async (sections) => {
+    // let htmlContent = '';
 
     // Process sections in parallel
-    const processedSections = await Promise.all(
-        sections.map(async (section) => {
-            // const index = section.content.search('<body>');
-            // if (index > -1) {
-            //     const idx = section.content.indexOf()
-            // }
-            // return section.content;
-            return section.content.substring(7, section.content.length - 4);
-        })
-    );
+    const htmlContent = sections.reduce((acc, section) => {
+        acc += section.content;
+        return acc;
+    }, '');
 
-    htmlContent = processedSections.join('<br />');
+    console.log('Total Content: ', htmlContent);
 
     try {
         const pdf = await generateAndSavePDF(
             htmlContent,
-            `${studentData.name}-${new Date().toLocaleDateString('en-CA', {
+            `${new Date().toLocaleDateString('en-CA', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -136,33 +129,24 @@ const generateTotalReport = async (sections, studentData) => {
     }
 };
 
-const generateReport = async (studentInfo, files) => {
+const generateReport = async ({ type, eligibility }, files) => {
     try {
-        console.log('Starting report generation for:', studentInfo.name);
-        const template = await Template.findOne({ type: 'Initial' }).populate(
-            'sections.prompts'
-        );
+        console.log('Starting report generation for:');
+        const template = await Template.findOne({ type });
 
-        const sectionPromises = template.sections.map((section) =>
-            generateReportSection(section, studentInfo, files)
+        const sectionPromises = template.sections.slice(15, 17).map((section) =>
+            generateReportSection(section, files, eligibility)
         );
 
         const generatedSections = await Promise.all(sectionPromises);
 
-        // const generatedSections = sectionPromises;
-
-        console.log(generatedSections);
-
         // Sort sections by order
-        const filteredSection = generatedSections
-            .filter((section) => section !== undefined)
-            .sort((a, b) => a.order - b.order);
+        const filteredSection = generatedSections.filter(
+            (section) => section !== undefined
+        );
 
         // Generate final PDF
-        const generatedReport = await generateTotalReport(
-            filteredSection,
-            studentInfo
-        );
+        const generatedReport = await generateTotalReport(filteredSection);
 
         return generatedReport;
     } catch (error) {
@@ -175,3 +159,16 @@ module.exports = {
     generateReport,
     generateReportSection,
 };
+
+const titleExcept = [
+    'Confidential Multidisciplinary Report',
+    'Report Information',
+    'Purpose of Assessment',
+    'Validity Statement',
+    'Assessment Information',
+    'Cultural and Linguistic Factors',
+    'Recommendations',
+    'Signature Area',
+];
+
+const isTitleExcepted = (title) => titleExcept.includes(title);

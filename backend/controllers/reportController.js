@@ -1,92 +1,36 @@
-const multer = require('multer');
-const Template = require('../models/Report');
+const Template = require('../models/Template');
+const Student = require('../models/Student');
 const reportGenerationService = require('../services/reportGenerationService');
 const accessOutSideService = require('../services/accessOutSideService');
-const files = {};
 const MHSbotService = require('../services/MHSbot');
 const extractSEIS = require('../services/extractSEISService');
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/tests');
-    },
-    filename: (req, file, cb) => {
-        console.log(file);
-        files[req.body.type] = {
-            mimetype: file.mimetype,
-            name: `${req.body?.type && req.body.type + '---'}${file.originalname}`,
-        };
-        cb(
-            null,
-            `${req.body?.type && req.body.type + '---'}${file.originalname}`
-        );
-    },
-});
-
-const upload = multer({ storage: storage });
-// const upload = multer({ dest: 'public/tests' });
-
-// Create new report
-// const createReport = async (req, res) => {
-//     try {
-//         const { studentId, type, testScores, summary } = req.body;
-//         const report = new Template({
-//             student: studentId,
-//             type,
-//             testScores,
-//             summary,
-//             author: req.user.id,
-//         });
-//         await report.save();
-//         res.status(201).json(report);
-//     } catch (error) {
-//         res.status(400).json({ message: error.message });
-//     }
-// };
 
 // Generate report using OpenAI
 const generateReport = async (req, res) => {
     try {
-        const { student } = req.body;
+        const { id } = req.params;
+        const { type, eligibility } = req.body;
         // return res.json({ content: studentInfo });
 
-        console.log(files);
+		const { uploads } = await Student.findById(id);
+
 
         const generatedContent = await reportGenerationService.generateReport(
-            student,
-            files
+            { type, eligibility },
+            uploads
         );
 
         console.log(generatedContent);
 
-        // const templateType = "Psychoeducational";
-
-        // Save or Update Report
-        // const findReport = await Report.findOne({
-        //   student: studentId,
-        //   type: templateType
-        // })
-
-        // if (!findReport) {
-        //   const report = new Report({
-        //     student: studentId,
-        //     type: templateType,
-        //     testScores,
-        //     summary,
-        //     author: 'Alexis E. Carter',
-        //     file: generatedContent.fileName,
-        //   });
-
-        //   await report.save();
-        // } else {
-        //   await Report.updateOne(
-        //     { student: studentId, type: templateType },
-        //     { $set: { testScores, summary, author: 'Alexis E. Carter', file: generatedContent.fileName }}
-        //   );
-        // }
-
         console.log('Generate Success!!!');
-
+        
+        await Student.findByIdAndUpdate(
+              { _id: req.params.id },
+              { $set: {
+                report: generatedContent.fileName } 
+              },
+              { new: true, runValidators: true }
+            );
         res.json({ file: generatedContent.fileName });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -97,11 +41,7 @@ const uploadFile = async (req, res) => {
     try {
         const file = req.file;
         const { type } = req.body;
-        if (type === 'SEIS') {
-            const seisFile = files.find((f) => f.type === 'SEIS');
-            const result = await extractSEIS(seisFile);
-            res.json(JSON.parse(result));
-        } else res.json({ type });
+        res.json({ file: files[type] });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -144,6 +84,41 @@ const getTemplate = async (req, res) => {
 //         res.status(500).json({ message: error.message });
 //     }
 // };
+
+// Update Template
+const updateTemplate = async (req, res) => {
+    try {
+        const template = await Template.aggregate([
+            {
+                $match: {
+                    'sections.prompts._id': req.params.id,
+                },
+            },
+            {
+                $unwind: '$sections',
+            },
+            {
+                $unwind: '$sections.prompts',
+            },
+            {
+                $match: {
+                    'sections.prompts._id': req.params.id,
+                },
+            },
+        ]);
+
+        console.log(template);
+
+        if (!template) {
+            return res.status(404).json({ message: 'Template Not Found' });
+        }
+        Object.assign(template, req.body);
+        await template.save();
+        res.status(200).json(template);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
 // // Update report
 // const updateReport = async (req, res) => {
@@ -198,7 +173,6 @@ const getTemplate = async (req, res) => {
 module.exports = {
     // createReport,
     generateReport,
-    uploadFile: [upload.single('file'), uploadFile],
     // getReports,
     // getReportById,
     getTemplate,

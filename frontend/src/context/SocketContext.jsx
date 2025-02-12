@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import { receiveEmails } from "../actions/emailActions";
+import { toast } from "react-hot-toast";
+
 const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
@@ -15,7 +17,7 @@ export const SocketProvider = ({ children }) => {
 
     if (user) {
       // Initialize socket connection
-      const newSocket = io("http://172.86.110.178:5000");
+      const newSocket = io(`${import.meta.env.VITE_PUBLIC_URL}`);
 
       // Join user's room for notifications
       newSocket.emit("joinRoom", user.id);
@@ -36,8 +38,8 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("Message", (data) => {
-        receiveEmails(data);
-        alert(data.from);
+      //  receiveEmails(data);
+        toast.info("send from" + data.from);
       });
       setSocket(newSocket);
 

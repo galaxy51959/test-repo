@@ -1,5 +1,6 @@
 const Prompt = require('../models/Prompt');
-// const Report = require('../models/Report');
+const Template = require('../models/Template');
+const template = require('../models/Template');
 
 // Create new Prompt
 const createPrompt = async (req, res) => {
@@ -15,7 +16,8 @@ const createPrompt = async (req, res) => {
 // Get all Prompts
 const getPrompts = async (req, res) => {
     try {
-        const prompts = await Prompt.find();
+        const prompts = await Template.findOne({ type: 'Initial' });
+
         res.json(prompts);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -60,7 +62,6 @@ const updatePrompt = async (req, res) => {
         if (!prompt) {
             return res.status(404).json({ message: 'Prompt not found' });
         }
-
         Object.assign(prompt, req.body);
         prompt.updatedAt = Date.now();
         await prompt.save();

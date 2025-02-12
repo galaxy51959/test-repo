@@ -5,11 +5,16 @@
 		"format": "prettier --write ."
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.744.0",
+		"@aws-sdk/lib-storage": "^3.744.0",
+		"@google-cloud/storage": "^7.15.0",
 		"@ironsoftware/ironpdf": "^2024.12.9",
 		"@ironsoftware/ironpdf-engine-windows-x64": "^2024.12.9",
 		"@langchain/openai": "^0.4.2",
 		"@notionhq/client": "^2.2.15",
+		"aws-sdk": "^2.1692.0",
 		"bcryptjs": "^2.4.3",
+		"boto3": "^0.0.1",
 		"cors": "^2.8.5",
 		"crypto": "^1.0.1",
 		"docx-parser": "^0.2.1",

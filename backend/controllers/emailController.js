@@ -1,37 +1,9 @@
 const Email = require('../models/Email');
-// const GmailService = require('../services/gmailService');
 const socket = require('../socket');
 const multer = require('multer');
 
 let fileContent = {};
 const sendEmail = async (req, res) => {
-    // try {
-    //     const { to, subject, body, attachments, scheduledFor } = req.body;
-
-    //     const email = new Email({
-    //         to,
-    //         subject,
-    //         body,
-    //         from: req.user.email,
-    //         attachments,
-    //         scheduledFor,
-    //         status: scheduledFor ? 'scheduled' : 'sent',
-    //     });
-
-    //     if (!scheduledFor) {
-    //         await GmailService.sendEmail({
-    //             to,
-    //             subject,
-    //             body,
-    //             attachments,
-    //         });
-    //     }
-
-    //     await email.save();
-    //     res.status(201).json(email);
-    // } catch (error) {
-    //     res.status(500).json({ message: error.message });
-    // }
     try {
         console.log(req.body);
         const { subject, body, to, from } = req.body;
@@ -54,7 +26,7 @@ const sendEmail = async (req, res) => {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/reports');
+        cb(null, 'public/attachments');
     },
     filename: (req, file, cb) => {
         fileContent.path = `${Date.now()}-${file.originalname}`;
@@ -63,13 +35,6 @@ const storage = multer.diskStorage({
     },
 });
 const upload = multer({ storage: storage });
-
-const receiveEmail = async (req, res) => {
-    try {
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-};
 
 const receiveEmailBySocket = async (req, res) => {
     try {
@@ -89,6 +54,7 @@ const receiveEmailBySocket = async (req, res) => {
 
         await email.save();
         socket.io.emit('Message', req.body);
+        fileContent = {};
     } catch (error) {}
 };
 
@@ -100,16 +66,22 @@ const getEmailbyAccount = async (req, res) => {
             const emails = await Email.aggregate([
                 {
                     $match: { to: account },
+                   
                 },
+                {
+                    $sort: {createdAt: -1}
+                }
             ]);
             res.json(emails);
         }
         if (folder === 'sent') {
             const emails = await Email.aggregate([
                 {
-                    $match: { from: account },
+                    $match: { from: account } },{
+                     $sort: {createdAt: -1}
                 },
             ]);
+            console.log
             res.json(emails);
         }
     } catch (error) {

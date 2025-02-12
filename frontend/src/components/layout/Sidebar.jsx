@@ -11,6 +11,8 @@ import {
   DocumentPlusIcon,
   CommandLineIcon,
   DocumentTextIcon,
+  ArrowTurnUpLeftIcon,
+  ArrowTurnUpRightIcon,
 } from "@heroicons/react/24/outline";
 import MenuItem from "../ui/MenuItem";
 
@@ -32,7 +34,7 @@ const menuItems = [
   },
   { icon: EnvelopeIcon, label: "Mail", path: "/mails" },
   { icon: CalendarIcon, label: "Schedule", path: "/schedule" },
-  { icon: ChatBubbleLeftIcon, label: "Messages", path: "/messages" },
+  { icon: ArrowTurnUpRightIcon, label: "Upload", path: "/upload" },
   { icon: Cog6ToothIcon, label: "Settings", path: "/settings" },
 ];
 

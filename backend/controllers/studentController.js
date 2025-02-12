@@ -1,7 +1,33 @@
+const multer = require('multer');
 const Student = require('../models/Student');
 
+const { uploadFileToS3 } = require('../services/uploadToS3Service');
+// const s3Client = require('./config/aws-config');
+const files = {};
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        uploadFileToS3(file, process.env.AWS_S3_BUCKET_NAME, file.originalname);
+        // cb(null, 'public/tests');
+    },
+    // filename: (req, file, cb) => {
+    //     console.log(file);
+    //     files[req.body.type] = {
+    //         mimetype: file.mimetype,
+    //         name: `${req.body?.type && req.body.type + '---'}${file.originalname}`,
+    //     };
+    //     cb(
+    //         null,
+    //         `${req.body?.type && req.body.type + '---'}${file.originalname}`
+    //     );
+    // },
+});
+
+const upload = multer({ storage: storage });
 const createStudent = async (req, res) => {
     try {
+
+        console.log(req.body);
+
         const studentExists = await Student.findOne(req.body);
         if (studentExists) {
             return res
@@ -40,8 +66,6 @@ const getStudents = async (req, res) => {
             .skip((page - 1) * limit)
             .limit(limit);
 
-        console.log(students);
-
         const total = await Student.countDocuments(query);
 
         res.json({
@@ -54,16 +78,33 @@ const getStudents = async (req, res) => {
     }
 };
 
+const uploadFile = async (req, res) =>{
+    try {
+        const { uploads } = await Student.findById(req.params.id);
+        uploads[req.body.type] = files[req.body.type];
+        const student = await Student.findByIdAndUpdate(
+            { _id: req.params.id },
+            { $set: { uploads: uploads } },
+            { new: true, runValidators: true }
+        );
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student Not Found' });
+        }
+        res.json({ file: files[req.body.type] });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'An error occurred while uploading the file.' });
+    }
+}
+
 const getStudentById = async (req, res) => {
     try {
-        const student = await Student.findById(req.params.id).populate(
-            'assessments'
-        );
+        const student = await Student.findById(req.params.id);
 
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });
         }
-
         res.json(student);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -154,4 +195,5 @@ module.exports = {
     updateStudent,
     deleteStudent,
     assignStudent,
+    uploadwithFile: [upload.single('file'), uploadFile],
 };

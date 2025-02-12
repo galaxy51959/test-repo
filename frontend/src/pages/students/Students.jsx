@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import moment from 'moment';
+import moment from "moment";
 import { HotTable } from "@handsontable/react";
 import { registerAllModules } from "handsontable/registry";
 import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   PlusIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 // import "handsontable/dist/handsontable.full.min.css";
 import {
@@ -18,12 +19,12 @@ import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import Tooltip from "../../components/ui/Tooltip";
 import * as XLSX from "xlsx";
 import HyperFormula from "hyperformula";
-
 registerAllModules();
 
 export default function Students() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const hotRef = useRef(null);
 
   const hyperformulaInstance = HyperFormula.buildEmpty({
@@ -43,8 +44,14 @@ export default function Students() {
       data: "dateOfBirth",
       title: "Date of Birth",
       type: "date",
-      dateFormat: "DD/MM/YYYY",
-      currentFormat: true
+      renderer: function (instance, td, row, col, prop, value, cellProperties) {
+        if (value) {
+          const date = moment(value).format("DD/MM/YYYY");
+          td.innerHTML = date;
+        } else {
+          td.innerHTML = "";
+        }
+      },
     },
     { data: "grade", title: "Grade", type: "numeric" },
     { data: "school", title: "School" },
@@ -87,13 +94,13 @@ export default function Students() {
         "Other",
       ],
     },
-    { 
-      data: "parent.name", 
-      title: "Parent Name"
+    {
+      data: "parent.name",
+      title: "Parent Name",
     },
-    { 
-      data: "parent.phone", 
-      title: "Parent Phone"
+    {
+      data: "parent.phone",
+      title: "Parent Phone",
     },
     {
       data: "parent.email",
@@ -158,7 +165,7 @@ export default function Students() {
       for (const [row, prop, oldValue, newValue] of changes) {
         if (oldValue !== newValue) {
           try {
-            if (data[row]._id) {
+            if (data[row]?._id) {
               await updateStudent(data[row]._id, { [prop]: newValue });
             } else {
               const student = await addStudent({ [prop]: newValue });
@@ -201,7 +208,24 @@ export default function Students() {
     // Save to file
     XLSX.writeFile(wb, "students.xlsx");
   };
-
+  const findData = (searchTerm) => {
+    const temp = data.filter(
+      (item) =>
+        item.firstName.search(searchTerm) > -1 ||
+        item.lastName.search(searchTerm) > -1 ||
+        item.gender.search(searchTerm) > -1 ||
+        item.dateOfBirth.search(searchTerm) > -1 ||
+        item.school.search(searchTerm) > -1 ||
+        item.parent.name.search(searchTerm) > -1 ||
+        item.parent.phone.search(searchTerm) > -1 ||
+        item.parent.email.search(searchTerm) > -1 ||
+        item.teacher.name.search(searchTerm) > -1 ||
+        item.teacher.phone.search(searchTerm) > -1 ||
+        item.teacher.phone.search(searchTerm) > -1
+    );
+    console.log(temp);
+    return temp;
+  }
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -243,6 +267,18 @@ export default function Students() {
           <h1 className="px-4 text-xl font-semibold">Students</h1>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  placeholder="Search students..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                  }}
+                  className="w-full pl-10 pr-4 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              </div>
               <Tooltip text="Export Excel" placement="top">
                 <button
                   onClick={handleExport}
@@ -281,7 +317,7 @@ export default function Students() {
                   sheetName: "Students",
                 }}
                 ref={hotRef}
-                data={data}
+                data={findData(searchTerm)}
                 columns={columns}
                 colHeaders={true}
                 rowHeaders={true}

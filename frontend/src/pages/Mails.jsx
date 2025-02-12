@@ -17,7 +17,7 @@ import {
   sendEmails,
   getEmails,
 } from "../actions/emailActions";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 
 const Mails = () => {
   const [selectedMail, setSelectedMail] = useState(null);
@@ -31,7 +31,7 @@ const Mails = () => {
   const emailAccounts = [
     {
       id: 1,
-      email: "Alexis.Carter@ssg-community.com",
+      email: import.meta.env.VITE_USER_MAIL_3,
       folders: {
         inbox: [],
         drafts: [],
@@ -41,7 +41,7 @@ const Mails = () => {
     },
     {
       id: 2,
-      email: "alexis.cartetr@provider.presence.com",
+      email: import.meta.env.VITE_USER_MAIL_1,
       folders: {
         inbox: [],
         drafts: [],
@@ -51,7 +51,28 @@ const Mails = () => {
     },
     {
       id: 3,
-      email: "acarter@dlinorthcounty.org",
+      email: import.meta.env.VITE_USER_MAIL_2,
+      folders: {
+        inbox: [],
+        drafts: [],
+        sent: [],
+        trash: [],
+      },
+    },
+
+    {
+      id: 4,
+      email: import.meta.env.VITE_USER_MAIL_4,
+      folders: {
+        inbox: [],
+        drafts: [],
+        sent: [],
+        trash: [],
+      },
+    },
+    {
+      id: 5,
+      email: import.meta.env.VITE_USER_MAIL_5,
       folders: {
         inbox: [],
         drafts: [],
@@ -85,13 +106,16 @@ const Mails = () => {
 
   const handleNewMail = () => {
     if (selectedMail != null) {
+      console.log(selectedMail);
       setSelectMail();
+      setSendEmailData({});
       setSendEmailData({ ...sendEmailData, from: selectedMail.email });
       console.log(sendEmailData);
     } else {
+      setSendEmailData({});
       setSendEmailData({
         ...sendEmailData,
-        from: "alexis.cartetr@provider.presence.com",
+        from: import.meta.env.VITE_USER_MAIL_1,
       });
     }
     // setShowModal(true);
@@ -107,10 +131,11 @@ const Mails = () => {
 
   const handleFileChange = (e) => {
     const attachment = e.target.files[0];
-    setSendEmailData((prev) => ({
-      ...prev,
-      attachment: attachment,
-    }));
+    setSendEmailData({ ...sendEmailData, attachment: attachment });
+    // setSendEmailData((prev) => ({
+    //   ...prev,
+    //   attachment: attachment,
+    // }));
   };
 
   const handleSubmit = async (e) => {
@@ -123,19 +148,20 @@ const Mails = () => {
     if (sendEmailData.attachment) {
       formData.append("attachment", sendEmailData.attachment);
     }
+    console.log(sendEmailData.from);
     let n8nLink;
-    if (sendEmailData.from == import.meta.env.USER_MAIL1) {
-      n8nLink = import.meta.env.N8N_WEBHOOK_URL1;
+    if (sendEmailData.from == import.meta.env.VITE_USER_MAIL_1) {
+      n8nLink = import.meta.env.VITE_N8N_WEBHOOK_URL1;
     }
-    if (sendEmailData.from == import.meta.env.USER_MAIL2) {
-      n8nLink = import.meta.env.N8N_WEBHOOK_URL2;
+    if (sendEmailData.from == import.meta.env.VITE_USER_MAIL_2) {
+      n8nLink = import.meta.env.VITE_N8N_WEBHOOK_URL2;
     }
     try {
       const response = await sendEmails(n8nLink, formData);
       if (!response.error) {
         handleClose();
         toast.success("Email sent successfully");
-        setSendEmailData({});
+        setSendEmailData();
       }
     } catch (error) {
       console.error("Failed to send email:", error);
@@ -389,7 +415,7 @@ const Mails = () => {
                           <div className="border-b-2 border-gray-300 flex justify-between items-center p-3">
                             <a
                               target={"_blank"}
-                              href={`${import.meta.PUBLIC_URL}/attachments/${mail.attachments[0].path}`}
+                              href={`${import.meta.env.VITE_PUBLIC_URL}/attachments/${mail.attachments[0].path}`}
                               className="text-blue-600"
                             >
                               {mail.attachments[0].filename}

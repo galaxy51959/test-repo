@@ -12,7 +12,6 @@ import {
   updatePrompt,
   createPrompt,
 } from "../../actions/promptActions";
-import { getTemplate } from "../../actions/reportActions";
 
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import HyperFormula from "hyperformula";
@@ -42,71 +41,9 @@ export default function Prompts() {
 
   const columns = [
     { data: "title", title: "Section Title" },
-    // {
-    //   data: "attachments",
-    //   title: "Attachments",
-    //   // type: "autocomplete",
-    //   // source: [
-    //   //   "No File",
-    //   //   "SEIS",
-    //   //   "INTERVIEW(Parent)",
-    //   //   "INTERVIEW(Teacher)",
-    //   //   "Essential Observation",
-    //   //   "Classroom Observation",
-    //   //   "DAY-C-2",
-    //   //   "WRAML-3",
-    //   //   "CTONI-2",
-    //   //   "WJV",
-    //   //   "CAS-2",
-    //   //   "TAPS-4",
-    //   //   "TVPS-4",
-    //   //   "MVPT-4",
-    //   //   "BVPT-6",
-    //   //   "BG-2",
-    //   //   "VMI",
-    //   //   "BASC-3(Parent)",
-    //   //   "BASC-3(Teacher)",
-    //   //   "BASC-3(Self)",
-    //   //   "Vineland-3",
-    //   //   "FAR",
-    //   //   "KTEA-3",
-    //   //   "WRAT-5",
-    //   //   "WISC-V",
-    //   //   "GARS-3(Parent)",
-    //   //   "GARS-3(Teacher)",
-    //   //   "ASRS-3(Parent)",
-    //   //   "ASRS-3(Teacher)",
-    //   //   "SUMMARY",
-    //   //   "ELLIGIBILITY",
-    //   // ],
-    //   renderer: (instance, td, row, col, prop, value, cellProperties) => {
-    //     const safeValue = Array.isArray(value) ? value : [];
-    //     td.innerHTML = safeValue.length > 0 ? safeValue.join(', ') : "";
-    //     return td;
-    //   },
-    // },
-    {
-      data: "attachments",
-      title: "Attachments",
-      renderer: (instance, td, row, col, prop, value, cellProperties) => {
-        if (!value) {
-          td.innerHTML = "";
-          return td;
-        }
-
-        const safeValue = Array.isArray(value) ? value : [value];
-
-        const displayValue = safeValue
-          .filter((item) => item != null && item !== "")
-          .join(", ");
-
-        td.innerHTML = displayValue;
-        return td;
-      },
-    },
+    { data: "attachments", title: "Attachments" },
     { data: "humanPrompt", title: "Prompt", renderer: promptRenderer },
     { data: "systemPrompt", title: "System Prompt" },
-    { data: "order", title: "Order" },
   ];
 
   useEffect(() => {
@@ -120,7 +57,7 @@ export default function Prompts() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const template = await getTemplate();
+      const template = await getPrompts();
       const result = [];
       if (template) {
         template.sections.forEach((section) => {
@@ -128,10 +65,11 @@ export default function Prompts() {
             result.push({
               _id: prompt._id,
               title: section.title,
-              attachments: prompt.need.join(", "),
+              attachments: prompt.attachments
+                ? prompt.attachments.join(" | ")
+                : "",
               humanPrompt: prompt.humanPrompt,
-              systemPrompt: section.systemPrompt,
-              order: section.order,
+              systemPrompt: prompt.systemPrompt,
             });
           });
         });
@@ -151,12 +89,19 @@ export default function Prompts() {
       for (const [row, prop, oldValue, newValue] of changes) {
         if (oldValue !== newValue) {
           try {
+            console.log(data[row]);
             if (data[row]._id) {
-              await updatePrompt(data[row]._id, { [prop]: newValue });
+              await updatePrompt(
+                {
+                  promptId: data[row].promptId,
+                  sectionId: data[row].sectionId,
+                },
+                { [prop]: newValue }
+              );
             } else {
-              const data = await createPrompt({ [prop]: newValue });
-              prompts.splice(row, 1, data);
-              setPrompts(prompts);
+              const newData = await createPrompt({ [prop]: newValue });
+              prompts.splice(row, 1, newData);
+              setPrompts([...prompts]);
             }
           } catch (error) {
             console.error("Error updating cell:", error);
