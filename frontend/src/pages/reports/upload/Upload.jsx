@@ -9,8 +9,8 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
-import LoadingSpinner from "../../components/ui/LoadingSpinner";
-import { getStudents } from '../../actions/studentActions';
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import { getStudents } from '../../../actions/studentActions';
 // Add this mock data after the imports and before the component
 
 const Uploads = () => {
