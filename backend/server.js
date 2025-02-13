@@ -18,6 +18,7 @@ const authRoutes = require('./routes/auth');
 const promptRoutes = require('./routes/promptRoutes');
 const calendarRoutes = require('./routes/calendarRoutes');
 const studentRoutes = require('./routes/studentRoutes');
+const storageRoutes = require('./routes/storageRoutes');
 // Middleware
 const errorHandler = require('./middleware/error');
 
@@ -36,7 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/prompts', promptRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/students', studentRoutes);
-
+app.use('/api/storage', storageRoutes);
 // app.use('/api/upload', async (req, res) => {
     // const { file } = req;
 // })

@@ -1,25 +1,33 @@
-const SERVER_URL = `http://172.86.110.178:5000/api/reports`;
-
-export const createScore = async (formData) => {
+export const getStorage = async () => {
   try {
-    const response = await fetch(`${SERVER_URL}/access-outside`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-    const data = await response.json();
-    console.log("Create Score Result: ", data);
-    return data;
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/storage/files`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch storage files');
+    }
+    return await response.json();
   } catch (error) {
-    console.error("Create Score Error: ", error);
-    throw error;
+    throw new Error("Failed to fetch storage: " + error.message);
   }
 };
 
-// export const getScores = async () => {
-//     const response = await fetch(`${SERVER_URL}`);
-//     const data = await response.json();
-//     return data;
-// }
+export const uploadFiles = async (files) => {
+  try {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/storage/upload`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('Upload failed');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error("Failed to upload files: " + error.message);
+  }
+};

@@ -6,31 +6,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { toast } from 'react-hot-toast';
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import {getStorage, uploadFiles } from "../actions/storageAction";
 
 // Add sample data
-const SAMPLE_FILES = [
-  {
-    Key: 'reports/student1_assessment.pdf',
-    ContentType: 'application/pdf',
-    LastModified: '2024-03-20T10:30:00Z',
-    Size: 2048576, // 2MB
-    StorageClass: 'STANDARD'
-  },
-  {
-    Key: 'documents/parent_interview.docx',
-    ContentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    LastModified: '2024-03-19T15:45:00Z',
-    Size: 1048576, // 1MB
-    StorageClass: 'STANDARD'
-  },
-  {
-    Key: 'assessments/wisc_v_results.pdf',
-    ContentType: 'application/pdf',
-    LastModified: '2024-03-18T09:15:00Z',
-    Size: 3145728, // 3MB
-    StorageClass: 'STANDARD'
-  }
-];
+
 
 export default function Storage() {
   const [files, setFiles] = useState([]);
@@ -39,10 +18,17 @@ export default function Storage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
 
   useEffect(() => {
+    fetchStorage();
     // Use sample data instead of API call
-    setFiles(SAMPLE_FILES);
   }, []);
 
+  const fetchStorage = async() =>{
+    setLoading(true);
+    const response = await getStorage();
+    setFiles(response);
+    if(response)
+      setLoading(false);
+  }
   const handleFileSelect = (e) => {
     const selectedFiles = Array.from(e.target.files);
     setUploadingFiles(selectedFiles);
@@ -53,29 +39,20 @@ export default function Storage() {
       toast.error("Please select files to upload");
       return;
     }
-
-    setLoading(true);
     try {
       const formData = new FormData();
       uploadingFiles.forEach(file => {
         formData.append('files', file);
       });
-
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/storage/upload`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) throw new Error('Upload failed');
-
+      uploadFiles(formData);
       toast.success("Files uploaded successfully");
       setShowUploadModal(false);
       setUploadingFiles([]);
+      await fetchStorage();
+      }
       // Refresh the file list
-    } catch (error) {
+     catch (error) {
       toast.error("Failed to upload files");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -113,7 +90,6 @@ export default function Storage() {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last modified</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Storage class</th>
@@ -127,9 +103,6 @@ export default function Storage() {
                     <DocumentIcon className="h-5 w-5 text-gray-400 mr-2" />
                     <span className="text-sm text-gray-900">{file.Key}</span>
                   </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {file.ContentType || 'Unknown'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {formatDate(file.LastModified)}

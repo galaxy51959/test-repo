@@ -8,9 +8,6 @@ import Layout from "./components/layout/Layout";
 import Dashboard from "./pages/Dashboard";
 import {
   Students,
-  AddStudent,
-  StudentAssessment,
-  SendEmail,
 } from "./pages/students";
 import { Reports, GenerateReport, Prompt } from "./pages/reports";
 import Schedule from "./pages/Schedule";
@@ -32,7 +29,7 @@ function ProtectedRoute({ children }) {
     return <div>Loading...</div>;
   }
 
-  return !isAuthenticated ? children : <Navigate to="/signin" replace />;
+  return isAuthenticated ? children : <Navigate to="/signin" replace />;
 }
 
 function App() {
@@ -56,12 +53,12 @@ function App() {
 
               {/* Students */}
               <Route path="/students" element={<Students />} />
-              <Route path="/students/new" element={<AddStudent />} />
-              <Route
+              {/* <Route path="/students/new" element={<AddStudent />} /> */}
+              {/* <Route
                 path="/students/:id/assess"
                 element={<StudentAssessment />}
-              />
-              <Route path="/students/:id/email" element={<SendEmail />} />
+              /> */}
+              {/* <Route path="/students/:id/email" element={<SendEmail />} /> */}
 
               {/* Mails */}
               <Route path="/mails" element={<Mails />} />
