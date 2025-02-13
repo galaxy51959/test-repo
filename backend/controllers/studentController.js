@@ -1,21 +1,25 @@
 const multer = require('multer');
 const Student = require('../models/Student');
+
+const { uploadFileToS3 } = require('../services/uploadToS3Service');
+// const s3Client = require('./config/aws-config');
 const files = {};
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/tests');
+        uploadFileToS3(file, process.env.AWS_S3_BUCKET_NAME, file.originalname);
+        // cb(null, 'public/tests');
     },
-    filename: (req, file, cb) => {
-        console.log(file);
-        files[req.body.type] = {
-            mimetype: file.mimetype,
-            name: `${req.body?.type && req.body.type + '---'}${file.originalname}`,
-        };
-        cb(
-            null,
-            `${req.body?.type && req.body.type + '---'}${file.originalname}`
-        );
-    },
+    // filename: (req, file, cb) => {
+    //     console.log(file);
+    //     files[req.body.type] = {
+    //         mimetype: file.mimetype,
+    //         name: `${req.body?.type && req.body.type + '---'}${file.originalname}`,
+    //     };
+    //     cb(
+    //         null,
+    //         `${req.body?.type && req.body.type + '---'}${file.originalname}`
+    //     );
+    // },
 });
 
 const upload = multer({ storage: storage });

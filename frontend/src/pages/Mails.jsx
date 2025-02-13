@@ -59,6 +59,27 @@ const Mails = () => {
         trash: [],
       },
     },
+
+    {
+      id: 4,
+      email: import.meta.env.VITE_USER_MAIL_4,
+      folders: {
+        inbox: [],
+        drafts: [],
+        sent: [],
+        trash: [],
+      },
+    },
+    {
+      id: 5,
+      email: import.meta.env.VITE_USER_MAIL_5,
+      folders: {
+        inbox: [],
+        drafts: [],
+        sent: [],
+        trash: [],
+      },
+    },
   ];
   // Sample email accounts data
 
