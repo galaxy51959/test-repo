@@ -1,6 +1,7 @@
 const fs = require('fs');
 const pdfParse = require('pdf-parse');
-const docxParser = require('docx-parser');
+const { DocxLoader } = require('@langchain/community/document_loaders/fs/docx');
+// const docxParser = require('docx-parser');
 
 exports.parsePdf = async (filePath) => {
     const pdfBuffer = fs.readFileSync(`./public/tests/${filePath}`);
@@ -8,12 +9,16 @@ exports.parsePdf = async (filePath) => {
     return data.text;
 };
 
-exports.parseDocx = (filePath) => {
-    return new Promise((resolve, reject) => {
-        docxParser.parseDocx(`./public/tests/${filePath}`, function (data) {
-            resolve(data);
-        });
-    });
+exports.parseDocx = async (filePath) => {
+    // return new Promise((resolve, reject) => {
+    //     docxParser.parseDocx(`./public/tests/${filePath}`, function (data) {
+    //         resolve(data);
+    //     });
+    // });
+    const loader = new DocxLoader(`./public/tests/${filePath}`);
+    const docs = await loader.load();
+    // console.log(docs[0].pageContent);
+    return docs.map(doc => doc.pageContent).join('\n');
 };
 
 exports.parseFile = async (file) => {

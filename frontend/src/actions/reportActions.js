@@ -13,7 +13,6 @@ export const getTemplate = async () => {
 
 export const generateReport = async (formData, id) => {
   try {
-    console.log(id);
     const response = await fetch(
       `${import.meta.env.VITE_APP_API_URL}/reports/${id}/generate`,
       {

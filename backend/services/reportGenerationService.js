@@ -134,7 +134,7 @@ const generateReport = async ({ type, eligibility }, files) => {
         console.log('Starting report generation for:');
         const template = await Template.findOne({ type });
 
-        const sectionPromises = template.sections.slice(15, 17).map((section) =>
+        const sectionPromises = template.sections.map((section) =>
             generateReportSection(section, files, eligibility)
         );
 
