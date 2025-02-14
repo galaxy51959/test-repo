@@ -1,7 +1,6 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs').promises;
 const path = require('path');
-
 const generateAndSavePDF = async (htmlContent, fileName) => {
     try {
         // console.log(htmlContent);
@@ -32,9 +31,8 @@ const generateAndSavePDF = async (htmlContent, fileName) => {
         // Create uploads directory if it doesn't exist
         const uploadsDir = path.join(__dirname, '../public/reports');
         await fs.mkdir(uploadsDir, { recursive: true });
-
         // Generate unique filename if none provided
-        const finalFileName = fileName || `report-${Date.now()}.pdf`;
+        const finalFileName = fileName || `report-${moment(Date.now()).format('hh:mm:ss MM/DD/YYYY')}.pdf`;
         const filePath = path.join(uploadsDir, finalFileName);
 
         // Save PDF to file

@@ -7,7 +7,7 @@ const {
 const Template = require('../models/Template');
 const { generateAndSavePDF } = require('./pdfGenerationService');
 const { parseFile } = require('../utils');
-
+const {uploadFileToS3} = require('./uploadToS3Service.js');
 const model = new ChatOpenAI({
     openAIApiKey: process.env.OPENAI_API_KEY,
     modelName: 'gpt-4o-mini',
@@ -102,7 +102,7 @@ const generateReportSection = async (section, files, eligibility) => {
     }
 };
 
-const generateTotalReport = async (sections) => {
+const generateTotalReport = async (sections, fullName) => {
     // let htmlContent = '';
 
     // Process sections in parallel
@@ -112,16 +112,18 @@ const generateTotalReport = async (sections) => {
     }, '');
 
     console.log('Total Content: ', htmlContent);
-
+    const filename =  `${fullName}...${new Date().toLocaleDateString('en-CA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    })}.pdf`
+    console.log(filename);
     try {
         const pdf = await generateAndSavePDF(
             htmlContent,
-            `${new Date().toLocaleDateString('en-CA', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-            })}.pdf`
+           `${filename}`
         );
+    //    await uploadFileToS3(pdf.buffer, process.env.AWS_S3_BUCKET_NAME_REPORT_RESULTS, filename);
         return pdf;
     } catch (err) {
         console.error('Error generating total report:', err);
@@ -129,12 +131,12 @@ const generateTotalReport = async (sections) => {
     }
 };
 
-const generateReport = async ({ type, eligibility }, files) => {
+const generateReport = async ({ type, eligibility }, files, fullName) => {
     try {
         console.log('Starting report generation for:');
         const template = await Template.findOne({ type });
 
-        const sectionPromises = template.sections.slice(15, 17).map((section) =>
+        const sectionPromises = template.sections.map((section) =>
             generateReportSection(section, files, eligibility)
         );
 
@@ -146,7 +148,7 @@ const generateReport = async ({ type, eligibility }, files) => {
         );
 
         // Generate final PDF
-        const generatedReport = await generateTotalReport(filteredSection);
+        const generatedReport = await generateTotalReport(filteredSection, fullName);
 
         return generatedReport;
     } catch (error) {

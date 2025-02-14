@@ -12,12 +12,13 @@ const generateReport = async (req, res) => {
         const { type, eligibility } = req.body;
         // return res.json({ content: studentInfo });
 
-		const { uploads } = await Student.findById(id);
+		const { uploads, firstName, lastName } = await Student.findById(id);
 
 
         const generatedContent = await reportGenerationService.generateReport(
             { type, eligibility },
-            uploads
+            uploads,
+            firstName+ lastName
         );
 
         console.log(generatedContent);
