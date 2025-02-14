@@ -4,7 +4,6 @@ export const getNotionData = async () => {
       `${import.meta.env.VITE_APP_API_URL}/calendar`
     );
     const result = await response.json();
-    console.log(result);
     return result;
   } catch (error) {
     console.log(error);
@@ -24,7 +23,6 @@ export const createNotionData = async (Data) => {
       }
     );
     const result = await response.json();
-    console.log(result.data);
     return result.data;
   } catch (error) {
     console.log("Error Creating Prompts: ", error);
@@ -44,7 +42,6 @@ export const updateNotionData = async (Data) => {
       }
     );
     const result = await response.json();
-    console.log(result.data);
     return result.data;
   } catch (error) {
     console.log("Error Creating Prompts: ", error);
@@ -53,7 +50,6 @@ export const updateNotionData = async (Data) => {
 
 export const deleteNotionData = async (id) => {
   try {
-    console.log(id);
     const response = await fetch(
       `${import.meta.env.VITE_APP_API_URL}/calendar/${id}`
     );

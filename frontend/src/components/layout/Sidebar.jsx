@@ -13,6 +13,7 @@ import {
   DocumentTextIcon,
   ArrowTurnUpLeftIcon,
   ArrowTurnUpRightIcon,
+  
 } from "@heroicons/react/24/outline";
 import MenuItem from "../ui/MenuItem";
 
@@ -29,13 +30,14 @@ const menuItems = [
         path: "/reports/generate",
       },
       { icon: CommandLineIcon, label: "Prompt", path: "/reports/prompts" },
-      { icon: DocumentTextIcon, label: "Template", path: "/reports/template" },
+      { icon: ArrowTurnUpRightIcon, label: "Upload", path: "/reports/upload" },
+      // { icon: ArrowTurnUpRightIcon, label: "AddF", path: "/report/addfile" },
     ],
   },
   { icon: EnvelopeIcon, label: "Mail", path: "/mails" },
   { icon: CalendarIcon, label: "Schedule", path: "/schedule" },
-  { icon: ArrowTurnUpRightIcon, label: "Upload", path: "/upload" },
-  { icon: Cog6ToothIcon, label: "Settings", path: "/settings" },
+  { icon: CalendarIcon, label: "Storage", path: "/storage" },
+  { icon: Cog6ToothIcon, label: "Settings", path: "/settings"},
 ];
 
 export default function Sidebar({ isOpen }) {

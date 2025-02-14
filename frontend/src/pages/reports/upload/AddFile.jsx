@@ -6,8 +6,8 @@ import {
   uploadFile,
   updateStudent,
   getStudentById
-} from "../../actions/studentActions";
-import LoadingSpinner from "../../components/ui/LoadingSpinner";
+} from "../../../actions/studentActions";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 export default function GenerateReport() {
   const navigate = useNavigate()

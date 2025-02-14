@@ -19,6 +19,17 @@ const storage = multer.diskStorage({
             `${req.body?.type && req.body.type + '---'}${file.originalname}`
         );
     },
+    // filename: (req, file, cb) => {
+    //     console.log(file);
+    //     files[req.body.type] = {
+    //         mimetype: file.mimetype,
+    //         name: `${req.body?.type && req.body.type + '---'}${file.originalname}`,
+    //     };
+    //     cb(
+    //         null,
+    //         `${req.body?.type && req.body.type + '---'}${file.originalname}`
+    //     );
+    // },
 });
 
 const upload = multer({ storage: storage });

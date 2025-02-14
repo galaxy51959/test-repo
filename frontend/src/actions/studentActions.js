@@ -52,12 +52,12 @@ export const addStudent = async (studentData) => {
       grade: result.grade,
       school: result.school,
       language: result.language,
-      parentName: result.parent.name,
-      parentPhone: result.parent.phone,
-      parentEmail: result.parent.email,
-      teacherName: result.teacher.name,
-      teacherPhone: result.teacher.phone,
-      teacherEmail: result.teacher.email,
+      parentName: result.parent?.name,
+      parentPhone: result.parent?.phone,
+      parentEmail: result.parent?.email,
+      teacherName: result.teacher?.name,
+      teacherPhone: result.teacher?.phone,
+      teacherEmail: result.teacher?.email,
     };
   } catch (error) {
     console.error("Error adding Students:", error);

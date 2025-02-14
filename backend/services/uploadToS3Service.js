@@ -6,6 +6,7 @@ exports.uploadFileToS3 = async (file, bucketName, key) => {
         Key: key,
         Body: file.stream
     };
+   
 
     s3.upload(uploadParams, (err, data) => {
         if (err) {
