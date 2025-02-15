@@ -4,7 +4,7 @@ const  {uploadFileToS3} = require("../services/uploadToS3Service");
 const files = {};
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const url = uploadFileToS3(file, process.env.AWS_S3_BUCKET_NAME, file.originalname);
+        const url = uploadFileToS3(file, process.env.AWS_S3_BUCKET_NAME_REPORT_REPORT, file.originalname);
         
         cb(null, 'public/tests');
     },
