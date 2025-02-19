@@ -3,9 +3,8 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const {
     getStorage,
-    uploadwithFiles
+    uploadwithFiles,
 } = require('../controllers/storageController');
-
 
 router.get('/', getStorage);
 router.post('/upload', uploadwithFiles);

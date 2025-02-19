@@ -13,7 +13,7 @@ const createEvents = async (req, res) => {
         if (req.body.end == '') {
             req.body.end = null;
         }
-        if(!req.body.summary) {
+        if (!req.body.summary) {
             req.body.summary = '';
         }
         // Call the Notion API to create a new page

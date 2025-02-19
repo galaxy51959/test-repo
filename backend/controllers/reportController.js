@@ -9,40 +9,29 @@ const extractSEIS = require('../services/extractSEISService');
 const generateReport = async (req, res) => {
     try {
         const { id } = req.params;
-        const { type, eligibility } = req.body;
-        // return res.json({ content: studentInfo });
+        const { type, eligibility, recommendations } = req.body;
 
-		const { uploads, firstName, lastName } = await Student.findById(id);
-
-
+        const { uploads } = await Student.findById(id);
+        console.log(eligibility);
         const generatedContent = await reportGenerationService.generateReport(
-            { type, eligibility },
-            uploads,
-            firstName+ lastName
+            { type, eligibility, recommendations },
+            uploads
         );
 
         console.log(generatedContent);
 
         console.log('Generate Success!!!');
-        
-        await Student.findByIdAndUpdate(
-              { _id: req.params.id },
-              { $set: {
-                report: generatedContent.fileName } 
-              },
-              { new: true, runValidators: true }
-            );
-        res.json({ file: generatedContent.fileName });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
 
-const uploadFile = async (req, res) => {
-    try {
-        const file = req.file;
-        const { type } = req.body;
-        res.json({ file: files[type] });
+        await Student.findByIdAndUpdate(
+            { _id: req.params.id },
+            {
+                $set: {
+                    report: generatedContent.fileName,
+                },
+            },
+            { new: true, runValidators: true }
+        );
+        res.json({ file: generatedContent.fileName });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -59,32 +48,6 @@ const getTemplate = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
-// Get all reports
-// const getReports = async (req, res) => {
-//     try {
-//         const reports = await Template.find().populate('student');
-//         // .populate('author', 'name');
-//         res.json(reports);
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// };
-
-// Get report by ID
-// const getReportById = async (req, res) => {
-//     try {
-//         const report = await Template.findById(req.params.id)
-//             .populate('student')
-//             .populate('author', 'name');
-//         if (!report) {
-//             return res.status(404).json({ message: 'Report not found' });
-//         }
-//         res.json(report);
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// };
 
 // Update Template
 const updateTemplate = async (req, res) => {

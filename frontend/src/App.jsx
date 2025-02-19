@@ -6,16 +6,14 @@ import {
 } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Dashboard from "./pages/Dashboard";
-import {
-  Students,
-} from "./pages/students";
+import { Students } from "./pages/students";
 import { Reports, GenerateReport, Prompt } from "./pages/reports";
 import Schedule from "./pages/Schedule";
-import Upload from './pages/reports/upload/Upload';
+import Upload from "./pages/reports/upload/Upload";
 import Mails from "./pages/Mails";
 import SignIn from "./pages/SignIn";
-import AddFile from './pages/reports/upload/AddFile';
-import Storage from './pages/Storage';
+import AddFile from "./pages/reports/upload/AddFile";
+import Storage from "./pages/Storage";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
 import { Toaster } from "react-hot-toast";
@@ -67,13 +65,12 @@ function App() {
               <Route path="/reports" element={<Reports />} />
               <Route path="/reports/:id" element={<GenerateReport />} />
               <Route path="/reports/prompts" element={<Prompt />} />
-              <Route path ="/reports/upload" element = {<Upload/>} />
-              <Route path ="/reports/addfile" element = {<addFile/>} />
-              <Route path="/addfile/:id" element = {<AddFile/>}/>
+              <Route path="/reports/upload" element={<Upload />} />
+              <Route path="/reports/addfile" element={<addFile />} />
+              <Route path="/addfile/:id" element={<AddFile />} />
               {/* Schedule */}
               <Route path="/schedule" element={<Schedule />} />
-              <Route path ="/storage" element={<Storage />} />
-             
+              <Route path="/storage" element={<Storage />} />
             </Route>
           </Routes>
         </Router>

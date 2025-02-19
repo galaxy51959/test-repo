@@ -64,26 +64,29 @@ export const addStudent = async (studentData) => {
   }
 };
 
-export const getStudentById = async(studentID) =>{
-  try{
+export const getStudentById = async (studentID) => {
+  try {
     const response = await fetch(
-      `${import.meta.env.VITE_APP_API_URL}/students/${studentID}`,
+      `${import.meta.env.VITE_APP_API_URL}/students/${studentID}`
     );
     const result = await response.json();
     return result;
-  } catch(error) {
+  } catch (error) {
     console.log(error);
   }
-}
+};
 export const updateStudent = async (studentId, studentData) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/students/${studentId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(studentData),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/students/${studentId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(studentData),
+      }
+    );
 
     const result = await response.json();
     return result;
@@ -146,4 +149,3 @@ export const getTemplate = async () => {
     throw error;
   }
 };
-

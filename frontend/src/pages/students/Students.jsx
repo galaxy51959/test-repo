@@ -192,12 +192,12 @@ export default function Students() {
         Grade: item.grade,
         School: item.school,
         Language: item.language,
-        "Parent Name": item.parentName,
-        "Parent Phone": item.parentPhone,
-        "Parent Email": item.parentEmail,
-        "Teacher Name": item.teacherName,
-        "Teacher Phone": item.teacherPhone,
-        "Teacher Email": item.teacherEmail,
+        "Parent Name": item.parent.name,
+        "Parent Phone": item.parent.phone,
+        "Parent Email": item.parent.email,
+        "Teacher Name": item.teacher.name,
+        "Teacher Phone": item.teacher.phone,
+        "Teacher Email": item.teacher.email,
       }))
     );
 
@@ -225,7 +225,7 @@ export default function Students() {
     );
     console.log(temp);
     return temp;
-  }
+  };
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -244,12 +244,16 @@ export default function Students() {
           dateOfBirth: row["Date of Birth"] || "",
           grade: row["Grade"] || "",
           school: row["School"] || "",
-          parentName: row["Parent Name"] || "",
-          parentPhone: row["Parent Phone"] || "",
-          parentEmail: row["Parent Email"] || "",
-          teacherName: row["Teacher Name"] || "",
-          teacherPhone: row["Teacher Phone"] || "",
-          teacherEmail: row["Teacher Email"] || "",
+          parent: {
+            name: row["Parent Name"] || "",
+            phone: row["Parent Phone"] || "",
+            email: row["Parent Email"] || "",
+          },
+          teacher: {
+            name: row["Teacher Name"] || "",
+            phone: row["Teacher Phone"] || "",
+            email: row["Teacher Email"] || "",
+          },
           _id: Date.now() + Math.random(), // Temporary ID for new rows
         }));
 

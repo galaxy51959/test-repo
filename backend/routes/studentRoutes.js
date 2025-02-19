@@ -8,7 +8,7 @@ const {
     updateStudent,
     deleteStudent,
     assignStudent,
-    uploadwithFile
+    uploadwithFile,
 } = require('../controllers/studentController');
 
 // router.use(auth); // Apply authentication to all routes

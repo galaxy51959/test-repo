@@ -1,34 +1,54 @@
 import { useState, useEffect } from "react";
-import { 
+import {
   ArrowUpTrayIcon,
   DocumentIcon,
-  XMarkIcon 
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
-import {getStorage, uploadFiles } from "../actions/storageAction";
+import { getStorage, uploadFiles } from "../actions/storageAction";
 
 // Add sample data
-
 
 export default function Storage() {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploadingFiles, setUploadingFiles] = useState([]);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [sortOrder, setSortOrder] = useState("desc"); // 'desc' or 'asc'
 
   useEffect(() => {
     fetchStorage();
     // Use sample data instead of API call
   }, []);
 
-  const fetchStorage = async() =>{
+  const fetchStorage = async () => {
     setLoading(true);
     const response = await getStorage();
-    setFiles(response);
-    if(response)
-      setLoading(false);
-  }
+    // Sort files by LastModified in descending order (newest first)
+    const sortedFiles = response.sort(
+      (a, b) => new Date(b.LastModified) - new Date(a.LastModified)
+    );
+    setFiles(sortedFiles);
+    if (response) setLoading(false);
+  };
+
+  const sortFiles = (files, order) => {
+    return files.sort((a, b) => {
+      const dateA = new Date(a.LastModified);
+      const dateB = new Date(b.LastModified);
+      return order === "desc" ? dateB - dateA : dateA - dateB;
+    });
+  };
+
+  const toggleSortOrder = () => {
+    setSortOrder((prev) => {
+      const newOrder = prev === "desc" ? "asc" : "desc";
+      setFiles(sortFiles([...files], newOrder));
+      return newOrder;
+    });
+  };
+
   const handleFileSelect = (e) => {
     const selectedFiles = Array.from(e.target.files);
     setUploadingFiles(selectedFiles);
@@ -41,27 +61,26 @@ export default function Storage() {
     }
     try {
       const formData = new FormData();
-      uploadingFiles.forEach(file => {
-        formData.append('files', file);
+      uploadingFiles.forEach((file) => {
+        formData.append("files", file);
       });
       uploadFiles(formData);
       toast.success("Files uploaded successfully");
       setShowUploadModal(false);
       setUploadingFiles([]);
       await fetchStorage();
-      }
+    } catch (error) {
       // Refresh the file list
-     catch (error) {
       toast.error("Failed to upload files");
     }
   };
 
   const formatBytes = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const formatDate = (date) => {
@@ -89,10 +108,21 @@ export default function Storage() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last modified</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Storage class</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                onClick={toggleSortOrder}
+              >
+                Last modified {sortOrder === "desc" ? "↓" : "↑"}
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Size
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Storage class
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -125,7 +155,7 @@ export default function Storage() {
           <div className="bg-white rounded-lg p-6 w-[480px]">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold">Upload Files</h2>
-              <button 
+              <button
                 onClick={() => setShowUploadModal(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
@@ -138,14 +168,17 @@ export default function Storage() {
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <ArrowUpTrayIcon className="w-8 h-8 mb-3 text-gray-400" />
                   <p className="mb-2 text-sm text-gray-500">
-                    <span className="font-semibold">Click to upload</span> or drag and drop
+                    <span className="font-semibold">Click to upload</span> or
+                    drag and drop
                   </p>
-                  <p className="text-xs text-gray-500">PDF, DOCX, or other files</p>
+                  <p className="text-xs text-gray-500">
+                    PDF, DOCX, or other files
+                  </p>
                 </div>
-                <input 
-                  type="file" 
-                  multiple 
-                  className="hidden" 
+                <input
+                  type="file"
+                  multiple
+                  className="hidden"
                   onChange={handleFileSelect}
                 />
               </label>
@@ -157,9 +190,14 @@ export default function Storage() {
                 <div className="max-h-40 overflow-y-auto">
                   <ul className="space-y-2">
                     {uploadingFiles.map((file, index) => (
-                      <li key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                      <li
+                        key={index}
+                        className="flex items-center gap-2 p-2 bg-gray-50 rounded"
+                      >
                         <DocumentIcon className="h-5 w-5 text-gray-400" />
-                        <span className="text-sm text-gray-700 truncate">{file.name}</span>
+                        <span className="text-sm text-gray-700 truncate">
+                          {file.name}
+                        </span>
                         <span className="text-xs text-gray-500">
                           ({formatBytes(file.size)})
                         </span>
@@ -182,7 +220,9 @@ export default function Storage() {
                 disabled={uploadingFiles.length === 0}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
               >
-                Upload {uploadingFiles.length > 0 && `(${uploadingFiles.length} files)`}
+                Upload{" "}
+                {uploadingFiles.length > 0 &&
+                  `(${uploadingFiles.length} files)`}
               </button>
             </div>
           </div>

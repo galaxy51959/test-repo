@@ -2,7 +2,7 @@ export const getStorage = async () => {
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/storage`);
     if (!response.ok) {
-      throw new Error('Failed to fetch storage files');
+      throw new Error("Failed to fetch storage files");
     }
     return await response.json();
   } catch (error) {
@@ -11,10 +11,10 @@ export const getStorage = async () => {
 };
 
 export const uploadFiles = async (formData) => {
-  try { 
+  try {
     await fetch(`${import.meta.env.VITE_APP_API_URL}/storage/upload`, {
-      method: 'POST',
-      body: formData
+      method: "POST",
+      body: formData,
     });
   } catch (error) {
     console.log(error);

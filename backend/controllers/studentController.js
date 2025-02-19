@@ -1,11 +1,16 @@
 const multer = require('multer');
 const Student = require('../models/Student');
-const  {uploadFileToS3} = require("../services/uploadToS3Service");
+const { uploadFileToS3 } = require('../services/uploadToS3Service');
 const files = {};
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const url = uploadFileToS3(file, process.env.AWS_S3_BUCKET_NAME_REPORT_REPORT, file.originalname);
-        
+        console.log(process.env.AWS_S3_BUCKET_NAME_REPORT_REPORT);
+        uploadFileToS3(
+            file,
+            process.env.AWS_S3_BUCKET_NAME_REPORT_REPORT,
+            file.originalname
+        );
+
         cb(null, 'public/tests');
     },
     filename: (req, file, cb) => {
@@ -35,7 +40,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 const createStudent = async (req, res) => {
     try {
-
         console.log(req.body);
 
         const studentExists = await Student.findOne(req.body);
@@ -88,7 +92,7 @@ const getStudents = async (req, res) => {
     }
 };
 
-const uploadFile = async (req, res) =>{
+const uploadFile = async (req, res) => {
     try {
         const { uploads } = await Student.findById(req.params.id);
         uploads[req.body.type] = files[req.body.type];
@@ -104,9 +108,11 @@ const uploadFile = async (req, res) =>{
         res.json({ file: files[req.body.type] });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: 'An error occurred while uploading the file.' });
+        res.status(500).json({
+            message: 'An error occurred while uploading the file.',
+        });
     }
-}
+};
 
 const getStudentById = async (req, res) => {
     try {

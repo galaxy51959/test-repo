@@ -38,8 +38,8 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("Message", (data) => {
-      //  receiveEmails(data);
-        toast.info("send from" + data.from);
+        //  receiveEmails(data);
+        toast.success("send from" + data.from);
       });
       setSocket(newSocket);
 

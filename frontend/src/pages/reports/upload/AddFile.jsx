@@ -5,12 +5,12 @@ import {
   getTemplate,
   uploadFile,
   updateStudent,
-  getStudentById
+  getStudentById,
 } from "../../../actions/studentActions";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 export default function GenerateReport() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { id } = useParams();
   const [student, setStudent] = useState({
     assessment: "Initial",
@@ -64,8 +64,8 @@ export default function GenerateReport() {
 
   const handleComplete = async () => {
     // setLoading(true);
-    updateStudent(id, {report: ""});
-    navigate('/upload');
+    updateStudent(id, { report: "" });
+    navigate("/reports/upload");
     // setLoading(false);
   };
 
@@ -108,38 +108,40 @@ export default function GenerateReport() {
         {/* Section 2: Assessment Protocol Uploads */}
         <div className="grid grid-cols-2 gap-6">
           {formData &&
-            formData.slice(0, formData.length-3).map((section, sectionIdx) => (
-              <div className="bg-white shadow-md" key={section._id}>
-                <h2 className="px-6 pb-2 pt-3 text-lg font-medium">
-                  {section.title}
-                </h2>
-                <div className="flex flex-wrap gap-3 p-3">
-                  {section.attachments.map((attachment, attachmentIdx) => (
-                    <div key={attachmentIdx} className="relative group">
-                      <label className="flex flex-col items-center justify-center relative h-40 w-40 border-2 border-dashed border-gray-300 rounded-xl p-2 cursor-pointer group-hover:border-blue-500 transition-colors bg-gray-50 group-hover:bg-blue-50">
-                        <ArrowUpTrayIcon className="h-8 w-8 text-gray-400 group-hover:text-blue-500 mb-2" />
-                        <span className="absolute top-2 left-3 text-sm font-medium text-gray-700 group-hover:text-blue-600">
-                          {attachment}
-                        </span>
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept=".pdf,.doc,.docx"
-                          onChange={(e) =>
-                            handleFileUpload(attachment, e.target.files[0])
-                          }
-                        />
-                        {fileObj && fileObj[attachment] && (
-                          <span className="absolute bottom-2 left-3 text-sm font-medium line-clamp-1 text-gray-700 group-hover:text-blue-600">
-                            {fileObj[attachment].name}
+            formData
+              .slice(0, formData.length - 3)
+              .map((section, sectionIdx) => (
+                <div className="bg-white shadow-md" key={section._id}>
+                  <h2 className="px-6 pb-2 pt-3 text-lg font-medium">
+                    {section.title}
+                  </h2>
+                  <div className="flex flex-wrap gap-3 p-3">
+                    {section.attachments.map((attachment, attachmentIdx) => (
+                      <div key={attachmentIdx} className="relative group">
+                        <label className="flex flex-col items-center justify-center relative h-40 w-40 border-2 border-dashed border-gray-300 rounded-xl p-2 cursor-pointer group-hover:border-blue-500 transition-colors bg-gray-50 group-hover:bg-blue-50">
+                          <ArrowUpTrayIcon className="h-8 w-8 text-gray-400 group-hover:text-blue-500 mb-2" />
+                          <span className="absolute top-2 left-3 text-sm font-medium text-gray-700 group-hover:text-blue-600">
+                            {attachment}
                           </span>
-                        )}
-                      </label>
-                    </div>
-                  ))}
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept=".pdf,.doc,.docx"
+                            onChange={(e) =>
+                              handleFileUpload(attachment, e.target.files[0])
+                            }
+                          />
+                          {fileObj && fileObj[attachment] && (
+                            <span className="absolute bottom-2 left-3 text-sm font-medium line-clamp-1 text-gray-700 group-hover:text-blue-600">
+                              {fileObj[attachment].name}
+                            </span>
+                          )}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
         </div>
 
         {/* Section 3: Generate Button */}

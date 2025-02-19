@@ -32,7 +32,9 @@ const generateAndSavePDF = async (htmlContent, fileName) => {
         const uploadsDir = path.join(__dirname, '../public/reports');
         await fs.mkdir(uploadsDir, { recursive: true });
         // Generate unique filename if none provided
-        const finalFileName = fileName || `report-${moment(Date.now()).format('hh:mm:ss MM/DD/YYYY')}.pdf`;
+        const finalFileName =
+            fileName ||
+            `report-${moment(Date.now()).format('hh:mm:ss MM/DD/YYYY')}.pdf`;
         const filePath = path.join(uploadsDir, finalFileName);
 
         // Save PDF to file

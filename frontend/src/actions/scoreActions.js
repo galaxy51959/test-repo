@@ -1,8 +1,10 @@
 export const getStorage = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/storage/files`);
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/storage/files`
+    );
     if (!response.ok) {
-      throw new Error('Failed to fetch storage files');
+      throw new Error("Failed to fetch storage files");
     }
     return await response.json();
   } catch (error) {
@@ -13,17 +15,20 @@ export const getStorage = async () => {
 export const uploadFiles = async (files) => {
   try {
     const formData = new FormData();
-    files.forEach(file => {
-      formData.append('files', file);
+    files.forEach((file) => {
+      formData.append("files", file);
     });
 
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/storage/upload`, {
-      method: 'POST',
-      body: formData
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/storage/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
     if (!response.ok) {
-      throw new Error('Upload failed');
+      throw new Error("Upload failed");
     }
 
     return await response.json();

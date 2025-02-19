@@ -354,7 +354,7 @@ export default function Schedule() {
                         </label>
                         <input
                           type="datetime-local"
-                          value={selectedEvent.created_time?.slice(0, 16) || ""}
+                          value={selectedEvent.created_time.slice(0, 16) || ""}
                           onChange={(e) =>
                             setSelectedEvent({
                               ...selectedEvent,
@@ -643,7 +643,8 @@ export default function Schedule() {
                           low
                         </option>
                         <option
-                          value="priority_medium" className="text-green-500"
+                          value="priority_medium"
+                          className="text-green-500"
                         >
                           middle
                         </option>
